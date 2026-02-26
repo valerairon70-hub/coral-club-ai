@@ -214,18 +214,56 @@
       cursor: pointer;
     }
 
-    .upload-zone .change-photo {
+    /* Thumbnails */
+    .thumbs-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+
+    .thumb-item {
+      position: relative;
+      width: 72px;
+      height: 72px;
+      flex-shrink: 0;
+    }
+
+    .thumb-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid #444;
+    }
+
+    .thumb-remove {
       position: absolute;
-      bottom: 8px;
-      right: 8px;
-      background: rgba(0,0,0,0.6);
-      color: #fff;
+      top: -5px;
+      right: -5px;
+      width: 18px;
+      height: 18px;
+      background: #ff5555;
       border: none;
-      border-radius: 6px;
-      padding: 0.3rem 0.6rem;
-      font-size: 0.75rem;
+      border-radius: 50%;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
       cursor: pointer;
-      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .upload-add-more {
+      font-size: 0.8rem;
+      color: #ff6b35;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 2px;
     }
 
     /* Жалобы */
@@ -430,14 +468,16 @@
 
             <!-- Загрузка диаграммы -->
             <div class="upload-zone" id="upload-zone">
-              <input type="file" id="file-input" accept="image/*" onchange="handleFile(this.files[0])">
+              <input type="file" id="file-input" accept="image/*" multiple style="display:none">
               <div id="upload-placeholder">
                 <div class="upload-icon">📊</div>
-                <div class="upload-text">Загрузите скриншот диаграммы</div>
-                <div class="upload-hint">Нажмите или перетащите файл</div>
+                <div class="upload-text">Загрузите скриншоты диаграммы</div>
+                <div class="upload-hint">Можно несколько файлов сразу</div>
               </div>
-              <img id="preview" style="display:none" alt="Диаграмма">
-              <button class="change-photo" id="change-btn" style="display:none" onclick="clearImage(event)">Заменить</button>
+              <div id="thumbs-container" style="display:none; flex-direction:column; align-items:center; width:100%; gap:0.5rem; padding:0.5rem 0;">
+                <div class="thumbs-grid" id="thumbs-grid"></div>
+                <span class="upload-add-more">+ добавить ещё скриншоты</span>
+              </div>
             </div>
 
             <!-- Жалобы -->
@@ -476,7 +516,7 @@
   </div>
 
 <script>
-  // ── Пароль ── (смените значение на своё)
+  // ── Пароль ──
   const ACCESS_PASSWORD = 'coral2025';
 
   function login() {
@@ -499,17 +539,26 @@
     document.getElementById('pwd-error').textContent = '';
   }
 
-  // Восстановить сессию
   if (sessionStorage.getItem('auth') === '1') {
     document.getElementById('password-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
   }
 
-  // ── Загрузка изображения ──
-  let imageBase64 = null;
-  let imageMimeType = 'image/jpeg';
+  // ── Загрузка изображений ──
+  let uploadedImages = []; // [{base64, mimeType, previewUrl}]
 
   const uploadZone = document.getElementById('upload-zone');
+  const fileInput = document.getElementById('file-input');
+
+  uploadZone.addEventListener('click', e => {
+    if (e.target.classList.contains('thumb-remove')) return;
+    fileInput.click();
+  });
+
+  fileInput.addEventListener('change', function() {
+    handleFiles(this.files);
+    this.value = '';
+  });
 
   uploadZone.addEventListener('dragover', e => {
     e.preventDefault();
@@ -519,48 +568,55 @@
   uploadZone.addEventListener('drop', e => {
     e.preventDefault();
     uploadZone.classList.remove('drag-over');
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) handleFile(file);
+    handleFiles(e.dataTransfer.files);
   });
 
-  function handleFile(file) {
-    if (!file) return;
-    imageMimeType = file.type || 'image/jpeg';
-
-    // Сжимаем через canvas
-    const reader = new FileReader();
-    reader.onload = e => {
-      const img = new Image();
-      img.onload = () => {
-        const maxW = 1200;
-        let w = img.width, h = img.height;
-        if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
-
-        const canvas = document.createElement('canvas');
-        canvas.width = w; canvas.height = h;
-        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-
-        imageBase64 = canvas.toDataURL('image/jpeg', 0.85).split(',')[1];
-
-        const preview = document.getElementById('preview');
-        preview.src = canvas.toDataURL('image/jpeg', 0.85);
-        preview.style.display = 'block';
-        document.getElementById('upload-placeholder').style.display = 'none';
-        document.getElementById('change-btn').style.display = 'block';
-        imageMimeType = 'image/jpeg';
+  function handleFiles(files) {
+    Array.from(files).forEach(file => {
+      if (!file || !file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+          const maxW = 1200;
+          let w = img.width, h = img.height;
+          if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+          uploadedImages.push({ base64: dataUrl.split(',')[1], mimeType: 'image/jpeg', previewUrl: dataUrl });
+          renderThumbnails();
+        };
+        img.src = e.target.result;
       };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
+      reader.readAsDataURL(file);
+    });
   }
 
-  function clearImage(e) {
+  function renderThumbnails() {
+    const placeholder = document.getElementById('upload-placeholder');
+    const container = document.getElementById('thumbs-container');
+    const grid = document.getElementById('thumbs-grid');
+    if (uploadedImages.length === 0) {
+      placeholder.style.display = 'flex';
+      container.style.display = 'none';
+      return;
+    }
+    placeholder.style.display = 'none';
+    container.style.display = 'flex';
+    grid.innerHTML = uploadedImages.map((img, i) => `
+      <div class="thumb-item">
+        <img src="${img.previewUrl}" alt="Скриншот ${i+1}">
+        <button class="thumb-remove" onclick="removeImage(${i}, event)">×</button>
+      </div>
+    `).join('');
+  }
+
+  function removeImage(index, e) {
     e.stopPropagation();
-    imageBase64 = null;
-    document.getElementById('preview').style.display = 'none';
-    document.getElementById('upload-placeholder').style.display = 'flex';
-    document.getElementById('change-btn').style.display = 'none';
-    document.getElementById('file-input').value = '';
+    uploadedImages.splice(index, 1);
+    renderThumbnails();
   }
 
   // ── Анализ ──
@@ -569,7 +625,7 @@
     const c2 = document.getElementById('c2').value.trim();
     const c3 = document.getElementById('c3').value.trim();
 
-    if (!imageBase64) {
+    if (uploadedImages.length === 0) {
       alert('Пожалуйста, загрузите скриншот диаграммы');
       return;
     }
@@ -585,8 +641,7 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          image: imageBase64,
-          imageType: imageMimeType,
+          images: uploadedImages.map(img => ({ base64: img.base64, mimeType: img.mimeType })),
           complaints: [c1, c2, c3].filter(Boolean)
         })
       });
@@ -653,7 +708,7 @@
       {
         cls: 'card-systems',
         icon: '📊',
-        title: 'Состояние систем',
+        title: 'Картина здоровья',
         content: data.systems,
         copyable: false
       },
