@@ -885,6 +885,49 @@
     .btn-wa   { background: #25d366; color: #fff; }
     .btn-tg   { background: #229ed9; color: #fff; }
 
+    /* ── Таблица схемы приёма ── */
+    .tbl-wrap {
+      overflow-x: auto;
+      margin: 0.6rem 0;
+      border-radius: 8px;
+      border: 1px solid #2a2a2a;
+    }
+
+    .proto-tbl {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      min-width: 320px;
+    }
+
+    .proto-tbl th {
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      background: #1e1e1e;
+      color: #777;
+      font-weight: 600;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    .proto-tbl td {
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid #1e1e1e;
+      color: #ccc;
+      vertical-align: middle;
+    }
+
+    .proto-tbl td:not(:first-child) { text-align: center; color: #bbb; }
+    .proto-tbl td:first-child { font-weight: 500; color: #f0f0f0; }
+    .proto-tbl td:last-child { text-align: left !important; color: #888; font-size: 0.78rem; }
+    .proto-tbl tr:last-child td { border-bottom: none; }
+    .proto-tbl .dash { color: #3a3a3a; }
+
+    .card-schedule .result-card-header { border-left: 3px solid #06b6d4; }
+    .card-water    .result-card-header { border-left: 3px solid #3b82f6; }
+
     /* ── Адаптив ── */
     @media (max-width: 720px) {
       .layout { grid-template-columns: 1fr; }
@@ -1492,7 +1535,9 @@
       chain:    extract('цепочка'),
       protocol: extract('протокол'),
       script:   extract('скрипт'),
-      logic:    extract('логика')
+      logic:    extract('логика'),
+      schedule: extract('схема_приема'),
+      water:    extract('вода')
     };
   }
 
@@ -1506,7 +1551,9 @@
       { cls: 'card-chain',    icon: '🔗', title: 'Причинно-следственная цепочка',   content: data.chain,    copyable: true },
       { cls: 'card-protocol', icon: '💊', title: 'Протокол восстановления (Coral Club)', content: data.protocol, copyable: true },
       { cls: 'card-script',   icon: '💬', title: 'Скрипт консультации',             content: data.script,   copyable: true },
-      { cls: 'card-logic',    icon: '💡', title: 'Почему такой протокол',           content: data.logic,    copyable: false }
+      { cls: 'card-logic',    icon: '💡', title: 'Почему такой протокол',           content: data.logic,    copyable: false },
+      { cls: 'card-schedule', icon: '📅', title: 'Схема приёма',                    content: data.schedule, copyable: false },
+      { cls: 'card-water',    icon: '💧', title: 'Вода и гидратация',               content: data.water,    copyable: false }
     ];
 
     panel.innerHTML = cards.map((c, i) => `
@@ -1760,14 +1807,48 @@
   // ════════════════════════════════════════
   // УТИЛИТЫ
   // ════════════════════════════════════════
-  function renderText(text) {
-    return text
+  function renderMarkdownTable(lines) {
+    const isSep = l => /^\s*\|[\s\-:| ]+\|\s*$/.test(l);
+    const parseRow = l => l.split('|').slice(1,-1).map(c => c.trim());
+    const esc = s => s
       .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      .replace(/\[ПЕРЕГРУЗ[^\]]*\]/g, m => `<span class="status-red">${m}</span>`)
-      .replace(/\[НАГРУЗКА[^\]]*\]/g, m => `<span class="status-yellow">${m}</span>`)
-      .replace(/\[НОРМА[^\]]*\]/g,    m => `<span class="status-green">${m}</span>`)
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\n/g, '<br>');
+      .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+    const header = lines[0];
+    const body   = lines.filter((l, i) => i > 0 && !isSep(l));
+    const heads  = parseRow(header);
+    const rows   = body.map(parseRow);
+    const thead = `<thead><tr>${heads.map(c=>`<th>${esc(c)}</th>`).join('')}</tr></thead>`;
+    const tbody = `<tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${esc(c)||'<span class="dash">—</span>'}</td>`).join('')}</tr>`).join('')}</tbody>`;
+    return `<div class="tbl-wrap"><table class="proto-tbl">${thead}${tbody}</table></div>`;
+  }
+
+  function renderText(text) {
+    // Split into table segments and regular text segments
+    const lines = text.split('\n');
+    const segs = [];
+    let cur = { type: 'text', lines: [] };
+    for (const line of lines) {
+      const isTbl = /^\s*\|.+\|\s*$/.test(line);
+      if (isTbl) {
+        if (cur.type !== 'table') { if (cur.lines.length) segs.push(cur); cur = { type: 'table', lines: [] }; }
+        cur.lines.push(line);
+      } else {
+        if (cur.type !== 'text')  { if (cur.lines.length) segs.push(cur); cur = { type: 'text',  lines: [] }; }
+        cur.lines.push(line);
+      }
+    }
+    if (cur.lines.length) segs.push(cur);
+
+    return segs.map(seg => {
+      if (seg.type === 'table') return renderMarkdownTable(seg.lines);
+      return seg.lines.join('\n')
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/\[ПЕРЕГРУЗ[^\]]*\]/g, m => `<span class="status-red">${m}</span>`)
+        .replace(/\[НАГРУЗКА[^\]]*\]/g, m => `<span class="status-yellow">${m}</span>`)
+        .replace(/\[НОРМА[^\]]*\]/g,    m => `<span class="status-green">${m}</span>`)
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n/g, '<br>');
+    }).join('');
   }
 
   function escBt(str) {
