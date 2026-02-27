@@ -963,7 +963,10 @@
       </div>
       <h1>AI-ассистент</h1>
       <p class="subtitle">Трекер здоровья · Coral Club · Метод Бутаковой</p>
-      <input type="password" id="pwd-input" placeholder="Введите пароль" onkeydown="if(event.key==='Enter') login()">
+      <input type="password" id="pwd-input" placeholder="Введите пароль (латиница)"
+        lang="en" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
+        onkeydown="if(event.key==='Enter') login()" oninput="checkLang(this)">
+      <p style="font-size:0.75rem;color:#666;margin:-0.75rem 0 1rem;text-align:left">Пароль вводится английскими буквами</p>
       <button class="btn-login" onclick="login()">Войти</button>
       <div class="error-msg" id="pwd-error"></div>
     </div>
@@ -1061,6 +1064,16 @@
                   <label for="ch-live">🗣 Лично / по телефону</label>
                   <input type="radio" name="channel" id="ch-zoom" value="zoom" class="channel-option">
                   <label for="ch-zoom">💻 Zoom / видеозвонок</label>
+                </div>
+              </div>
+
+              <div class="field-group">
+                <div class="field-label">Кто пишет?</div>
+                <div class="channel-grid">
+                  <input type="radio" name="sender-gender" id="sg-male" value="male" class="channel-option" checked>
+                  <label for="sg-male">👨 Я — мужчина</label>
+                  <input type="radio" name="sender-gender" id="sg-female" value="female" class="channel-option">
+                  <label for="sg-female">👩 Я — женщина</label>
                 </div>
               </div>
 
@@ -1183,6 +1196,16 @@
   // ════════════════════════════════════════
   // АВТОРИЗАЦИЯ
   // ════════════════════════════════════════
+
+  function checkLang(input) {
+    const err = document.getElementById('pwd-error');
+    if (/[а-яёА-ЯЁ]/.test(input.value)) {
+      err.textContent = 'Переключите клавиатуру на английский язык';
+    } else {
+      err.textContent = '';
+    }
+  }
+
   const ACCESS_PASSWORD = 'coral2025';   // основной — без лимита
   const TEST_PASSWORD   = 'test2025';    // тестовый — 10 генераций
   const TEST_LIMIT      = 10;
@@ -1362,8 +1385,9 @@
     if (!personDesc) { alert('Опиши человека — хотя бы несколько слов'); return; }
     if (!checkTestLimit()) return;
 
-    const channel = document.querySelector('input[name="channel"]:checked')?.value || 'whatsapp';
-    const hints   = document.getElementById('inv-hints').value.trim();
+    const channel      = document.querySelector('input[name="channel"]:checked')?.value || 'whatsapp';
+    const hints        = document.getElementById('inv-hints').value.trim();
+    const senderGender = document.querySelector('input[name="sender-gender"]:checked')?.value || 'male';
 
     setInviteLoading(true);
 
@@ -1371,7 +1395,7 @@
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'invite', clientDesc: personDesc, healthHints: hints, channel })
+        body: JSON.stringify({ mode: 'invite', clientDesc: personDesc, healthHints: hints, channel, senderGender })
       });
 
       const data = await res.json();
