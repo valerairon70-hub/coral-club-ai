@@ -34,10 +34,7 @@
       text-align: center;
     }
 
-    .password-card .logo {
-      font-size: 2.5rem;
-      margin-bottom: 0.5rem;
-    }
+    .password-card .logo { font-size: 2.5rem; margin-bottom: 0.5rem; }
 
     .password-card h1 {
       font-size: 1.4rem;
@@ -65,9 +62,7 @@
       transition: border-color 0.2s;
     }
 
-    .password-card input[type="password"]:focus {
-      border-color: #ff6b35;
-    }
+    .password-card input[type="password"]:focus { border-color: #ff6b35; }
 
     .password-card .btn-login {
       width: 100%;
@@ -94,10 +89,11 @@
     /* ── Приложение ── */
     #app { display: none; }
 
+    /* ── Хедер ── */
     header {
       background: #242424;
       border-bottom: 1px solid #333;
-      padding: 1rem 0;
+      padding: 0.85rem 0;
     }
 
     header .container {
@@ -106,17 +102,17 @@
       gap: 0.75rem;
     }
 
-    header .header-icon { font-size: 1.5rem; }
+    header .header-icon { font-size: 1.4rem; }
 
     header h1 {
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 700;
       color: #f0f0f0;
     }
 
     header .tagline {
-      font-size: 0.75rem;
-      color: #888;
+      font-size: 0.7rem;
+      color: #666;
     }
 
     header .logout {
@@ -134,14 +130,52 @@
     header .logout:hover { border-color: #ff6b35; color: #ff6b35; }
 
     .container {
-      max-width: 960px;
+      max-width: 980px;
       margin: 0 auto;
       padding: 0 1rem;
     }
 
-    main { padding: 2rem 0; }
+    /* ── Вкладки ── */
+    .tab-nav {
+      background: #1e1e1e;
+      border-bottom: 1px solid #2a2a2a;
+      padding: 0;
+    }
 
-    /* ── Layout ── */
+    .tab-nav .container {
+      display: flex;
+      gap: 0;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      padding: 0.85rem 1.25rem;
+      color: #666;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .tab-btn:hover { color: #bbb; }
+
+    .tab-btn.active {
+      color: #ff6b35;
+      border-bottom-color: #ff6b35;
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    main { padding: 1.5rem 0 3rem; }
+
+    /* ── 2-колоночный layout ── */
     .layout {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -149,7 +183,7 @@
       align-items: start;
     }
 
-    /* ── Панель ввода ── */
+    /* ── Панели ввода (общие стили) ── */
     .input-panel {
       background: #242424;
       border: 1px solid #333;
@@ -158,22 +192,112 @@
     }
 
     .input-panel h2 {
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 700;
       margin-bottom: 1.25rem;
       color: #f0f0f0;
     }
 
-    /* Зона загрузки */
+    .field-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #999;
+      margin-bottom: 0.5rem;
+    }
+
+    .field-group { margin-bottom: 1.1rem; }
+
+    textarea.field-input, input.field-input {
+      width: 100%;
+      background: #1a1a1a;
+      border: 1px solid #3a3a3a;
+      border-radius: 8px;
+      padding: 0.65rem 0.85rem;
+      color: #f0f0f0;
+      font-size: 0.88rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+      resize: vertical;
+    }
+
+    textarea.field-input:focus, input.field-input:focus { border-color: #ff6b35; }
+    textarea.field-input::placeholder, input.field-input::placeholder { color: #555; }
+
+    /* ── Сегментированный выбор (этап / настрой) ── */
+    .seg-control {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .seg-option {
+      display: none;
+    }
+
+    .seg-option + label {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.4rem 0.75rem;
+      background: #1a1a1a;
+      border: 1px solid #3a3a3a;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      color: #888;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .seg-option:checked + label {
+      background: rgba(255, 107, 53, 0.15);
+      border-color: #ff6b35;
+      color: #ff6b35;
+    }
+
+    .seg-option + label:hover { border-color: #666; color: #ccc; }
+
+    /* ── Радио-кнопки канала ── */
+    .channel-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.4rem;
+    }
+
+    .channel-option { display: none; }
+
+    .channel-option + label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.55rem 0.75rem;
+      background: #1a1a1a;
+      border: 1px solid #3a3a3a;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      color: #888;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .channel-option:checked + label {
+      background: rgba(255, 107, 53, 0.12);
+      border-color: #ff6b35;
+      color: #f0f0f0;
+    }
+
+    .channel-option + label:hover { border-color: #555; color: #ccc; }
+
+    /* ── Зона загрузки ── */
     .upload-zone {
       border: 2px dashed #444;
       border-radius: 12px;
-      padding: 1.5rem;
+      padding: 1.25rem;
       text-align: center;
       cursor: pointer;
       transition: all 0.2s;
-      margin-bottom: 1.25rem;
-      min-height: 160px;
+      margin-bottom: 1.1rem;
+      min-height: 130px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -187,32 +311,15 @@
       background: rgba(255, 107, 53, 0.05);
     }
 
-    .upload-zone .upload-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .upload-zone .upload-icon { font-size: 1.8rem; margin-bottom: 0.4rem; }
 
     .upload-zone .upload-text {
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       color: #bbb;
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.2rem;
     }
 
-    .upload-zone .upload-hint {
-      font-size: 0.75rem;
-      color: #666;
-    }
-
-    .upload-zone img#preview {
-      max-width: 100%;
-      max-height: 200px;
-      border-radius: 8px;
-      object-fit: contain;
-    }
-
-    .upload-zone input[type="file"] {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      cursor: pointer;
-    }
+    .upload-zone .upload-hint { font-size: 0.75rem; color: #666; }
 
     /* Thumbnails */
     .thumbs-grid {
@@ -224,8 +331,8 @@
 
     .thumb-item {
       position: relative;
-      width: 72px;
-      height: 72px;
+      width: 68px;
+      height: 68px;
       flex-shrink: 0;
     }
 
@@ -259,21 +366,14 @@
     }
 
     .upload-add-more {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: #ff6b35;
       cursor: pointer;
       text-decoration: underline;
       text-underline-offset: 2px;
     }
 
-    /* Жалобы */
-    .complaints-label {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #bbb;
-      margin-bottom: 0.75rem;
-    }
-
+    /* ── Жалобы ── */
     .complaint-row {
       display: flex;
       align-items: center;
@@ -282,14 +382,14 @@
     }
 
     .complaint-num {
-      width: 24px;
-      height: 24px;
+      width: 22px;
+      height: 22px;
       background: #333;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 700;
       color: #ff6b35;
       flex-shrink: 0;
@@ -300,9 +400,9 @@
       background: #1a1a1a;
       border: 1px solid #3a3a3a;
       border-radius: 8px;
-      padding: 0.6rem 0.75rem;
+      padding: 0.55rem 0.75rem;
       color: #f0f0f0;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       outline: none;
       transition: border-color 0.2s;
     }
@@ -310,18 +410,18 @@
     .complaint-row input:focus { border-color: #ff6b35; }
     .complaint-row input::placeholder { color: #555; }
 
-    /* Кнопка анализа */
-    .btn-analyze {
+    /* ── Кнопка действия ── */
+    .btn-action {
       width: 100%;
       background: #ff6b35;
       color: #fff;
       border: none;
       border-radius: 10px;
-      padding: 0.85rem;
-      font-size: 1rem;
+      padding: 0.8rem;
+      font-size: 0.95rem;
       font-weight: 700;
       cursor: pointer;
-      margin-top: 1.25rem;
+      margin-top: 1.1rem;
       transition: background 0.2s, transform 0.1s;
       display: flex;
       align-items: center;
@@ -329,13 +429,13 @@
       gap: 0.5rem;
     }
 
-    .btn-analyze:hover:not(:disabled) { background: #e85d2a; }
-    .btn-analyze:active:not(:disabled) { transform: scale(0.98); }
-    .btn-analyze:disabled { background: #555; cursor: not-allowed; }
+    .btn-action:hover:not(:disabled) { background: #e85d2a; }
+    .btn-action:active:not(:disabled) { transform: scale(0.98); }
+    .btn-action:disabled { background: #555; cursor: not-allowed; }
 
     .spinner {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       border: 2px solid rgba(255,255,255,0.3);
       border-top-color: #fff;
       border-radius: 50%;
@@ -356,7 +456,7 @@
       border: 1px solid #333;
       border-radius: 16px;
       overflow: hidden;
-      animation: fadeIn 0.4s ease;
+      animation: fadeIn 0.35s ease;
     }
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
@@ -364,21 +464,34 @@
     .result-card-header {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 1rem 1.25rem;
-      border-bottom: 1px solid #333;
-      font-weight: 700;
-      font-size: 0.9rem;
+      justify-content: space-between;
+      padding: 0.85rem 1.1rem;
+      border-bottom: 1px solid #2a2a2a;
     }
 
-    .card-systems .result-card-header { border-left: 3px solid #4a9eff; }
-    .card-chain   .result-card-header { border-left: 3px solid #a855f7; }
+    .result-card-header .card-title {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    /* Цвета вкладок по левой границе */
+    .card-systems  .result-card-header { border-left: 3px solid #4a9eff; }
+    .card-chain    .result-card-header { border-left: 3px solid #a855f7; }
     .card-protocol .result-card-header { border-left: 3px solid #ff6b35; }
-    .card-script  .result-card-header { border-left: 3px solid #22c55e; }
+    .card-script   .result-card-header { border-left: 3px solid #22c55e; }
+    .card-logic    .result-card-header { border-left: 3px solid #f59e0b; }
+    .card-direct   .result-card-header { border-left: 3px solid #4a9eff; }
+    .card-story    .result-card-header { border-left: 3px solid #a855f7; }
+    .card-question .result-card-header { border-left: 3px solid #22c55e; }
+    .card-followup .result-card-header { border-left: 3px solid #ff6b35; }
+    .card-tip      .result-card-header { border-left: 3px solid #f59e0b; }
 
     .result-card-body {
-      padding: 1.25rem;
-      font-size: 0.9rem;
+      padding: 1.1rem;
+      font-size: 0.88rem;
       line-height: 1.7;
       color: #ddd;
     }
@@ -386,31 +499,108 @@
     .result-card-body .status-red    { color: #ff5555; font-weight: 600; }
     .result-card-body .status-yellow { color: #ffcc44; font-weight: 600; }
     .result-card-body .status-green  { color: #44cc88; font-weight: 600; }
-
     .result-card-body strong { color: #f0f0f0; }
-
-    .result-card-footer {
-      padding: 0.75rem 1.25rem;
-      border-top: 1px solid #333;
-      display: flex;
-      justify-content: flex-end;
-    }
 
     .btn-copy {
       background: none;
-      border: 1px solid #444;
+      border: 1px solid #3a3a3a;
       border-radius: 6px;
-      color: #888;
-      font-size: 0.8rem;
-      padding: 0.3rem 0.75rem;
+      color: #777;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.65rem;
       cursor: pointer;
       transition: all 0.2s;
+      white-space: nowrap;
     }
 
     .btn-copy:hover { border-color: #ff6b35; color: #ff6b35; }
     .btn-copy.copied { border-color: #22c55e; color: #22c55e; }
 
-    /* Состояние ожидания */
+    /* ── Блок исхода консультации ── */
+    .outcome-block {
+      background: #1e2a1e;
+      border: 1px solid #2d3d2d;
+      border-radius: 12px;
+      padding: 1rem 1.1rem;
+      animation: fadeIn 0.35s ease;
+    }
+
+    .outcome-block h3 {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #888;
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .outcome-btns {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.75rem;
+    }
+
+    .btn-outcome {
+      background: #1a1a1a;
+      border: 1px solid #3a3a3a;
+      border-radius: 8px;
+      padding: 0.45rem 0.85rem;
+      color: #aaa;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-outcome:hover { border-color: #666; color: #eee; }
+    .btn-outcome.selected-bought  { background: rgba(34,197,94,0.15); border-color: #22c55e; color: #22c55e; }
+    .btn-outcome.selected-thinking { background: rgba(251,191,36,0.12); border-color: #fbbf24; color: #fbbf24; }
+    .btn-outcome.selected-rejected { background: rgba(239,68,68,0.12); border-color: #ef4444; color: #ef4444; }
+    .btn-outcome.selected-objection { background: rgba(168,85,247,0.12); border-color: #a855f7; color: #a855f7; }
+
+    .objection-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .objection-row input {
+      flex: 1;
+      background: #1a1a1a;
+      border: 1px solid #3a3a3a;
+      border-radius: 8px;
+      padding: 0.5rem 0.75rem;
+      color: #f0f0f0;
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .objection-row input:focus { border-color: #a855f7; }
+    .objection-row input::placeholder { color: #555; }
+
+    .btn-save-outcome {
+      background: #ff6b35;
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      color: #fff;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-save-outcome:hover { background: #e85d2a; }
+
+    .outcome-saved {
+      font-size: 0.82rem;
+      color: #22c55e;
+      text-align: center;
+      padding: 0.4rem;
+    }
+
+    /* ── Состояние ожидания ── */
     .empty-state {
       background: #242424;
       border: 1px solid #333;
@@ -421,13 +611,214 @@
     }
 
     .empty-state .empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
-    .empty-state p { font-size: 0.9rem; }
+    .empty-state p { font-size: 0.88rem; }
+
+    /* ── Вкладка статистики ── */
+    .stats-layout { padding: 0; }
+
+    .stats-summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      background: #242424;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 1.1rem;
+      text-align: center;
+    }
+
+    .stat-card .stat-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #ff6b35;
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+
+    .stat-card .stat-label {
+      font-size: 0.78rem;
+      color: #888;
+    }
+
+    .stats-section {
+      background: #242424;
+      border: 1px solid #333;
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .stats-section h3 {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #bbb;
+      margin-bottom: 1rem;
+    }
+
+    .filter-row {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .btn-filter {
+      background: #1a1a1a;
+      border: 1px solid #3a3a3a;
+      border-radius: 20px;
+      padding: 0.35rem 0.85rem;
+      color: #888;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-filter.active {
+      background: rgba(255, 107, 53, 0.15);
+      border-color: #ff6b35;
+      color: #ff6b35;
+    }
+
+    .btn-filter:hover:not(.active) { border-color: #555; color: #ccc; }
+
+    .records-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+
+    .records-table th {
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      color: #666;
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    .records-table td {
+      padding: 0.65rem 0.75rem;
+      border-bottom: 1px solid #222;
+      color: #ccc;
+      vertical-align: top;
+    }
+
+    .records-table tr:last-child td { border-bottom: none; }
+
+    .outcome-pill {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
+    .pill-bought    { background: rgba(34,197,94,0.15);  color: #22c55e; }
+    .pill-thinking  { background: rgba(251,191,36,0.12); color: #fbbf24; }
+    .pill-rejected  { background: rgba(239,68,68,0.12);  color: #ef4444; }
+    .pill-objection { background: rgba(168,85,247,0.12); color: #a855f7; }
+    .pill-pending   { background: rgba(100,100,100,0.15); color: #888; }
+
+    .type-pill {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    .type-invite  { background: rgba(74,158,255,0.12); color: #4a9eff; }
+    .type-decode  { background: rgba(255,107,53,0.12); color: #ff6b35; }
+
+    .objection-tag {
+      display: inline-block;
+      background: rgba(168,85,247,0.1);
+      border: 1px solid rgba(168,85,247,0.3);
+      border-radius: 4px;
+      padding: 0.1rem 0.4rem;
+      font-size: 0.72rem;
+      color: #c084fc;
+      margin: 0.15rem 0.15rem 0 0;
+    }
+
+    .no-records {
+      text-align: center;
+      color: #555;
+      padding: 2rem;
+      font-size: 0.88rem;
+    }
+
+    .btn-export {
+      background: none;
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 0.5rem 1.1rem;
+      color: #888;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-export:hover { border-color: #ff6b35; color: #ff6b35; }
+
+    .btn-clear-stats {
+      background: none;
+      border: 1px solid #3a2a2a;
+      border-radius: 8px;
+      padding: 0.5rem 1.1rem;
+      color: #666;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-clear-stats:hover { border-color: #ff5555; color: #ff5555; }
+
+    .top-objections-list { list-style: none; }
+
+    .top-objections-list li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #222;
+      font-size: 0.85rem;
+      color: #ccc;
+    }
+
+    .top-objections-list li:last-child { border-bottom: none; }
+
+    .obj-count {
+      background: rgba(168,85,247,0.15);
+      color: #a855f7;
+      padding: 0.15rem 0.55rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
 
     /* ── Адаптив ── */
     @media (max-width: 720px) {
       .layout { grid-template-columns: 1fr; }
-      header h1 { font-size: 0.95rem; }
+      header h1 { font-size: 0.9rem; }
       .password-card { padding: 2rem 1.25rem; }
+      .stats-summary { grid-template-columns: repeat(3, 1fr); }
+      .tab-btn { padding: 0.75rem 0.85rem; font-size: 0.78rem; }
+      .tab-btn .tab-icon { display: none; }
+      .channel-grid { grid-template-columns: 1fr 1fr; }
+      .records-table { font-size: 0.75rem; }
+      .records-table th, .records-table td { padding: 0.5rem 0.5rem; }
+    }
+
+    @media (max-width: 480px) {
+      .stats-summary { grid-template-columns: 1fr 1fr; }
+      .stats-summary .stat-card:last-child { grid-column: span 2; }
     }
   </style>
 </head>
@@ -438,7 +829,7 @@
     <div class="password-card">
       <div class="logo">🧬</div>
       <h1>AI-ассистент</h1>
-      <p class="subtitle">Расшифровка трекера здоровья · Coral Club</p>
+      <p class="subtitle">Трекер здоровья · Coral Club · Метод Бутаковой</p>
       <input type="password" id="pwd-input" placeholder="Введите пароль" onkeydown="if(event.key==='Enter') login()">
       <button class="btn-login" onclick="login()">Войти</button>
       <div class="error-msg" id="pwd-error"></div>
@@ -458,65 +849,179 @@
       </div>
     </header>
 
+    <!-- ── Вкладки ── -->
+    <nav class="tab-nav">
+      <div class="container">
+        <button class="tab-btn active" onclick="switchTab('invite')">
+          <span class="tab-icon">🤝</span> Пригласить
+        </button>
+        <button class="tab-btn" onclick="switchTab('decode')">
+          <span class="tab-icon">🔍</span> Расшифровать
+        </button>
+        <button class="tab-btn" onclick="switchTab('stats')">
+          <span class="tab-icon">📊</span> Статистика
+        </button>
+      </div>
+    </nav>
+
     <main>
       <div class="container">
-        <div class="layout">
 
-          <!-- Левая панель: ввод -->
-          <div class="input-panel">
-            <h2>Данные клиента</h2>
+        <!-- ════════════════════════════════
+             ВКЛАДКА 1: ПРИГЛАСИТЬ НА ТРЕКЕР
+             ════════════════════════════════ -->
+        <div class="tab-panel active" id="panel-invite">
+          <div class="layout">
 
-            <!-- Загрузка диаграммы -->
-            <div class="upload-zone" id="upload-zone">
-              <input type="file" id="file-input" accept="image/*" multiple style="display:none">
-              <div id="upload-placeholder">
-                <div class="upload-icon">📊</div>
-                <div class="upload-text">Загрузите скриншоты диаграммы</div>
-                <div class="upload-hint">Можно несколько файлов сразу</div>
+            <!-- Форма приглашения -->
+            <div class="input-panel">
+              <h2>Пригласить на трекер здоровья</h2>
+
+              <div class="field-group">
+                <div class="field-label">Кто этот человек?</div>
+                <textarea class="field-input" id="inv-person" rows="3"
+                  placeholder="Например: подруга, мама двоих детей, 38 лет. Работает в офисе, жалуется на усталость и плохой сон. Активно интересуется здоровьем, следит за питанием."></textarea>
               </div>
-              <div id="thumbs-container" style="display:none; flex-direction:column; align-items:center; width:100%; gap:0.5rem; padding:0.5rem 0;">
-                <div class="thumbs-grid" id="thumbs-grid"></div>
-                <span class="upload-add-more">+ добавить ещё скриншоты</span>
+
+              <div class="field-group">
+                <div class="field-label">Что знаешь о его/её здоровье? <span style="color:#555">(необязательно)</span></div>
+                <textarea class="field-input" id="inv-hints" rows="2"
+                  placeholder="Например: недавно говорила о лишнем весе, упоминала проблемы с суставами"></textarea>
+              </div>
+
+              <div class="field-group">
+                <div class="field-label">Канал общения</div>
+                <div class="channel-grid">
+                  <input type="radio" name="channel" id="ch-wa" value="whatsapp" class="channel-option" checked>
+                  <label for="ch-wa">💬 WhatsApp / Telegram</label>
+                  <input type="radio" name="channel" id="ch-ig" value="instagram" class="channel-option">
+                  <label for="ch-ig">📸 Instagram / соцсети</label>
+                  <input type="radio" name="channel" id="ch-live" value="person" class="channel-option">
+                  <label for="ch-live">🗣 Лично / по телефону</label>
+                  <input type="radio" name="channel" id="ch-zoom" value="zoom" class="channel-option">
+                  <label for="ch-zoom">💻 Zoom / видеозвонок</label>
+                </div>
+              </div>
+
+              <button class="btn-action" id="invite-btn" onclick="generateInvite()">
+                <span id="invite-btn-icon">✉️</span>
+                <span id="invite-btn-text">Подготовить скрипты приглашения</span>
+              </button>
+            </div>
+
+            <!-- Результаты приглашения -->
+            <div class="results-panel" id="invite-results">
+              <div class="empty-state">
+                <div class="empty-icon">✉️</div>
+                <p>Опиши человека — получишь 3 готовых скрипта приглашения и совет по работе с ним</p>
               </div>
             </div>
 
-            <!-- Жалобы -->
-            <div class="complaints-label">Три главные жалобы клиента</div>
-
-            <div class="complaint-row">
-              <div class="complaint-num">1</div>
-              <input type="text" id="c1" placeholder="Например: постоянная усталость">
-            </div>
-            <div class="complaint-row">
-              <div class="complaint-num">2</div>
-              <input type="text" id="c2" placeholder="Например: плохой сон, раздражительность">
-            </div>
-            <div class="complaint-row">
-              <div class="complaint-num">3</div>
-              <input type="text" id="c3" placeholder="Например: лишний вес, давление">
-            </div>
-
-            <button class="btn-analyze" id="analyze-btn" onclick="analyze()">
-              <span id="btn-icon">🔍</span>
-              <span id="btn-text">Расшифровать диаграмму</span>
-            </button>
           </div>
-
-          <!-- Правая панель: результаты -->
-          <div class="results-panel" id="results-panel">
-            <div class="empty-state">
-              <div class="empty-icon">📋</div>
-              <p>Загрузите диаграмму и укажите жалобы — здесь появится полная расшифровка</p>
-            </div>
-          </div>
-
         </div>
+
+        <!-- ════════════════════════════════
+             ВКЛАДКА 2: РАСШИФРОВАТЬ ТРЕКЕР
+             ════════════════════════════════ -->
+        <div class="tab-panel" id="panel-decode">
+          <div class="layout">
+
+            <!-- Форма расшифровки -->
+            <div class="input-panel">
+              <h2>Данные клиента</h2>
+
+              <!-- Загрузка диаграммы -->
+              <div class="field-group">
+                <div class="field-label">Скриншоты диаграммы</div>
+                <div class="upload-zone" id="upload-zone">
+                  <input type="file" id="file-input" accept="image/*" multiple style="display:none">
+                  <div id="upload-placeholder">
+                    <div class="upload-icon">📊</div>
+                    <div class="upload-text">Загрузите скриншоты диаграммы</div>
+                    <div class="upload-hint">Можно несколько файлов сразу</div>
+                  </div>
+                  <div id="thumbs-container" style="display:none; flex-direction:column; align-items:center; width:100%; gap:0.5rem; padding:0.5rem 0;">
+                    <div class="thumbs-grid" id="thumbs-grid"></div>
+                    <span class="upload-add-more">+ добавить ещё скриншоты</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Жалобы -->
+              <div class="field-group">
+                <div class="field-label">Три главные жалобы клиента</div>
+                <div class="complaint-row">
+                  <div class="complaint-num">1</div>
+                  <input type="text" id="c1" placeholder="Например: постоянная усталость">
+                </div>
+                <div class="complaint-row">
+                  <div class="complaint-num">2</div>
+                  <input type="text" id="c2" placeholder="Например: плохой сон, раздражительность">
+                </div>
+                <div class="complaint-row">
+                  <div class="complaint-num">3</div>
+                  <input type="text" id="c3" placeholder="Например: лишний вес, скачки давления">
+                </div>
+              </div>
+
+              <!-- Этап работы -->
+              <div class="field-group">
+                <div class="field-label">Этап работы с клиентом</div>
+                <div class="seg-control">
+                  <input type="radio" name="stage" id="st-first" value="first_contact" class="seg-option" checked>
+                  <label for="st-first">Первый контакт</label>
+                  <input type="radio" name="stage" id="st-m1" value="month1" class="seg-option">
+                  <label for="st-m1">Сопровождение (мес. 1)</label>
+                  <input type="radio" name="stage" id="st-m2" value="month2" class="seg-option">
+                  <label for="st-m2">Повторный трекер</label>
+                </div>
+              </div>
+
+              <!-- Настрой клиента -->
+              <div class="field-group">
+                <div class="field-label">Настрой клиента</div>
+                <div class="seg-control">
+                  <input type="radio" name="readiness" id="rd-open" value="open" class="seg-option" checked>
+                  <label for="rd-open">Открытый ✓</label>
+                  <input type="radio" name="readiness" id="rd-think" value="thinking" class="seg-option">
+                  <label for="rd-think">Думает...</label>
+                  <input type="radio" name="readiness" id="rd-skep" value="skeptic" class="seg-option">
+                  <label for="rd-skep">Скептик</label>
+                </div>
+              </div>
+
+              <button class="btn-action" id="analyze-btn" onclick="analyze()">
+                <span id="btn-icon">🔍</span>
+                <span id="btn-text">Расшифровать диаграмму</span>
+              </button>
+            </div>
+
+            <!-- Результаты расшифровки -->
+            <div class="results-panel" id="decode-results">
+              <div class="empty-state">
+                <div class="empty-icon">📋</div>
+                <p>Загрузите диаграмму, укажите жалобы и этап — здесь появится полная расшифровка</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ════════════════════════════════
+             ВКЛАДКА 3: СТАТИСТИКА
+             ════════════════════════════════ -->
+        <div class="tab-panel" id="panel-stats">
+          <div id="stats-content"></div>
+        </div>
+
       </div>
     </main>
   </div>
 
 <script>
-  // ── Пароль ──
+  // ════════════════════════════════════════
+  // АВТОРИЗАЦИЯ
+  // ════════════════════════════════════════
   const ACCESS_PASSWORD = 'coral2025';
 
   function login() {
@@ -544,11 +1049,44 @@
     document.getElementById('app').style.display = 'block';
   }
 
-  // ── Загрузка изображений ──
-  let uploadedImages = []; // [{base64, mimeType, previewUrl}]
+  // ════════════════════════════════════════
+  // ВКЛАДКИ
+  // ════════════════════════════════════════
+  function switchTab(name) {
+    document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+      btn.classList.toggle('active', ['invite','decode','stats'][i] === name);
+    });
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + name).classList.add('active');
+    if (name === 'stats') renderStats();
+  }
+
+  // ════════════════════════════════════════
+  // ЛОКАЛЬНОЕ ХРАНИЛИЩЕ (мини-CRM)
+  // ════════════════════════════════════════
+  function getRecords() {
+    try { return JSON.parse(localStorage.getItem('cc_records') || '[]'); } catch { return []; }
+  }
+
+  function saveRecord(rec) {
+    const records = getRecords();
+    const idx = records.findIndex(r => r.id === rec.id);
+    if (idx >= 0) records[idx] = rec;
+    else records.unshift(rec);
+    localStorage.setItem('cc_records', JSON.stringify(records));
+  }
+
+  function genId() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  }
+
+  // ════════════════════════════════════════
+  // ЗАГРУЗКА ИЗОБРАЖЕНИЙ
+  // ════════════════════════════════════════
+  let uploadedImages = [];
 
   const uploadZone = document.getElementById('upload-zone');
-  const fileInput = document.getElementById('file-input');
+  const fileInput  = document.getElementById('file-input');
 
   uploadZone.addEventListener('click', e => {
     if (e.target.classList.contains('thumb-remove')) return;
@@ -560,11 +1098,8 @@
     this.value = '';
   });
 
-  uploadZone.addEventListener('dragover', e => {
-    e.preventDefault();
-    uploadZone.classList.add('drag-over');
-  });
-  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+  uploadZone.addEventListener('dragover',  e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+  uploadZone.addEventListener('dragleave', ()  => uploadZone.classList.remove('drag-over'));
   uploadZone.addEventListener('drop', e => {
     e.preventDefault();
     uploadZone.classList.remove('drag-over');
@@ -596,18 +1131,18 @@
 
   function renderThumbnails() {
     const placeholder = document.getElementById('upload-placeholder');
-    const container = document.getElementById('thumbs-container');
-    const grid = document.getElementById('thumbs-grid');
+    const container   = document.getElementById('thumbs-container');
+    const grid        = document.getElementById('thumbs-grid');
     if (uploadedImages.length === 0) {
       placeholder.style.display = 'flex';
-      container.style.display = 'none';
+      container.style.display   = 'none';
       return;
     }
     placeholder.style.display = 'none';
-    container.style.display = 'flex';
+    container.style.display   = 'flex';
     grid.innerHTML = uploadedImages.map((img, i) => `
       <div class="thumb-item">
-        <img src="${img.previewUrl}" alt="Скриншот ${i+1}">
+        <img src="${img.previewUrl}" alt="Скриншот ${i + 1}">
         <button class="thumb-remove" onclick="removeImage(${i}, event)">×</button>
       </div>
     `).join('');
@@ -619,50 +1154,161 @@
     renderThumbnails();
   }
 
-  // ── Анализ ──
+  // ════════════════════════════════════════
+  // ВКЛАДКА 1: ГЕНЕРАЦИЯ ПРИГЛАШЕНИЙ
+  // ════════════════════════════════════════
+  async function generateInvite() {
+    const personDesc = document.getElementById('inv-person').value.trim();
+    if (!personDesc) { alert('Опиши человека — хотя бы несколько слов'); return; }
+
+    const channel = document.querySelector('input[name="channel"]:checked')?.value || 'whatsapp';
+    const hints   = document.getElementById('inv-hints').value.trim();
+
+    setInviteLoading(true);
+
+    try {
+      const res = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'invite', clientDesc: personDesc, healthHints: hints, channel })
+      });
+
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || 'Ошибка сервера');
+
+      const parsed = parseInviteResponse(data.result);
+      renderInviteResults(parsed, personDesc);
+
+    } catch (err) {
+      alert('Ошибка: ' + err.message);
+    } finally {
+      setInviteLoading(false);
+    }
+  }
+
+  function setInviteLoading(on) {
+    const btn  = document.getElementById('invite-btn');
+    const icon = document.getElementById('invite-btn-icon');
+    const text = document.getElementById('invite-btn-text');
+    btn.disabled = on;
+    if (on) {
+      icon.outerHTML = '<div class="spinner" id="invite-btn-icon"></div>';
+      text.textContent = 'Готовлю скрипты...';
+    } else {
+      document.getElementById('invite-btn-icon').outerHTML = '<span id="invite-btn-icon">✉️</span>';
+      text.textContent = 'Подготовить скрипты приглашения';
+    }
+  }
+
+  function parseInviteResponse(text) {
+    const extract = tag => {
+      const m = text.match(new RegExp(`<${tag}>[\\s\\S]*?<\\/${tag}>`));
+      return m ? m[0].replace(new RegExp(`<\\/?${tag}>`,'g'),'').trim() : '';
+    };
+    return {
+      direct:    extract('прямой'),
+      story:     extract('история'),
+      question:  extract('вопрос'),
+      followup:  extract('повторное_касание'),
+      tip:       extract('совет_дистрибьютору')
+    };
+  }
+
+  function renderInviteResults(data, personDesc) {
+    const panel = document.getElementById('invite-results');
+    const recId = genId();
+
+    const cards = [
+      { cls: 'card-direct',   icon: '💬', title: 'Прямое приглашение',       content: data.direct,   copyable: true },
+      { cls: 'card-story',    icon: '📖', title: 'Через историю',            content: data.story,    copyable: true },
+      { cls: 'card-question', icon: '❓', title: 'Вопрос-крючок',            content: data.question, copyable: true },
+      { cls: 'card-followup', icon: '🔄', title: 'Повторное касание',        content: data.followup, copyable: true },
+      { cls: 'card-tip',      icon: '💡', title: 'Совет дистрибьютору',      content: data.tip,      copyable: false }
+    ];
+
+    panel.innerHTML = cards.map((c, i) => `
+      <div class="result-card ${c.cls}" style="animation-delay:${i * 0.07}s">
+        <div class="result-card-header">
+          <div class="card-title">${c.icon} ${c.title}</div>
+          ${c.copyable ? `<button class="btn-copy" onclick="copyText(this, \`${escBt(c.content)}\`)">Скопировать</button>` : ''}
+        </div>
+        <div class="result-card-body">${renderText(c.content || '—')}</div>
+      </div>
+    `).join('') + renderInviteOutcomeBlock(recId, personDesc);
+  }
+
+  function renderInviteOutcomeBlock(recId, personDesc) {
+    return `
+      <div class="outcome-block" id="outcome-${recId}">
+        <h3>Результат приглашения</h3>
+        <div class="outcome-btns">
+          <button class="btn-outcome" onclick="selectOutcome('${recId}', 'bought', 'invite', '${escBt(personDesc)}', this)">✅ Согласился пройти</button>
+          <button class="btn-outcome" onclick="selectOutcome('${recId}', 'thinking', 'invite', '${escBt(personDesc)}', this)">🤔 Думает</button>
+          <button class="btn-outcome" onclick="selectOutcome('${recId}', 'rejected', 'invite', '${escBt(personDesc)}', this)">🚫 Отказался</button>
+          <button class="btn-outcome" onclick="selectOutcome('${recId}', 'objection', 'invite', '${escBt(personDesc)}', this)">⚡ Возражение</button>
+        </div>
+        <div id="obj-row-${recId}" style="display:none">
+          <div class="objection-row">
+            <input type="text" id="obj-text-${recId}" placeholder="Напишите возражение...">
+            <button class="btn-save-outcome" onclick="saveOutcome('${recId}', 'invite', '${escBt(personDesc)}')">Сохранить</button>
+          </div>
+        </div>
+        <div id="outcome-saved-${recId}"></div>
+      </div>
+    `;
+  }
+
+  // ════════════════════════════════════════
+  // ВКЛАДКА 2: РАСШИФРОВКА ТРЕКЕРА
+  // ════════════════════════════════════════
   async function analyze() {
     const c1 = document.getElementById('c1').value.trim();
     const c2 = document.getElementById('c2').value.trim();
     const c3 = document.getElementById('c3').value.trim();
 
-    if (uploadedImages.length === 0) {
-      alert('Пожалуйста, загрузите скриншот диаграммы');
-      return;
-    }
-    if (!c1) {
-      alert('Укажите хотя бы одну жалобу клиента');
-      return;
-    }
+    if (uploadedImages.length === 0) { alert('Пожалуйста, загрузите скриншот диаграммы'); return; }
+    if (!c1) { alert('Укажите хотя бы одну жалобу клиента'); return; }
 
-    setLoading(true);
+    const stage     = document.querySelector('input[name="stage"]:checked')?.value || 'first_contact';
+    const readiness = document.querySelector('input[name="readiness"]:checked')?.value || 'open';
+
+    setDecodeLoading(true);
 
     try {
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          mode: 'decode',
           images: uploadedImages.map(img => ({ base64: img.base64, mimeType: img.mimeType })),
-          complaints: [c1, c2, c3].filter(Boolean)
+          complaints: [c1, c2, c3].filter(Boolean),
+          stage,
+          readiness
         })
       });
 
       const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || 'Ошибка сервера');
 
-      if (!res.ok || data.error) {
-        throw new Error(data.error || 'Ошибка сервера');
+      const parsed = parseDecodeResponse(data.result);
+      renderDecodeResults(parsed, [c1, c2, c3].filter(Boolean));
+
+      // Скролл к результатам на мобильном
+      if (window.innerWidth < 720) {
+        setTimeout(() => {
+          document.getElementById('decode-results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 300);
       }
-
-      renderResults(parseResponse(data.result));
 
     } catch (err) {
       alert('Ошибка: ' + err.message);
     } finally {
-      setLoading(false);
+      setDecodeLoading(false);
     }
   }
 
-  function setLoading(on) {
-    const btn = document.getElementById('analyze-btn');
+  function setDecodeLoading(on) {
+    const btn  = document.getElementById('analyze-btn');
     const icon = document.getElementById('btn-icon');
     const text = document.getElementById('btn-text');
     btn.disabled = on;
@@ -675,8 +1321,7 @@
     }
   }
 
-  // ── Парсинг ответа (XML-теги) ──
-  function parseResponse(text) {
+  function parseDecodeResponse(text) {
     const extract = tag => {
       const m = text.match(new RegExp(`<${tag}>[\\s\\S]*?<\\/${tag}>`));
       return m ? m[0].replace(new RegExp(`<\\/?${tag}>`,'g'),'').trim() : '';
@@ -685,11 +1330,275 @@
       systems:  extract('системы'),
       chain:    extract('цепочка'),
       protocol: extract('протокол'),
-      script:   extract('скрипт')
+      script:   extract('скрипт'),
+      logic:    extract('логика')
     };
   }
 
-  // ── Рендер текста ──
+  function renderDecodeResults(data, complaints) {
+    const panel = document.getElementById('decode-results');
+    const recId = genId();
+    const clientDesc = 'Жалобы: ' + complaints.join(', ');
+
+    const cards = [
+      { cls: 'card-systems',  icon: '📊', title: 'Картина здоровья',                content: data.systems,  copyable: true },
+      { cls: 'card-chain',    icon: '🔗', title: 'Причинно-следственная цепочка',   content: data.chain,    copyable: true },
+      { cls: 'card-protocol', icon: '💊', title: 'Протокол восстановления (Coral Club)', content: data.protocol, copyable: true },
+      { cls: 'card-script',   icon: '💬', title: 'Скрипт консультации',             content: data.script,   copyable: true },
+      { cls: 'card-logic',    icon: '💡', title: 'Почему такой протокол',           content: data.logic,    copyable: false }
+    ];
+
+    panel.innerHTML = cards.map((c, i) => `
+      <div class="result-card ${c.cls}" style="animation-delay:${i * 0.07}s">
+        <div class="result-card-header">
+          <div class="card-title">${c.icon} ${c.title}</div>
+          ${c.copyable ? `<button class="btn-copy" onclick="copyText(this, \`${escBt(c.content)}\`)">Скопировать</button>` : ''}
+        </div>
+        <div class="result-card-body">${renderText(c.content || '—')}</div>
+      </div>
+    `).join('') + renderDecodeOutcomeBlock(recId, clientDesc);
+  }
+
+  function renderDecodeOutcomeBlock(recId, clientDesc) {
+    return `
+      <div class="outcome-block" id="outcome-${recId}">
+        <h3>Что в итоге с клиентом?</h3>
+        <div class="outcome-btns">
+          <button class="btn-outcome" onclick="selectOutcome('${recId}', 'bought', 'decode', '${escBt(clientDesc)}', this)">✅ Купил</button>
+          <button class="btn-outcome" onclick="selectOutcome('${recId}', 'thinking', 'decode', '${escBt(clientDesc)}', this)">🤔 Думает</button>
+          <button class="btn-outcome" onclick="selectOutcome('${recId}', 'rejected', 'decode', '${escBt(clientDesc)}', this)">🚫 Отказался</button>
+          <button class="btn-outcome" onclick="selectOutcome('${recId}', 'objection', 'decode', '${escBt(clientDesc)}', this)">⚡ Возражение</button>
+        </div>
+        <div id="obj-row-${recId}" style="display:none">
+          <div class="objection-row">
+            <input type="text" id="obj-text-${recId}" placeholder="Напишите возражение клиента...">
+            <button class="btn-save-outcome" onclick="saveOutcome('${recId}', 'decode', '${escBt(clientDesc)}')">Сохранить</button>
+          </div>
+        </div>
+        <div id="outcome-saved-${recId}"></div>
+      </div>
+    `;
+  }
+
+  // ════════════════════════════════════════
+  // ФИКСАЦИЯ ИСХОДА
+  // ════════════════════════════════════════
+  let pendingOutcomes = {}; // recId → {type, clientDesc}
+
+  function selectOutcome(recId, outcome, type, clientDesc, btn) {
+    // Сброс стилей других кнопок
+    btn.closest('.outcome-btns').querySelectorAll('.btn-outcome').forEach(b => {
+      b.className = 'btn-outcome';
+    });
+    btn.classList.add('selected-' + outcome);
+    pendingOutcomes[recId] = { outcome, type, clientDesc };
+
+    const objRow = document.getElementById('obj-row-' + recId);
+    if (outcome === 'objection') {
+      objRow.style.display = 'block';
+      document.getElementById('obj-text-' + recId).focus();
+    } else {
+      objRow.style.display = 'none';
+      // Автосохранение для не-возражений
+      const rec = {
+        id: recId,
+        date: new Date().toISOString(),
+        type,
+        clientDesc,
+        outcome,
+        objectionText: ''
+      };
+      saveRecord(rec);
+      document.getElementById('outcome-saved-' + recId).innerHTML =
+        '<div class="outcome-saved">✓ Сохранено в статистике</div>';
+    }
+  }
+
+  function saveOutcome(recId, type, clientDesc) {
+    const pending = pendingOutcomes[recId];
+    const objText = document.getElementById('obj-text-' + recId)?.value.trim() || '';
+    const rec = {
+      id: recId,
+      date: new Date().toISOString(),
+      type,
+      clientDesc,
+      outcome: pending?.outcome || 'objection',
+      objectionText: objText
+    };
+    saveRecord(rec);
+    document.getElementById('obj-row-' + recId).style.display = 'none';
+    document.getElementById('outcome-saved-' + recId).innerHTML =
+      '<div class="outcome-saved">✓ Сохранено в статистике</div>';
+  }
+
+  // ════════════════════════════════════════
+  // ВКЛАДКА 3: СТАТИСТИКА
+  // ════════════════════════════════════════
+  let statsFilter = 'all';
+
+  function renderStats() {
+    const records = getRecords();
+    const container = document.getElementById('stats-content');
+
+    const total    = records.length;
+    const invites  = records.filter(r => r.type === 'invite').length;
+    const decodes  = records.filter(r => r.type === 'decode').length;
+    const bought   = records.filter(r => r.outcome === 'bought').length;
+    const convRate = total ? Math.round(bought / total * 100) : 0;
+
+    // Топ возражений
+    const objMap = {};
+    records.filter(r => r.outcome === 'objection' && r.objectionText).forEach(r => {
+      const key = r.objectionText.trim();
+      objMap[key] = (objMap[key] || 0) + 1;
+    });
+    const topObj = Object.entries(objMap).sort((a,b) => b[1]-a[1]).slice(0, 5);
+
+    // Фильтрация записей
+    const filtered = statsFilter === 'all' ? records
+      : records.filter(r => r.type === statsFilter);
+
+    const outcomePills = {
+      bought:    '<span class="outcome-pill pill-bought">✅ Купил</span>',
+      thinking:  '<span class="outcome-pill pill-thinking">🤔 Думает</span>',
+      rejected:  '<span class="outcome-pill pill-rejected">🚫 Отказ</span>',
+      objection: '<span class="outcome-pill pill-objection">⚡ Возражение</span>',
+    };
+
+    const typePills = {
+      invite: '<span class="type-pill type-invite">Приглашение</span>',
+      decode: '<span class="type-pill type-decode">Расшифровка</span>'
+    };
+
+    container.innerHTML = `
+      <div class="stats-summary">
+        <div class="stat-card">
+          <div class="stat-value">${total}</div>
+          <div class="stat-label">Всего записей</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">${bought}</div>
+          <div class="stat-label">Положительных</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">${convRate}%</div>
+          <div class="stat-label">Конверсия</div>
+        </div>
+      </div>
+
+      ${topObj.length > 0 ? `
+      <div class="stats-section">
+        <h3>🔥 Топ возражений</h3>
+        <ul class="top-objections-list">
+          ${topObj.map(([text, cnt]) => `
+            <li>
+              <span>${text}</span>
+              <span class="obj-count">${cnt}</span>
+            </li>
+          `).join('')}
+        </ul>
+      </div>
+      ` : ''}
+
+      <div class="stats-section">
+        <h3>📋 История консультаций</h3>
+        <div class="filter-row">
+          <button class="btn-filter ${statsFilter==='all'?'active':''}"
+            onclick="setFilter('all')">Все (${total})</button>
+          <button class="btn-filter ${statsFilter==='invite'?'active':''}"
+            onclick="setFilter('invite')">Приглашения (${invites})</button>
+          <button class="btn-filter ${statsFilter==='decode'?'active':''}"
+            onclick="setFilter('decode')">Расшифровки (${decodes})</button>
+          <button class="btn-export" onclick="exportCSV()">⬇ Экспорт CSV</button>
+          ${total > 0 ? `<button class="btn-clear-stats" onclick="clearStats()">🗑 Очистить</button>` : ''}
+        </div>
+
+        ${filtered.length === 0 ? `
+          <div class="no-records">
+            ${total === 0
+              ? 'Пока нет записей. Они появятся после того как ты отметишь результат консультации или приглашения.'
+              : 'Нет записей с таким фильтром.'}
+          </div>
+        ` : `
+          <table class="records-table">
+            <thead>
+              <tr>
+                <th>Дата</th>
+                <th>Тип</th>
+                <th>Клиент</th>
+                <th>Итог</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${filtered.map(r => `
+                <tr>
+                  <td style="white-space:nowrap;color:#666">${formatDate(r.date)}</td>
+                  <td>${typePills[r.type] || r.type}</td>
+                  <td style="max-width:200px;color:#aaa">
+                    ${escHtml(r.clientDesc || '').substring(0, 80)}${r.clientDesc && r.clientDesc.length > 80 ? '…' : ''}
+                  </td>
+                  <td>
+                    ${outcomePills[r.outcome] || ''}
+                    ${r.objectionText ? `<br><span class="objection-tag">${escHtml(r.objectionText)}</span>` : ''}
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `}
+      </div>
+    `;
+  }
+
+  function setFilter(f) {
+    statsFilter = f;
+    renderStats();
+  }
+
+  function clearStats() {
+    if (!confirm('Удалить все записи статистики? Это действие нельзя отменить.')) return;
+    localStorage.removeItem('cc_records');
+    renderStats();
+  }
+
+  function formatDate(iso) {
+    const d = new Date(iso);
+    const dd   = String(d.getDate()).padStart(2, '0');
+    const mm   = String(d.getMonth() + 1).padStart(2, '0');
+    const hh   = String(d.getHours()).padStart(2, '0');
+    const min  = String(d.getMinutes()).padStart(2, '0');
+    return `${dd}.${mm} ${hh}:${min}`;
+  }
+
+  function exportCSV() {
+    const records = getRecords();
+    if (records.length === 0) { alert('Нет данных для экспорта'); return; }
+
+    const header = ['Дата', 'Тип', 'Описание клиента', 'Итог', 'Возражение'].join(';');
+    const rows = records.map(r => [
+      new Date(r.date).toLocaleString('ru'),
+      r.type === 'invite' ? 'Приглашение' : 'Расшифровка',
+      '"' + (r.clientDesc || '').replace(/"/g, '""') + '"',
+      r.outcome === 'bought' ? 'Купил/Согласился' :
+      r.outcome === 'thinking' ? 'Думает' :
+      r.outcome === 'rejected' ? 'Отказ' :
+      r.outcome === 'objection' ? 'Возражение' : r.outcome,
+      '"' + (r.objectionText || '').replace(/"/g, '""') + '"'
+    ].join(';'));
+
+    const csv = '\uFEFF' + header + '\n' + rows.join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href  = url;
+    link.download = 'coral_stats_' + new Date().toISOString().slice(0,10) + '.csv';
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // ════════════════════════════════════════
+  // УТИЛИТЫ
+  // ════════════════════════════════════════
   function renderText(text) {
     return text
       .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
@@ -700,61 +1609,12 @@
       .replace(/\n/g, '<br>');
   }
 
-  // ── Отображение результатов ──
-  function renderResults(data) {
-    const panel = document.getElementById('results-panel');
-
-    const cards = [
-      {
-        cls: 'card-systems',
-        icon: '📊',
-        title: 'Картина здоровья',
-        content: data.systems,
-        copyable: false
-      },
-      {
-        cls: 'card-chain',
-        icon: '🔗',
-        title: 'Причинно-следственная цепочка',
-        content: data.chain,
-        copyable: false
-      },
-      {
-        cls: 'card-protocol',
-        icon: '💊',
-        title: 'Протокол восстановления (Coral Club)',
-        content: data.protocol,
-        copyable: false
-      },
-      {
-        cls: 'card-script',
-        icon: '💬',
-        title: 'Скрипт консультации',
-        content: data.script,
-        copyable: true
-      }
-    ];
-
-    panel.innerHTML = cards.map((c, i) => `
-      <div class="result-card ${c.cls}" style="animation-delay:${i * 0.08}s">
-        <div class="result-card-header">
-          ${c.icon} ${c.title}
-        </div>
-        <div class="result-card-body">
-          ${renderText(c.content || '—')}
-        </div>
-        ${c.copyable ? `
-        <div class="result-card-footer">
-          <button class="btn-copy" onclick="copyText(this, \`${escapeBacktick(c.content)}\`)">
-            Скопировать скрипт
-          </button>
-        </div>` : ''}
-      </div>
-    `).join('');
+  function escBt(str) {
+    return (str || '').replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/\$/g,'\\$');
   }
 
-  function escapeBacktick(str) {
-    return (str || '').replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/\$/g,'\\$');
+  function escHtml(str) {
+    return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
   function copyText(btn, text) {
@@ -762,7 +1622,7 @@
       btn.textContent = '✓ Скопировано';
       btn.classList.add('copied');
       setTimeout(() => {
-        btn.textContent = 'Скопировать скрипт';
+        btn.textContent = 'Скопировать';
         btn.classList.remove('copied');
       }, 2000);
     });
