@@ -803,6 +803,73 @@
       font-weight: 700;
     }
 
+    /* ── Модальное окно лимита ── */
+    .limit-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.82);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      padding: 1rem;
+      backdrop-filter: blur(4px);
+    }
+
+    .limit-card {
+      background: #242424;
+      border: 1px solid #444;
+      border-radius: 20px;
+      padding: 2.5rem 2rem;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .limit-card .limit-icon { font-size: 3rem; margin-bottom: 1rem; }
+
+    .limit-card h2 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      color: #f0f0f0;
+    }
+
+    .limit-card .limit-sub {
+      font-size: 0.88rem;
+      color: #888;
+      margin-bottom: 1.75rem;
+      line-height: 1.6;
+    }
+
+    .limit-card .limit-sub strong { color: #f0f0f0; }
+
+    .contact-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .btn-contact {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      padding: 0.85rem 1rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .btn-contact:hover { opacity: 0.88; }
+
+    .btn-wa   { background: #25d366; color: #fff; }
+    .btn-tg   { background: #229ed9; color: #fff; }
+
     /* ── Адаптив ── */
     @media (max-width: 720px) {
       .layout { grid-template-columns: 1fr; }
@@ -833,6 +900,26 @@
       <input type="password" id="pwd-input" placeholder="Введите пароль" onkeydown="if(event.key==='Enter') login()">
       <button class="btn-login" onclick="login()">Войти</button>
       <div class="error-msg" id="pwd-error"></div>
+    </div>
+  </div>
+
+  <!-- ══ МОДАЛЬНОЕ ОКНО ЛИМИТА ══ -->
+  <div class="limit-overlay" id="limit-overlay" style="display:none">
+    <div class="limit-card">
+      <div class="limit-icon">🔒</div>
+      <h2>Тестовый доступ исчерпан</h2>
+      <p class="limit-sub">
+        Вы использовали все <strong>10 бесплатных генераций</strong>.<br>
+        Чтобы продолжить работу с AI-ассистентом, свяжитесь с автором — <strong>Валерием Созановым</strong>:
+      </p>
+      <div class="contact-btns">
+        <a class="btn-contact btn-wa" href="https://wa.me/79627445758" target="_blank">
+          💬 WhatsApp: +7 962 744-57-58
+        </a>
+        <a class="btn-contact btn-tg" href="https://t.me/valeriisozanov" target="_blank">
+          ✈️ Telegram: @valeriisozanov
+        </a>
+      </div>
     </div>
   </div>
 
@@ -1022,14 +1109,25 @@
   // ════════════════════════════════════════
   // АВТОРИЗАЦИЯ
   // ════════════════════════════════════════
-  const ACCESS_PASSWORD = 'coral2025';
+  const ACCESS_PASSWORD = 'coral2025';   // основной — без лимита
+  const TEST_PASSWORD   = 'test2025';    // тестовый — 10 генераций
+  const TEST_LIMIT      = 10;
 
   function login() {
     const val = document.getElementById('pwd-input').value;
     if (val === ACCESS_PASSWORD) {
       document.getElementById('password-screen').style.display = 'none';
       document.getElementById('app').style.display = 'block';
-      sessionStorage.setItem('auth', '1');
+      sessionStorage.setItem('auth', 'main');
+    } else if (val === TEST_PASSWORD) {
+      // Сразу проверяем — не исчерпан ли лимит
+      if (getTestCount() >= TEST_LIMIT) {
+        showLimitModal();
+        return;
+      }
+      document.getElementById('password-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      sessionStorage.setItem('auth', 'test');
     } else {
       document.getElementById('pwd-error').textContent = 'Неверный пароль';
       document.getElementById('pwd-input').focus();
@@ -1040,13 +1138,41 @@
     sessionStorage.removeItem('auth');
     document.getElementById('password-screen').style.display = 'flex';
     document.getElementById('app').style.display = 'none';
+    document.getElementById('limit-overlay').style.display = 'none';
     document.getElementById('pwd-input').value = '';
     document.getElementById('pwd-error').textContent = '';
   }
 
-  if (sessionStorage.getItem('auth') === '1') {
+  const stored = sessionStorage.getItem('auth');
+  if (stored === 'main' || stored === 'test') {
     document.getElementById('password-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
+  }
+
+  // ── Счётчик тестовых генераций ──
+  function getTestCount() {
+    return parseInt(localStorage.getItem('cc_test_count') || '0', 10);
+  }
+
+  function incrementTestCounter() {
+    localStorage.setItem('cc_test_count', getTestCount() + 1);
+  }
+
+  function isTestMode() {
+    return sessionStorage.getItem('auth') === 'test';
+  }
+
+  function checkTestLimit() {
+    if (!isTestMode()) return true; // основной пароль — всегда пропускаем
+    if (getTestCount() >= TEST_LIMIT) {
+      showLimitModal();
+      return false;
+    }
+    return true;
+  }
+
+  function showLimitModal() {
+    document.getElementById('limit-overlay').style.display = 'flex';
   }
 
   // ════════════════════════════════════════
@@ -1160,6 +1286,7 @@
   async function generateInvite() {
     const personDesc = document.getElementById('inv-person').value.trim();
     if (!personDesc) { alert('Опиши человека — хотя бы несколько слов'); return; }
+    if (!checkTestLimit()) return;
 
     const channel = document.querySelector('input[name="channel"]:checked')?.value || 'whatsapp';
     const hints   = document.getElementById('inv-hints').value.trim();
@@ -1178,6 +1305,7 @@
 
       const parsed = parseInviteResponse(data.result);
       renderInviteResults(parsed, personDesc);
+      if (isTestMode()) incrementTestCounter();
 
     } catch (err) {
       alert('Ошибка: ' + err.message);
@@ -1268,6 +1396,7 @@
 
     if (uploadedImages.length === 0) { alert('Пожалуйста, загрузите скриншот диаграммы'); return; }
     if (!c1) { alert('Укажите хотя бы одну жалобу клиента'); return; }
+    if (!checkTestLimit()) return;
 
     const stage     = document.querySelector('input[name="stage"]:checked')?.value || 'first_contact';
     const readiness = document.querySelector('input[name="readiness"]:checked')?.value || 'open';
@@ -1292,6 +1421,7 @@
 
       const parsed = parseDecodeResponse(data.result);
       renderDecodeResults(parsed, [c1, c2, c3].filter(Boolean));
+      if (isTestMode()) incrementTestCounter();
 
       // Скролл к результатам на мобильном
       if (window.innerWidth < 720) {
