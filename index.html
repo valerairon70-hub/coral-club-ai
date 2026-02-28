@@ -504,6 +504,55 @@
     .card-followup .result-card-header { border-left: 3px solid #ff6b35; }
     .card-tip      .result-card-header { border-left: 3px solid #f59e0b; }
 
+    /* ── Серия касаний (Kennedy) ── */
+    .card-touch1 .result-card-header { border-left: 3px solid #666; }
+    .card-touch2 .result-card-header { border-left: 3px solid #f59e0b; }
+    .card-touch3 .result-card-header { border-left: 3px solid #ff6b35; }
+    .card-touch4 .result-card-header { border-left: 3px solid #4a9eff; }
+    .card-touch5 .result-card-header { border-left: 3px solid #a855f7; }
+    .card-seg-hot   .result-card-header { border-left: 3px solid #22c55e; }
+    .card-seg-warm  .result-card-header { border-left: 3px solid #f59e0b; }
+    .card-seg-cold  .result-card-header { border-left: 3px solid #4a9eff; }
+
+    .card-touch3 { box-shadow: 0 0 0 1px rgba(255,107,53,0.25); }
+
+    .touch-meta {
+      font-size: 0.7rem;
+      color: #666;
+      margin-bottom: 0.2rem;
+      font-weight: 400;
+    }
+
+    .touch-key-badge {
+      display: inline-block;
+      background: rgba(255,107,53,0.15);
+      color: #ff6b35;
+      border-radius: 4px;
+      padding: 0.05rem 0.45rem;
+      font-size: 0.67rem;
+      font-weight: 700;
+      margin-left: 0.4rem;
+      vertical-align: middle;
+    }
+
+    .section-divider {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin: 0.25rem 0;
+    }
+    .section-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #2a2a2a;
+    }
+
     .result-card-body {
       padding: 1.1rem;
       font-size: 0.88rem;
@@ -1432,11 +1481,15 @@
       return m ? m[0].replace(new RegExp(`<\\/?${tag}>`,'g'),'').trim() : '';
     };
     return {
-      direct:    extract('прямой'),
-      story:     extract('история'),
-      question:  extract('вопрос'),
-      followup:  extract('повторное_касание'),
-      tip:       extract('совет_дистрибьютору')
+      touch1:   extract('касание_1'),
+      touch2:   extract('касание_2'),
+      touch3:   extract('касание_3'),
+      touch4:   extract('касание_4'),
+      touch5:   extract('касание_5'),
+      ifHot:    extract('если_горячий'),
+      ifWarm:   extract('если_тёплый'),
+      ifCold:   extract('если_холодный'),
+      tip:      extract('совет_дистрибьютору')
     };
   }
 
@@ -1444,23 +1497,61 @@
     const panel = document.getElementById('invite-results');
     const recId = genId();
 
-    const cards = [
-      { cls: 'card-direct',   icon: '💬', title: 'Прямое приглашение',       content: data.direct,   copyable: true },
-      { cls: 'card-story',    icon: '📖', title: 'Через историю',            content: data.story,    copyable: true },
-      { cls: 'card-question', icon: '❓', title: 'Вопрос-крючок',            content: data.question, copyable: true },
-      { cls: 'card-followup', icon: '🔄', title: 'Повторное касание',        content: data.followup, copyable: true },
-      { cls: 'card-tip',      icon: '💡', title: 'Совет дистрибьютору',      content: data.tip,      copyable: false }
+    const touches = [
+      { cls: 'card-touch1', num: 1, goal: 'Открыть разговор',    when: 'Первое сообщение',              content: data.touch1, key: false },
+      { cls: 'card-touch2', num: 2, goal: 'Углубить боль',        when: 'После их ответа',               content: data.touch2, key: false },
+      { cls: 'card-touch3', num: 3, goal: 'Сделать предложение',  when: 'Ключевое касание — закрытие',   content: data.touch3, key: true  },
+      { cls: 'card-touch4', num: 4, goal: 'Новый угол',           when: 'Если не ответил 2-3 дня',       content: data.touch4, key: false },
+      { cls: 'card-touch5', num: 5, goal: 'Финальное',            when: 'Последняя попытка',             content: data.touch5, key: false },
     ];
 
-    panel.innerHTML = cards.map((c, i) => `
-      <div class="result-card ${c.cls}" style="animation-delay:${i * 0.07}s">
-        <div class="result-card-header">
-          <div class="card-title">${c.icon} ${c.title}</div>
-          ${c.copyable ? `<button class="btn-copy" onclick="copyText(this, \`${escBt(c.content)}\`)">Скопировать</button>` : ''}
+    const segments = [
+      { cls: 'card-seg-hot',  icon: '✅', title: 'Согласился пройти', when: 'Отправь сразу',        content: data.ifHot  },
+      { cls: 'card-seg-warm', icon: '🤔', title: 'Думает',            when: 'Через 2-3 дня',        content: data.ifWarm },
+      { cls: 'card-seg-cold', icon: '❄️', title: 'Не интересует пока', when: 'Через 2-3 недели',   content: data.ifCold },
+    ];
+
+    const touchHtml = `
+      <div class="section-divider">Серия касаний · метод Кеннеди</div>
+      ${touches.map((t, i) => `
+        <div class="result-card ${t.cls}" style="animation-delay:${i * 0.07}s">
+          <div class="result-card-header">
+            <div class="card-title">
+              <span>Касание ${t.num} — ${t.goal}</span>
+              ${t.key ? '<span class="touch-key-badge">КЛЮЧЕВОЕ</span>' : ''}
+            </div>
+            <button class="btn-copy" onclick="copyText(this, \`${escBt(t.content)}\`)">Скопировать</button>
+          </div>
+          <div class="touch-meta" style="padding:0.4rem 1.1rem 0">${t.when}</div>
+          <div class="result-card-body">${renderText(t.content || '—')}</div>
         </div>
-        <div class="result-card-body">${renderText(c.content || '—')}</div>
+      `).join('')}
+    `;
+
+    const segHtml = `
+      <div class="section-divider" style="margin-top:0.5rem">После ответа клиента</div>
+      ${segments.map((s, i) => `
+        <div class="result-card ${s.cls}" style="animation-delay:${(touches.length + i) * 0.07}s">
+          <div class="result-card-header">
+            <div class="card-title">${s.icon} ${s.title}</div>
+            <button class="btn-copy" onclick="copyText(this, \`${escBt(s.content)}\`)">Скопировать</button>
+          </div>
+          <div class="touch-meta" style="padding:0.4rem 1.1rem 0">${s.when}</div>
+          <div class="result-card-body">${renderText(s.content || '—')}</div>
+        </div>
+      `).join('')}
+    `;
+
+    const tipHtml = `
+      <div class="result-card card-tip" style="animation-delay:${(touches.length + segments.length) * 0.07}s">
+        <div class="result-card-header">
+          <div class="card-title">💡 Совет дистрибьютору</div>
+        </div>
+        <div class="result-card-body">${renderText(data.tip || '—')}</div>
       </div>
-    `).join('') + renderInviteOutcomeBlock(recId, personDesc);
+    `;
+
+    panel.innerHTML = touchHtml + segHtml + tipHtml + renderInviteOutcomeBlock(recId, personDesc);
   }
 
   function renderInviteOutcomeBlock(recId, personDesc) {
