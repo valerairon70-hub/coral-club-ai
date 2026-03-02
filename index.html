@@ -1448,7 +1448,7 @@
       });
 
       const data = await res.json();
-      if (!res.ok || data.error) throw new Error(data.error || 'Ошибка сервера');
+      if (!res.ok || data.error) throw new Error((data.error || 'Ошибка сервера') + (data.details ? ' | ' + data.details : ''));
 
       const parsed = parseInviteResponse(data.result);
       renderInviteResults(parsed, personDesc);
@@ -1606,7 +1606,7 @@
       });
 
       const data = await res.json();
-      if (!res.ok || data.error) throw new Error(data.error || 'Ошибка сервера');
+      if (!res.ok || data.error) throw new Error((data.error || 'Ошибка сервера') + (data.details ? ' | ' + data.details : ''));
 
       const parsed = parseDecodeResponse(data.result);
       renderDecodeResults(parsed, [c1, c2, c3].filter(Boolean));
