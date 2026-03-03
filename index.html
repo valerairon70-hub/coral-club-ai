@@ -1447,7 +1447,9 @@
         body: JSON.stringify({ mode: 'invite', clientDesc: personDesc, healthHints: hints, channel, senderGender })
       });
 
-      const data = await res.json();
+      const rawText1 = await res.text();
+      let data;
+      try { data = JSON.parse(rawText1); } catch(e) { throw new Error(`Ошибка сервера ${res.status}: ${rawText1.substring(0, 400)}`); }
       if (!res.ok || data.error) throw new Error((data.error || 'Ошибка сервера') + (data.details ? ' | ' + data.details : ''));
 
       const parsed = parseInviteResponse(data.result);
@@ -1605,7 +1607,9 @@
         })
       });
 
-      const data = await res.json();
+      const rawText2 = await res.text();
+      let data;
+      try { data = JSON.parse(rawText2); } catch(e) { throw new Error(`Ошибка сервера ${res.status}: ${rawText2.substring(0, 400)}`); }
       if (!res.ok || data.error) throw new Error((data.error || 'Ошибка сервера') + (data.details ? ' | ' + data.details : ''));
 
       const parsed = parseDecodeResponse(data.result);
