@@ -336,6 +336,19 @@
 
     .upload-zone .upload-hint { font-size: 0.75rem; color: #666; }
 
+    .upload-zone.upload-prev { border-color: #3a5a3a; }
+    .upload-zone.upload-prev:hover, .upload-zone.upload-prev.drag-over {
+      border-color: #22c55e;
+      background: rgba(34, 197, 94, 0.05);
+    }
+
+    .prev-tracker-block {
+      display: none;
+      overflow: hidden;
+      transition: all 0.25s;
+    }
+    .prev-tracker-block.visible { display: block; }
+
     /* Thumbnails */
     .thumbs-grid {
       display: flex;
@@ -1170,6 +1183,22 @@
                 </div>
               </div>
 
+              <!-- Клиент -->
+              <div class="field-group">
+                <div class="field-label">Кто клиент? <span style="color:#555">(необязательно)</span></div>
+                <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+                  <input type="text" id="client-name" placeholder="Имя, возраст — например: Марина, 42"
+                    style="flex:1; min-width:160px; background:#1a1a1a; border:1px solid #3a3a3a; border-radius:8px; padding:0.55rem 0.75rem; color:#f0f0f0; font-size:0.88rem; outline:none;"
+                    onfocus="this.style.borderColor='#ff6b35'" onblur="this.style.borderColor='#3a3a3a'">
+                  <div class="seg-control" style="flex-shrink:0">
+                    <input type="radio" name="client-gender" id="cg-f" value="female" class="seg-option" checked>
+                    <label for="cg-f">👩 Женщина</label>
+                    <input type="radio" name="client-gender" id="cg-m" value="male" class="seg-option">
+                    <label for="cg-m">👨 Мужчина</label>
+                  </div>
+                </div>
+              </div>
+
               <!-- Жалобы -->
               <div class="field-group">
                 <div class="field-label">Три главные жалобы клиента</div>
@@ -1197,6 +1226,25 @@
                   <label for="st-m1">Сопровождение (мес. 1)</label>
                   <input type="radio" name="stage" id="st-m2" value="month2" class="seg-option">
                   <label for="st-m2">Повторный трекер</label>
+                </div>
+              </div>
+
+              <!-- Первый трекер для сравнения (только при повторном) -->
+              <div class="prev-tracker-block" id="prev-tracker-block">
+                <div class="field-group">
+                  <div class="field-label" style="color:#22c55e">📂 Первый трекер — для сравнения</div>
+                  <div class="upload-zone upload-prev" id="upload-zone-prev">
+                    <input type="file" id="file-input-prev" accept="image/*" multiple style="display:none">
+                    <div id="upload-placeholder-prev">
+                      <div class="upload-icon">📊</div>
+                      <div class="upload-text">Загрузите скриншоты первого трекера</div>
+                      <div class="upload-hint">Claude сравнит динамику по системам</div>
+                    </div>
+                    <div id="thumbs-container-prev" style="display:none; flex-direction:column; align-items:center; width:100%; gap:0.5rem; padding:0.5rem 0;">
+                      <div class="thumbs-grid" id="thumbs-grid-prev"></div>
+                      <span class="upload-add-more">+ добавить ещё скриншоты</span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -1255,33 +1303,51 @@
     }
   }
 
-  const ACCESS_PASSWORD = 'coral2025';   // основной — без лимита
-  const TEST_PASSWORD   = 'test2025';    // тестовый — 10 генераций
-  const TEST_LIMIT      = 10;
+  const TEST_LIMIT = 10;
 
-  function login() {
-    const val = document.getElementById('pwd-input').value;
-    if (val === ACCESS_PASSWORD) {
-      document.getElementById('password-screen').style.display = 'none';
-      document.getElementById('app').style.display = 'block';
-      sessionStorage.setItem('auth', 'main');
-    } else if (val === TEST_PASSWORD) {
-      // Сразу проверяем — не исчерпан ли лимит
-      if (getTestCount() >= TEST_LIMIT) {
+  async function login() {
+    const val = document.getElementById('pwd-input').value.trim();
+    if (!val) return;
+
+    const btn = document.querySelector('.btn-login');
+    btn.disabled = true;
+    btn.textContent = '...';
+
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: val })
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        document.getElementById('pwd-error').textContent = data.error || 'Неверный пароль';
+        document.getElementById('pwd-input').focus();
+        return;
+      }
+
+      if (data.mode === 'test' && getTestCount() >= TEST_LIMIT) {
         showLimitModal();
         return;
       }
+
+      sessionStorage.setItem('auth', data.mode);
+      sessionStorage.setItem('auth_token', data.token);
       document.getElementById('password-screen').style.display = 'none';
       document.getElementById('app').style.display = 'block';
-      sessionStorage.setItem('auth', 'test');
-    } else {
-      document.getElementById('pwd-error').textContent = 'Неверный пароль';
-      document.getElementById('pwd-input').focus();
+
+    } catch (e) {
+      document.getElementById('pwd-error').textContent = 'Ошибка соединения с сервером';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Войти';
     }
   }
 
   function logout() {
     sessionStorage.removeItem('auth');
+    sessionStorage.removeItem('auth_token');
     document.getElementById('password-screen').style.display = 'flex';
     document.getElementById('app').style.display = 'none';
     document.getElementById('limit-overlay').style.display = 'none';
@@ -1290,7 +1356,7 @@
   }
 
   const stored = sessionStorage.getItem('auth');
-  if (stored === 'main' || stored === 'test') {
+  if ((stored === 'main' || stored === 'test') && sessionStorage.getItem('auth_token')) {
     document.getElementById('password-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
   }
@@ -1427,6 +1493,92 @@
   }
 
   // ════════════════════════════════════════
+  // ВТОРАЯ ЗОНА ЗАГРУЗКИ (предыдущий трекер)
+  // ════════════════════════════════════════
+  let prevImages = [];
+
+  const uploadZonePrev = document.getElementById('upload-zone-prev');
+  const fileInputPrev  = document.getElementById('file-input-prev');
+
+  uploadZonePrev.addEventListener('click', e => {
+    if (e.target.classList.contains('thumb-remove')) return;
+    fileInputPrev.click();
+  });
+
+  fileInputPrev.addEventListener('change', function() {
+    handleFilesPrev(this.files);
+    this.value = '';
+  });
+
+  uploadZonePrev.addEventListener('dragover',  e => { e.preventDefault(); uploadZonePrev.classList.add('drag-over'); });
+  uploadZonePrev.addEventListener('dragleave', ()  => uploadZonePrev.classList.remove('drag-over'));
+  uploadZonePrev.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadZonePrev.classList.remove('drag-over');
+    handleFilesPrev(e.dataTransfer.files);
+  });
+
+  function handleFilesPrev(files) {
+    Array.from(files).forEach(file => {
+      if (!file || !file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+          const maxW = 1200;
+          let w = img.width, h = img.height;
+          if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+          prevImages.push({ base64: dataUrl.split(',')[1], mimeType: 'image/jpeg', previewUrl: dataUrl });
+          renderThumbnailsPrev();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function renderThumbnailsPrev() {
+    const placeholder = document.getElementById('upload-placeholder-prev');
+    const container   = document.getElementById('thumbs-container-prev');
+    const grid        = document.getElementById('thumbs-grid-prev');
+    if (prevImages.length === 0) {
+      placeholder.style.display = 'flex';
+      container.style.display   = 'none';
+      return;
+    }
+    placeholder.style.display = 'none';
+    container.style.display   = 'flex';
+    grid.innerHTML = prevImages.map((img, i) => `
+      <div class="thumb-item">
+        <img src="${img.previewUrl}" alt="Прошлый ${i + 1}">
+        <button class="thumb-remove" onclick="removePrevImage(${i}, event)">×</button>
+      </div>
+    `).join('');
+  }
+
+  function removePrevImage(index, e) {
+    e.stopPropagation();
+    prevImages.splice(index, 1);
+    renderThumbnailsPrev();
+  }
+
+  // Показ/скрытие блока при переключении этапа
+  document.querySelectorAll('input[name="stage"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      const block = document.getElementById('prev-tracker-block');
+      if (radio.value === 'month2' && radio.checked) {
+        block.classList.add('visible');
+      } else if (radio.checked) {
+        block.classList.remove('visible');
+      }
+    });
+  });
+
+  // ════════════════════════════════════════
   // ВКЛАДКА 1: ГЕНЕРАЦИЯ ПРИГЛАШЕНИЙ
   // ════════════════════════════════════════
   async function generateInvite() {
@@ -1444,7 +1596,7 @@
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'invite', clientDesc: personDesc, healthHints: hints, channel, senderGender })
+        body: JSON.stringify({ mode: 'invite', clientDesc: personDesc, healthHints: hints, channel, senderGender, token: sessionStorage.getItem('auth_token') })
       });
 
       const rawText1 = await res.text();
@@ -1589,8 +1741,10 @@
     if (!c1) { alert('Укажите хотя бы одну жалобу клиента'); return; }
     if (!checkTestLimit()) return;
 
-    const stage     = document.querySelector('input[name="stage"]:checked')?.value || 'first_contact';
-    const readiness = document.querySelector('input[name="readiness"]:checked')?.value || 'open';
+    const stage        = document.querySelector('input[name="stage"]:checked')?.value || 'first_contact';
+    const readiness    = document.querySelector('input[name="readiness"]:checked')?.value || 'open';
+    const clientName   = document.getElementById('client-name').value.trim();
+    const clientGender = document.querySelector('input[name="client-gender"]:checked')?.value || 'female';
 
     setDecodeLoading(true);
 
@@ -1601,9 +1755,13 @@
         body: JSON.stringify({
           mode: 'decode',
           images: uploadedImages.map(img => ({ base64: img.base64, mimeType: img.mimeType })),
+          prevImages: prevImages.map(img => ({ base64: img.base64, mimeType: img.mimeType })),
           complaints: [c1, c2, c3].filter(Boolean),
           stage,
-          readiness
+          readiness,
+          clientName,
+          clientGender,
+          token: sessionStorage.getItem('auth_token')
         })
       });
 
@@ -1613,7 +1771,7 @@
       if (!res.ok || data.error) throw new Error((data.error || 'Ошибка сервера') + (data.details ? ' | ' + data.details : ''));
 
       const parsed = parseDecodeResponse(data.result);
-      renderDecodeResults(parsed, [c1, c2, c3].filter(Boolean));
+      renderDecodeResults(parsed, [c1, c2, c3].filter(Boolean), clientName);
       if (isTestMode()) incrementTestCounter();
 
       // Скролл к результатам на мобильном
@@ -1660,10 +1818,10 @@
     };
   }
 
-  function renderDecodeResults(data, complaints) {
+  function renderDecodeResults(data, complaints, clientName) {
     const panel = document.getElementById('decode-results');
     const recId = genId();
-    const clientDesc = 'Жалобы: ' + complaints.join(', ');
+    const clientDesc = (clientName ? clientName + ' — ' : '') + 'Жалобы: ' + complaints.join(', ');
 
     const cards = [
       { cls: 'card-systems',  icon: '📊', title: 'Картина здоровья',                content: data.systems,  copyable: true },
@@ -1671,7 +1829,7 @@
       { cls: 'card-protocol', icon: '💊', title: 'Протокол восстановления (Coral Club)', content: data.protocol, copyable: true },
       { cls: 'card-script',   icon: '💬', title: 'Скрипт консультации',             content: data.script,   copyable: true },
       { cls: 'card-logic',    icon: '💡', title: 'Почему такой протокол',           content: data.logic,    copyable: false },
-      { cls: 'card-schedule', icon: '📅', title: 'Схема приёма',                    content: data.schedule, copyable: false },
+      { cls: 'card-schedule', icon: '📅', title: 'Схема приёма',                    content: data.schedule, copyable: true },
       { cls: 'card-water',    icon: '💧', title: 'Вода и гидратация',               content: data.water,    copyable: false }
     ];
 
