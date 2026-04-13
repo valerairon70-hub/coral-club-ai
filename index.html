@@ -677,6 +677,183 @@
       padding: 0.4rem;
     }
 
+    /* ── Блок работы с отказом ── */
+    .rejection-block {
+      margin-top: 1rem;
+      background: #1e1414;
+      border: 1px solid #3d2020;
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .rejection-block h4 {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #ef4444;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+
+    .rejection-block .rejection-hint {
+      font-size: 0.82rem;
+      color: #888;
+      margin-bottom: 0.75rem;
+    }
+
+    .rejection-reason-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .rejection-reason-row textarea {
+      flex: 1;
+      min-width: 180px;
+      background: #1a1a1a;
+      border: 1px solid #3a3a3a;
+      border-radius: 8px;
+      padding: 0.55rem 0.75rem;
+      color: #f0f0f0;
+      font-size: 0.85rem;
+      font-family: inherit;
+      outline: none;
+      resize: none;
+      height: 60px;
+      transition: border-color 0.2s;
+    }
+
+    .rejection-reason-row textarea:focus { border-color: #ef4444; }
+    .rejection-reason-row textarea::placeholder { color: #555; }
+
+    .btn-rejection {
+      background: transparent;
+      border: 1px solid #ef4444;
+      color: #ef4444;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s, color 0.2s;
+      align-self: flex-end;
+    }
+
+    .btn-rejection:hover { background: rgba(239,68,68,0.12); }
+    .btn-rejection:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── Бейдж напоминаний в хедере ── */
+    .btn-reminder-badge {
+      background: #ff6b35;
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      padding: 0.3rem 0.7rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+      animation: pulse-badge 2s infinite;
+    }
+    .btn-reminder-badge:hover { background: #e85d2a; }
+
+    @keyframes pulse-badge {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.75; }
+    }
+
+    /* ── Раздел напоминаний в статистике ── */
+    .reminder-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #2a2a2a;
+    }
+    .reminder-item:last-child { border-bottom: none; }
+    .reminder-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 0.35rem;
+    }
+    .reminder-dot.overdue  { background: #ef4444; }
+    .reminder-dot.today    { background: #ff6b35; }
+    .reminder-dot.upcoming { background: #555; }
+    .reminder-dot.done     { background: #22c55e; }
+    .reminder-meta { flex: 1; min-width: 0; }
+    .reminder-title { font-size: 0.88rem; font-weight: 600; color: #f0f0f0; }
+    .reminder-client { font-size: 0.8rem; color: #888; margin-top: 0.1rem; }
+    .reminder-date { font-size: 0.78rem; color: #666; margin-top: 0.15rem; }
+    .reminder-date.overdue { color: #ef4444; font-weight: 600; }
+    .reminder-date.today { color: #ff6b35; font-weight: 600; }
+    .btn-reminder-done {
+      background: none;
+      border: 1px solid #333;
+      border-radius: 6px;
+      color: #666;
+      font-size: 0.75rem;
+      padding: 0.3rem 0.6rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .btn-reminder-done:hover { border-color: #22c55e; color: #22c55e; }
+
+    .card-rejection { border-left: 3px solid #ef4444; }
+    .card-rejection-analysis { border-left: 3px solid #888; }
+
+    /* ── Блок работы с "Думает" ── */
+    .thinking-block {
+      margin-top: 1rem;
+      background: #161b22;
+      border: 1px solid #2a3a2a;
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .thinking-block h4 {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #f59e0b;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+
+    .thinking-block .thinking-hint {
+      font-size: 0.82rem;
+      color: #888;
+      margin-bottom: 0.75rem;
+    }
+
+    .btn-thinking {
+      background: transparent;
+      border: 1px solid #f59e0b;
+      color: #f59e0b;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s, color 0.2s;
+      align-self: flex-end;
+    }
+
+    .btn-thinking:hover { background: rgba(245,158,11,0.12); }
+    .btn-thinking:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .card-thinking { border-left: 3px solid #f59e0b; }
+    .card-thinking-analysis { border-left: 3px solid #888; }
+
     /* ── Состояние ожидания ── */
     .empty-state {
       background: #242424;
@@ -987,8 +1164,81 @@
     .proto-tbl tr:last-child td { border-bottom: none; }
     .proto-tbl .dash { color: #3a3a3a; }
 
+    .card-pointab  .result-card-header { border-left: 3px solid #10b981; }
     .card-schedule .result-card-header { border-left: 3px solid #06b6d4; }
     .card-water    .result-card-header { border-left: 3px solid #3b82f6; }
+
+    /* ── Модальное окно истории ── */
+    .history-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      z-index: 998;
+      padding: 1.5rem 1rem;
+      backdrop-filter: blur(4px);
+      overflow-y: auto;
+    }
+
+    .history-modal-inner {
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 720px;
+      padding: 1.5rem;
+      position: relative;
+    }
+
+    .history-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      gap: 1rem;
+    }
+
+    .history-modal-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #f0f0f0;
+    }
+
+    .history-modal-meta {
+      font-size: 0.78rem;
+      color: #666;
+      margin-top: 0.15rem;
+    }
+
+    .btn-close-modal {
+      background: none;
+      border: 1px solid #444;
+      border-radius: 8px;
+      color: #888;
+      font-size: 1.1rem;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-close-modal:hover { border-color: #888; color: #f0f0f0; }
+
+    .btn-open-record {
+      background: none;
+      border: 1px solid #3a3a3a;
+      border-radius: 6px;
+      color: #888;
+      font-size: 0.72rem;
+      padding: 0.2rem 0.5rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-open-record:hover { border-color: #ff6b35; color: #ff6b35; }
 
     /* ── Адаптив ── */
     @media (max-width: 720px) {
@@ -1054,6 +1304,20 @@
     </div>
   </div>
 
+  <!-- ══ МОДАЛЬНОЕ ОКНО ИСТОРИИ ══ -->
+  <div class="history-modal" id="history-modal" style="display:none" onclick="closeHistoryModal(event)">
+    <div class="history-modal-inner">
+      <div class="history-modal-header">
+        <div>
+          <div class="history-modal-title" id="history-modal-title"></div>
+          <div class="history-modal-meta" id="history-modal-meta"></div>
+        </div>
+        <button class="btn-close-modal" onclick="closeHistoryModal()">×</button>
+      </div>
+      <div id="history-modal-body"></div>
+    </div>
+  </div>
+
   <!-- ══ ПРИЛОЖЕНИЕ ══ -->
   <div id="app">
     <header>
@@ -1071,6 +1335,7 @@
           <h1>AI-ассистент по трекеру здоровья</h1>
           <div class="tagline">Метод Бутаковой · Coral Club</div>
         </div>
+        <button class="btn-reminder-badge" id="reminder-badge" onclick="switchTab('stats')" style="display:none" title="Есть запланированные касания"></button>
         <button class="logout" onclick="logout()">Выйти</button>
       </div>
     </header>
@@ -1336,6 +1601,7 @@
       sessionStorage.setItem('auth_token', data.token);
       document.getElementById('password-screen').style.display = 'none';
       document.getElementById('app').style.display = 'block';
+      updateReminderBadge();
 
     } catch (e) {
       document.getElementById('pwd-error').textContent = 'Ошибка соединения с сервером';
@@ -1359,6 +1625,7 @@
   if ((stored === 'main' || stored === 'test') && sessionStorage.getItem('auth_token')) {
     document.getElementById('password-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
+    updateReminderBadge();
   }
 
   // ── Счётчик тестовых генераций ──
@@ -1605,7 +1872,7 @@
       if (!res.ok || data.error) throw new Error((data.error || 'Ошибка сервера') + (data.details ? ' | ' + data.details : ''));
 
       const parsed = parseInviteResponse(data.result);
-      renderInviteResults(parsed, personDesc);
+      renderInviteResults(parsed, personDesc, data.result);
       if (isTestMode()) incrementTestCounter();
 
     } catch (err) {
@@ -1647,9 +1914,10 @@
     };
   }
 
-  function renderInviteResults(data, personDesc) {
+  function renderInviteResults(data, personDesc, resultText) {
     const panel = document.getElementById('invite-results');
     const recId = genId();
+    if (resultText) pendingResults[recId] = { resultText, type: 'invite', clientDesc: personDesc };
 
     const touches = [
       { cls: 'card-touch1', num: 1, goal: 'Открыть разговор',    when: 'Первое сообщение',              content: data.touch1, key: false },
@@ -1705,7 +1973,28 @@
       </div>
     `;
 
-    panel.innerHTML = touchHtml + segHtml + tipHtml + renderInviteOutcomeBlock(recId, personDesc);
+    const newClientHtml = `
+      <div style="text-align:center;margin-top:1.25rem;padding-bottom:0.5rem">
+        <button onclick="resetInviteForm()" style="background:none;border:1px solid #444;border-radius:8px;color:#888;font-size:0.85rem;padding:0.55rem 1.25rem;cursor:pointer;transition:all 0.2s"
+          onmouseover="this.style.borderColor='#ff6b35';this.style.color='#ff6b35'"
+          onmouseout="this.style.borderColor='#444';this.style.color='#888'">
+          + Новый клиент
+        </button>
+      </div>`;
+
+    panel.innerHTML = touchHtml + segHtml + tipHtml + renderInviteOutcomeBlock(recId, personDesc) + newClientHtml;
+  }
+
+  function resetInviteForm() {
+    document.getElementById('inv-person').value = '';
+    const healthHints = document.getElementById('inv-health');
+    if (healthHints) healthHints.value = '';
+    document.getElementById('invite-results').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">✉️</div>
+        <p>Опиши человека — получишь 3 готовых скрипта приглашения и совет по работе с ним</p>
+      </div>`;
+    document.getElementById('inv-person').focus();
   }
 
   function renderInviteOutcomeBlock(recId, personDesc) {
@@ -1725,6 +2014,7 @@
           </div>
         </div>
         <div id="outcome-saved-${recId}"></div>
+        <div id="rejection-block-${recId}" style="display:none"></div>
       </div>
     `;
   }
@@ -1771,7 +2061,7 @@
       if (!res.ok || data.error) throw new Error((data.error || 'Ошибка сервера') + (data.details ? ' | ' + data.details : ''));
 
       const parsed = parseDecodeResponse(data.result);
-      renderDecodeResults(parsed, [c1, c2, c3].filter(Boolean), clientName);
+      renderDecodeResults(parsed, [c1, c2, c3].filter(Boolean), clientName, data.result);
       if (isTestMode()) incrementTestCounter();
 
       // Скролл к результатам на мобильном
@@ -1813,15 +2103,17 @@
       protocol: extract('протокол'),
       script:   extract('скрипт'),
       logic:    extract('логика'),
+      pointab:  extract('точка_а_б'),
       schedule: extract('схема_приема'),
       water:    extract('вода')
     };
   }
 
-  function renderDecodeResults(data, complaints, clientName) {
+  function renderDecodeResults(data, complaints, clientName, resultText) {
     const panel = document.getElementById('decode-results');
     const recId = genId();
     const clientDesc = (clientName ? clientName + ' — ' : '') + 'Жалобы: ' + complaints.join(', ');
+    if (resultText) pendingResults[recId] = { resultText, type: 'decode', clientDesc };
 
     const cards = [
       { cls: 'card-systems',  icon: '📊', title: 'Картина здоровья',                content: data.systems,  copyable: true },
@@ -1829,6 +2121,7 @@
       { cls: 'card-protocol', icon: '💊', title: 'Протокол восстановления (Coral Club)', content: data.protocol, copyable: true },
       { cls: 'card-script',   icon: '💬', title: 'Скрипт консультации',             content: data.script,   copyable: true },
       { cls: 'card-logic',    icon: '💡', title: 'Почему такой протокол',           content: data.logic,    copyable: false },
+      { cls: 'card-pointab',  icon: '🎯', title: 'Точка А → Точка Б (цель 90 дней)', content: data.pointab,  copyable: true },
       { cls: 'card-schedule', icon: '📅', title: 'Схема приёма',                    content: data.schedule, copyable: true },
       { cls: 'card-water',    icon: '💧', title: 'Вода и гидратация',               content: data.water,    copyable: false }
     ];
@@ -1861,6 +2154,7 @@
           </div>
         </div>
         <div id="outcome-saved-${recId}"></div>
+        <div id="rejection-block-${recId}" style="display:none"></div>
       </div>
     `;
   }
@@ -1869,9 +2163,9 @@
   // ФИКСАЦИЯ ИСХОДА
   // ════════════════════════════════════════
   let pendingOutcomes = {}; // recId → {type, clientDesc}
+  let pendingResults  = {}; // recId → {resultText, type, clientDesc}
 
   function selectOutcome(recId, outcome, type, clientDesc, btn) {
-    // Сброс стилей других кнопок
     btn.closest('.outcome-btns').querySelectorAll('.btn-outcome').forEach(b => {
       b.className = 'btn-outcome';
     });
@@ -1879,23 +2173,31 @@
     pendingOutcomes[recId] = { outcome, type, clientDesc };
 
     const objRow = document.getElementById('obj-row-' + recId);
+    const rejBlock = document.getElementById('rejection-block-' + recId);
     if (outcome === 'objection') {
       objRow.style.display = 'block';
+      if (rejBlock) rejBlock.style.display = 'none';
       document.getElementById('obj-text-' + recId).focus();
     } else {
       objRow.style.display = 'none';
-      // Автосохранение для не-возражений
       const rec = {
         id: recId,
         date: new Date().toISOString(),
         type,
         clientDesc,
         outcome,
-        objectionText: ''
+        objectionText: '',
+        resultText: pendingResults[recId]?.resultText || ''
       };
       saveRecord(rec);
       document.getElementById('outcome-saved-' + recId).innerHTML =
         '<div class="outcome-saved">✓ Сохранено в статистике</div>';
+      if (outcome === 'rejected' && rejBlock) {
+        rejBlock.style.display = 'block';
+        rejBlock.innerHTML = renderRejectionForm(recId, clientDesc, type);
+      } else if (rejBlock) {
+        rejBlock.style.display = 'none';
+      }
     }
   }
 
@@ -1908,12 +2210,250 @@
       type,
       clientDesc,
       outcome: pending?.outcome || 'objection',
-      objectionText: objText
+      objectionText: objText,
+      resultText: pendingResults[recId]?.resultText || ''
     };
     saveRecord(rec);
     document.getElementById('obj-row-' + recId).style.display = 'none';
     document.getElementById('outcome-saved-' + recId).innerHTML =
       '<div class="outcome-saved">✓ Сохранено в статистике</div>';
+  }
+
+  // ════════════════════════════════════════
+  // РАБОТА С ОТКАЗОМ
+  // ════════════════════════════════════════
+
+  function renderRejectionForm(recId, clientDesc, type) {
+    return `
+      <div class="rejection-block">
+        <h4>Работа с отказом</h4>
+        <p class="rejection-hint">Подготовлю серию из 4 касаний: принять отказ достойно, понять причину, показать последствия бездействия и предложить минимальный шаг.</p>
+        <div class="rejection-reason-row">
+          <textarea id="rej-reason-${recId}" placeholder="Что сказал клиент при отказе? (необязательно)"></textarea>
+          <button class="btn-rejection" id="rej-btn-${recId}" onclick="generateRejection('${recId}', '${escBt(clientDesc)}', '${type}')">Подготовить серию →</button>
+        </div>
+        <div id="rej-results-${recId}"></div>
+      </div>
+    `;
+  }
+
+  async function generateRejection(recId, clientDesc, type) {
+    const btn = document.getElementById('rej-btn-' + recId);
+    const reason = document.getElementById('rej-reason-' + recId)?.value.trim() || '';
+    const resultsDiv = document.getElementById('rej-results-' + recId);
+
+    const senderGender = document.querySelector('input[name="sender-gender"]:checked')?.value || 'female';
+    const channel = document.querySelector('input[name="channel"]:checked')?.value || 'whatsapp';
+
+    btn.disabled = true;
+    btn.textContent = 'Готовлю...';
+    resultsDiv.innerHTML = '';
+
+    try {
+      const res = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mode: 'rejection',
+          clientDesc,
+          rejectionReason: reason,
+          senderGender,
+          channel,
+          token: sessionStorage.getItem('auth_token')
+        })
+      });
+
+      const rawText = await res.text();
+      let data;
+      try { data = JSON.parse(rawText); } catch(e) { throw new Error(`Ошибка сервера ${res.status}: ${rawText.substring(0, 400)}`); }
+      if (!res.ok || data.error) throw new Error((data.error || 'Ошибка сервера') + (data.details ? ' | ' + data.details : ''));
+
+      const parsed = parseRejectionResponse(data.result);
+      resultsDiv.innerHTML = renderRejectionCards(parsed);
+
+    } catch (err) {
+      resultsDiv.innerHTML = `<div style="color:#ef4444;font-size:0.85rem;margin-top:0.5rem">Ошибка: ${err.message}</div>`;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Подготовить серию →';
+    }
+  }
+
+  function parseRejectionResponse(text) {
+    const extract = tag => {
+      const m = text.match(new RegExp(`<${tag}>([\\s\\S]*?)<\\/${tag}>`));
+      return m ? m[1].trim() : '';
+    };
+    return {
+      analysis:  extract('анализ_отказа'),
+      touch1:    extract('касание_р1'),
+      touch2:    extract('касание_р2'),
+      touch3:    extract('касание_р3'),
+      touch4:    extract('касание_р4'),
+      tip:       extract('совет_дистрибьютору_отказ')
+    };
+  }
+
+  function renderRejectionCards(d) {
+    const touches = [
+      { num: 'Р1', goal: 'Принять отказ достойно',       when: 'Сегодня · сразу',            days: 0,  content: d.touch1 },
+      { num: 'Р2', goal: 'Понять настоящую причину',      when: 'Через 5–7 дней',             days: 7,  content: d.touch2 },
+      { num: 'Р3', goal: 'Последствия бездействия',       when: 'Через 14 дней',              days: 14, content: d.touch3 },
+      { num: 'Р4', goal: 'Финальное · минимальный шаг',   when: 'Через 30 дней',              days: 30, content: d.touch4 },
+    ];
+    const analysisHtml = d.analysis ? `
+      <div class="result-card card-rejection-analysis" style="margin-top:0.75rem">
+        <div class="result-card-header">
+          <div class="card-title">🔍 Анализ отказа</div>
+        </div>
+        <div class="result-card-body">${renderText(d.analysis)}</div>
+      </div>` : '';
+    const touchesHtml = touches.map((t, i) => `
+      <div class="result-card card-rejection" style="margin-top:0.75rem;animation-delay:${i * 0.07}s">
+        <div class="result-card-header">
+          <div class="card-title">Касание ${t.num} — ${t.goal}</div>
+          <button class="btn-copy" onclick="copyText(this, \`${escBt(t.content)}\`)">Скопировать</button>
+        </div>
+        <div class="touch-meta" style="padding:0.4rem 1.1rem 0">${t.when}</div>
+        <div class="result-card-body">${renderText(t.content || '—')}</div>
+      </div>`).join('');
+    const tipHtml = d.tip ? `
+      <div class="result-card card-tip" style="margin-top:0.75rem">
+        <div class="result-card-header">
+          <div class="card-title">💡 Совет дистрибьютору</div>
+        </div>
+        <div class="result-card-body">${renderText(d.tip)}</div>
+      </div>` : '';
+    const scheduleData = encodeURIComponent(JSON.stringify(touches.map(t => ({num: t.num, goal: t.goal, days: t.days, content: t.content}))));
+    const scheduleHtml = `
+      <div id="rej-schedule-row" style="margin-top:0.75rem;text-align:center">
+        <button class="btn-rejection" style="padding:0.6rem 1.4rem;font-size:0.88rem" onclick="scheduleRejectionTouches(this,'${scheduleData}')">🔔 Запланировать касания</button>
+        <div id="rej-schedule-done" style="display:none;color:#22c55e;font-size:0.82rem;margin-top:0.4rem">✓ Касания запланированы — смотри в Статистике</div>
+      </div>`;
+    return analysisHtml + touchesHtml + tipHtml + scheduleHtml;
+  }
+
+  // ════════════════════════════════════════
+  // НАПОМИНАНИЯ
+  // ════════════════════════════════════════
+
+  function getReminders() {
+    try { return JSON.parse(localStorage.getItem('cc_reminders') || '[]'); } catch { return []; }
+  }
+
+  function saveReminders(list) {
+    localStorage.setItem('cc_reminders', JSON.stringify(list));
+  }
+
+  function todayStr() {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  function addDays(n) {
+    const d = new Date();
+    d.setDate(d.getDate() + n);
+    return d.toISOString().slice(0, 10);
+  }
+
+  function updateReminderBadge() {
+    const badge = document.getElementById('reminder-badge');
+    if (!badge) return;
+    const today = todayStr();
+    const pending = getReminders().filter(r => !r.done && r.dueDate <= today);
+    if (pending.length > 0) {
+      badge.textContent = '🔔 ' + pending.length;
+      badge.style.display = 'inline-block';
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+
+  function scheduleRejectionTouches(btn, dataEncoded) {
+    const touches = JSON.parse(decodeURIComponent(dataEncoded));
+    const clientDesc = btn.closest('.rejection-block')
+      ?.querySelector('textarea')?.closest('[id^="rejection-block-"]')
+      ? '' : '';
+
+    // Получаем clientDesc из родительского outcome-block
+    const outcomeBlock = btn.closest('[id^="outcome-"]');
+    const clientDescRaw = outcomeBlock
+      ? (outcomeBlock.querySelector('[id^="obj-text-"]')?.placeholder
+          ? '' : '')
+      : '';
+    // Берём из pendingOutcomes по recId
+    const rejBlock = btn.closest('[id^="rejection-block-"]');
+    const recId = rejBlock ? rejBlock.id.replace('rejection-block-', '') : '';
+    const clientDescFinal = pendingOutcomes[recId]?.clientDesc || '';
+
+    const reminders = getReminders();
+    touches.forEach(t => {
+      reminders.push({
+        id: genId(),
+        recId,
+        clientDesc: clientDescFinal,
+        touchNum: t.num,
+        touchLabel: t.goal,
+        touchContent: t.content,
+        dueDate: addDays(t.days),
+        done: false
+      });
+    });
+    saveReminders(reminders);
+    updateReminderBadge();
+
+    btn.style.display = 'none';
+    document.getElementById('rej-schedule-done').style.display = 'block';
+  }
+
+  function markReminderDone(id) {
+    const list = getReminders();
+    const item = list.find(r => r.id === id);
+    if (item) { item.done = true; saveReminders(list); }
+    updateReminderBadge();
+    renderStats();
+  }
+
+  function renderRemindersSection(container) {
+    const list = getReminders();
+    if (list.length === 0) return '';
+    const today = todayStr();
+
+    const sorted = [...list].sort((a, b) => {
+      if (a.done !== b.done) return a.done ? 1 : -1;
+      return a.dueDate.localeCompare(b.dueDate);
+    });
+
+    const items = sorted.map(r => {
+      const isOverdue = !r.done && r.dueDate < today;
+      const isToday   = !r.done && r.dueDate === today;
+      const dotCls    = r.done ? 'done' : isOverdue ? 'overdue' : isToday ? 'today' : 'upcoming';
+      const dateCls   = isOverdue ? 'overdue' : isToday ? 'today' : '';
+      const dateLabel = r.done ? 'Выполнено'
+        : isOverdue ? 'Просрочено · было ' + formatDate(r.dueDate)
+        : isToday   ? 'Сегодня'
+        : formatDate(r.dueDate);
+      return `
+        <div class="reminder-item">
+          <div class="reminder-dot ${dotCls}"></div>
+          <div class="reminder-meta">
+            <div class="reminder-title">Касание ${r.touchNum} — ${r.touchLabel}</div>
+            <div class="reminder-client">${r.clientDesc || '—'}</div>
+            <div class="reminder-date ${dateCls}">${dateLabel}</div>
+          </div>
+          ${!r.done ? `<button class="btn-reminder-done" onclick="markReminderDone('${r.id}')">✓ Готово</button>` : ''}
+        </div>`;
+    }).join('');
+
+    return `
+      <div class="stats-section" style="border-color:#3d2020">
+        <h3 style="color:#ef4444">🔔 Напоминания</h3>
+        ${items}
+      </div>`;
+  }
+
+  function formatDate(iso) {
+    const d = new Date(iso + 'T00:00:00');
+    return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
   }
 
   // ════════════════════════════════════════
@@ -1955,7 +2495,7 @@
       decode: '<span class="type-pill type-decode">Расшифровка</span>'
     };
 
-    container.innerHTML = `
+    container.innerHTML = renderRemindersSection(container) + `
       <div class="stats-summary">
         <div class="stat-card">
           <div class="stat-value">${total}</div>
@@ -2012,6 +2552,7 @@
                 <th>Тип</th>
                 <th>Клиент</th>
                 <th>Итог</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -2025,6 +2566,9 @@
                   <td>
                     ${outcomePills[r.outcome] || ''}
                     ${r.objectionText ? `<br><span class="objection-tag">${escHtml(r.objectionText)}</span>` : ''}
+                  </td>
+                  <td style="text-align:center">
+                    ${r.resultText ? `<button class="btn-open-record" onclick="openHistoryRecord('${r.id}')">Открыть</button>` : '<span style="color:#333">—</span>'}
                   </td>
                 </tr>
               `).join('')}
@@ -2134,6 +2678,77 @@
 
   function escHtml(str) {
     return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // ════════════════════════════════════════
+  // ИСТОРИЯ КОНСУЛЬТАЦИЙ — МОДАЛЬНОЕ ОКНО
+  // ════════════════════════════════════════
+  function openHistoryRecord(recId) {
+    const rec = getRecords().find(r => r.id === recId);
+    if (!rec || !rec.resultText) return;
+
+    const modal = document.getElementById('history-modal');
+    const typeLabel = rec.type === 'invite' ? 'Приглашение' : 'Расшифровка';
+
+    document.getElementById('history-modal-title').textContent =
+      (rec.clientDesc || '').substring(0, 80) + (rec.clientDesc?.length > 80 ? '…' : '');
+    document.getElementById('history-modal-meta').textContent =
+      typeLabel + ' · ' + new Date(rec.date).toLocaleString('ru', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+
+    const body = document.getElementById('history-modal-body');
+    if (rec.type === 'decode') {
+      const parsed = parseDecodeResponse(rec.resultText);
+      const cards = [
+        { icon: '📊', title: 'Картина здоровья',                    content: parsed.systems,   copyable: true },
+        { icon: '🔗', title: 'Причинно-следственная цепочка',       content: parsed.chain,     copyable: true },
+        { icon: '💊', title: 'Протокол восстановления (Coral Club)', content: parsed.protocol,  copyable: true },
+        { icon: '💬', title: 'Скрипт консультации',                 content: parsed.script,    copyable: true },
+        { icon: '💡', title: 'Почему такой протокол',               content: parsed.logic,     copyable: false },
+        { icon: '🎯', title: 'Точка А → Точка Б (цель 90 дней)',   content: parsed.pointab,   copyable: true },
+        { icon: '📅', title: 'Схема приёма',                        content: parsed.schedule,  copyable: true },
+        { icon: '💧', title: 'Вода и гидратация',                   content: parsed.water,     copyable: false },
+      ];
+      body.innerHTML = cards.map(c => `
+        <div class="result-card" style="margin-bottom:0.75rem">
+          <div class="result-card-header">
+            <div class="card-title">${c.icon} ${c.title}</div>
+            ${c.copyable ? `<button class="btn-copy" onclick="copyText(this, \`${escBt(c.content)}\`)">Скопировать</button>` : ''}
+          </div>
+          <div class="result-card-body">${renderText(c.content || '—')}</div>
+        </div>
+      `).join('');
+    } else {
+      const parsed = parseInviteResponse(rec.resultText);
+      const items = [
+        { label: 'Касание 1', content: parsed.touch1 },
+        { label: 'Касание 2', content: parsed.touch2 },
+        { label: 'Касание 3 (ключевое)', content: parsed.touch3 },
+        { label: 'Касание 4', content: parsed.touch4 },
+        { label: 'Касание 5', content: parsed.touch5 },
+        { label: 'Если согласился', content: parsed.ifHot },
+        { label: 'Если думает', content: parsed.ifWarm },
+        { label: 'Если холодный', content: parsed.ifCold },
+        { label: 'Совет дистрибьютору', content: parsed.tip },
+      ].filter(i => i.content);
+      body.innerHTML = items.map(i => `
+        <div class="result-card" style="margin-bottom:0.75rem">
+          <div class="result-card-header">
+            <div class="card-title">${i.label}</div>
+            <button class="btn-copy" onclick="copyText(this, \`${escBt(i.content)}\`)">Скопировать</button>
+          </div>
+          <div class="result-card-body">${renderText(i.content)}</div>
+        </div>
+      `).join('');
+    }
+
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeHistoryModal(e) {
+    if (e && e.target !== document.getElementById('history-modal')) return;
+    document.getElementById('history-modal').style.display = 'none';
+    document.body.style.overflow = '';
   }
 
   function copyText(btn, text) {
