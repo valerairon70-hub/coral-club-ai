@@ -806,6 +806,55 @@
     }
     .btn-reminder-done:hover { border-color: #22c55e; color: #22c55e; }
 
+    /* ── Модал завершения серии ── */
+    .series-modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000;
+      padding: 1rem;
+    }
+    .series-modal-overlay.hidden { display: none; }
+    .series-modal {
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+    .series-modal-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .series-modal-title {
+      font-size: 1.15rem; font-weight: 700; color: #f0f0f0;
+      margin-bottom: 0.4rem;
+    }
+    .series-modal-sub {
+      font-size: 0.85rem; color: #888;
+      margin-bottom: 1.5rem;
+    }
+    .series-modal-actions {
+      display: flex; flex-direction: column; gap: 0.6rem;
+    }
+    .btn-series-result {
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      border: 1px solid #333;
+      background: #2a2a2a;
+      color: #f0f0f0;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      text-align: left;
+    }
+    .btn-series-result:hover { background: #333; }
+    .btn-series-result.success { border-color: #22c55e; }
+    .btn-series-result.success:hover { background: #14532d; }
+    .btn-series-result.fail { border-color: #ef4444; }
+    .btn-series-result.fail:hover { background: #450a0a; }
+    .btn-series-result.later { border-color: #f59e0b; }
+    .btn-series-result.later:hover { background: #451a03; }
+
     .card-rejection { border-left: 3px solid #ef4444; }
     .card-rejection-analysis { border-left: 3px solid #888; }
 
@@ -1718,13 +1767,13 @@
       reader.onload = e => {
         const img = new Image();
         img.onload = () => {
-          const maxW = 1200;
+          const maxW = 900;
           let w = img.width, h = img.height;
           if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
           const canvas = document.createElement('canvas');
           canvas.width = w; canvas.height = h;
           canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-          const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.72);
           uploadedImages.push({ base64: dataUrl.split(',')[1], mimeType: 'image/jpeg', previewUrl: dataUrl });
           renderThumbnails();
         };
@@ -1792,13 +1841,13 @@
       reader.onload = e => {
         const img = new Image();
         img.onload = () => {
-          const maxW = 1200;
+          const maxW = 900;
           let w = img.width, h = img.height;
           if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
           const canvas = document.createElement('canvas');
           canvas.width = w; canvas.height = h;
           canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-          const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.72);
           prevImages.push({ base64: dataUrl.split(',')[1], mimeType: 'image/jpeg', previewUrl: dataUrl });
           renderThumbnailsPrev();
         };
@@ -2405,11 +2454,45 @@
     document.getElementById('rej-schedule-done').style.display = 'block';
   }
 
+  let _pendingSeriesRecId = null;
+
   function markReminderDone(id) {
     const list = getReminders();
     const item = list.find(r => r.id === id);
-    if (item) { item.done = true; saveReminders(list); }
+    if (!item) return;
+    item.done = true;
+    saveReminders(list);
     updateReminderBadge();
+    renderStats();
+
+    // Проверяем: все касания этой серии выполнены?
+    const recId = item.recId;
+    if (recId) {
+      const seriesItems = list.filter(r => r.recId === recId);
+      const allDone = seriesItems.every(r => r.done);
+      const alreadyFinished = seriesItems[0]?.seriesResult;
+      if (allDone && !alreadyFinished) {
+        showSeriesCompleteModal(recId, item.clientDesc);
+      }
+    }
+  }
+
+  function showSeriesCompleteModal(recId, clientDesc) {
+    _pendingSeriesRecId = recId;
+    const sub = document.getElementById('series-modal-client');
+    if (sub) sub.textContent = clientDesc ? `Клиент: ${clientDesc}` : 'Все касания выполнены';
+    document.getElementById('series-complete-modal').classList.remove('hidden');
+  }
+
+  function finishSeries(result) {
+    if (!_pendingSeriesRecId) return;
+    const list = getReminders();
+    list.forEach(r => {
+      if (r.recId === _pendingSeriesRecId) r.seriesResult = result;
+    });
+    saveReminders(list);
+    _pendingSeriesRecId = null;
+    document.getElementById('series-complete-modal').classList.add('hidden');
     renderStats();
   }
 
@@ -2418,7 +2501,11 @@
     if (list.length === 0) return '';
     const today = todayStr();
 
-    const sorted = [...list].sort((a, b) => {
+    // Не показываем серии, которые уже завершены (выбран результат)
+    const active = list.filter(r => !r.seriesResult);
+    if (active.length === 0) return '';
+
+    const sorted = [...active].sort((a, b) => {
       if (a.done !== b.done) return a.done ? 1 : -1;
       return a.dueDate.localeCompare(b.dueDate);
     });
@@ -2762,6 +2849,26 @@
     });
   }
 </script>
+
+  <!-- Модал завершения серии касаний -->
+  <div class="series-modal-overlay hidden" id="series-complete-modal">
+    <div class="series-modal">
+      <div class="series-modal-icon">🎯</div>
+      <div class="series-modal-title">Серия касаний завершена</div>
+      <div class="series-modal-sub" id="series-modal-client"></div>
+      <div class="series-modal-actions">
+        <button class="btn-series-result success" onclick="finishSeries('client')">
+          ✅ Стал клиентом
+        </button>
+        <button class="btn-series-result later" onclick="finishSeries('later')">
+          🕐 Думает — вернуться позже
+        </button>
+        <button class="btn-series-result fail" onclick="finishSeries('rejected')">
+          ❌ Не заинтересован
+        </button>
+      </div>
+    </div>
+  </div>
 
 </body>
 </html>
