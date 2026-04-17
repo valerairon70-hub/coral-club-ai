@@ -1216,6 +1216,8 @@
     .card-pointab  .result-card-header { border-left: 3px solid #10b981; }
     .card-schedule .result-card-header { border-left: 3px solid #06b6d4; }
     .card-water    .result-card-header { border-left: 3px solid #3b82f6; }
+    .card-urgent   .result-card-header { border-left: 3px solid #ef4444; }
+    .card-urgent { border-color: rgba(239,68,68,0.35); box-shadow: 0 0 0 1px rgba(239,68,68,0.2); }
 
     /* ── Модальное окно истории ── */
     .history-modal {
@@ -1482,13 +1484,13 @@
 
               <!-- Загрузка диаграммы -->
               <div class="field-group">
-                <div class="field-label">Скриншоты диаграммы</div>
+                <div class="field-label">Скриншоты диаграммы или результаты анализов</div>
                 <div class="upload-zone" id="upload-zone">
                   <input type="file" id="file-input" accept="image/*" multiple style="display:none">
                   <div id="upload-placeholder">
                     <div class="upload-icon">📊</div>
-                    <div class="upload-text">Загрузите скриншоты диаграммы</div>
-                    <div class="upload-hint">Можно несколько файлов сразу</div>
+                    <div class="upload-text">Диаграмма трекера, анализы крови, МРТ, УЗИ</div>
+                    <div class="upload-hint">Можно загрузить несколько файлов сразу</div>
                   </div>
                   <div id="thumbs-container" style="display:none; flex-direction:column; align-items:center; width:100%; gap:0.5rem; padding:0.5rem 0;">
                     <div class="thumbs-grid" id="thumbs-grid"></div>
@@ -2147,6 +2149,7 @@
       return m ? m[0].replace(new RegExp(`<\\/?${tag}>`,'g'),'').trim() : '';
     };
     return {
+      urgent:   extract('острая_фаза'),
       systems:  extract('системы'),
       chain:    extract('цепочка'),
       protocol: extract('протокол'),
@@ -2164,7 +2167,8 @@
     const clientDesc = (clientName ? clientName + ' — ' : '') + 'Жалобы: ' + complaints.join(', ');
     if (resultText) pendingResults[recId] = { resultText, type: 'decode', clientDesc };
 
-    const cards = [
+    const allCards = [
+      { cls: 'card-urgent',   icon: '🔴', title: 'Важно: нужна консультация врача', content: data.urgent,   copyable: true,  optional: true },
       { cls: 'card-systems',  icon: '📊', title: 'Картина здоровья',                content: data.systems,  copyable: true },
       { cls: 'card-chain',    icon: '🔗', title: 'Причинно-следственная цепочка',   content: data.chain,    copyable: true },
       { cls: 'card-protocol', icon: '💊', title: 'Протокол восстановления (Coral Club)', content: data.protocol, copyable: true },
@@ -2174,6 +2178,7 @@
       { cls: 'card-schedule', icon: '📅', title: 'Схема приёма',                    content: data.schedule, copyable: true },
       { cls: 'card-water',    icon: '💧', title: 'Вода и гидратация',               content: data.water,    copyable: false }
     ];
+    const cards = allCards.filter(c => !c.optional || c.content);
 
     panel.innerHTML = cards.map((c, i) => `
       <div class="result-card ${c.cls}" style="animation-delay:${i * 0.07}s">
