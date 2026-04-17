@@ -957,8 +957,13 @@ ${hasPrev
   }));
   contentBlocks.push({ type: 'text', text: userText });
 
+  // Стриминг: отправляем данные по мере генерации, не ждём полного ответа
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('X-Accel-Buffering', 'no');
+
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -968,25 +973,47 @@ ${hasPrev
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 4000,
+        stream: true,
         system: SYSTEM_PROMPT,
-        messages: [{
-          role: 'user',
-          content: contentBlocks
-        }]
+        messages: [{ role: 'user', content: contentBlocks }]
       })
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
+    if (!anthropicRes.ok) {
+      const errorText = await anthropicRes.text();
       console.error('Anthropic API error (decode):', errorText);
-      return res.status(502).json({ error: 'Ошибка Claude API', details: errorText });
+      res.write(`data: ${JSON.stringify({ error: 'Ошибка Claude API', details: errorText })}\n\n`);
+      return res.end();
     }
 
-    const data = await response.json();
-    return res.status(200).json({ result: data.content?.[0]?.text || '' });
+    const reader = anthropicRes.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop(); // сохраняем неполную строку
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const raw = line.slice(6).trim();
+        if (!raw || raw === '[DONE]') continue;
+        try {
+          const evt = JSON.parse(raw);
+          if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta') {
+            res.write(`data: ${JSON.stringify({ text: evt.delta.text })}\n\n`);
+          } else if (evt.type === 'message_stop') {
+            res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+          }
+        } catch (_) { /* пропускаем битые строки */ }
+      }
+    }
 
   } catch (err) {
     console.error('Handler error (decode):', err);
-    return res.status(500).json({ error: 'Внутренняя ошибка', details: err.message });
+    res.write(`data: ${JSON.stringify({ error: 'Внутренняя ошибка', details: err.message })}\n\n`);
   }
+  res.end();
 };

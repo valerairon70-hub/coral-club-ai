@@ -2106,20 +2106,42 @@
         })
       });
 
-      const rawText2 = await res.text();
-      let data;
-      try { data = JSON.parse(rawText2); } catch(e) { throw new Error(`Ошибка сервера ${res.status}: ${rawText2.substring(0, 400)}`); }
-      if (!res.ok || data.error) throw new Error((data.error || 'Ошибка сервера') + (data.details ? ' | ' + data.details : ''));
+      if (!res.ok && res.headers.get('content-type')?.includes('application/json')) {
+        const data = await res.json();
+        throw new Error((data.error || 'Ошибка сервера') + (data.details ? ' | ' + data.details : ''));
+      }
 
-      const parsed = parseDecodeResponse(data.result);
-      renderDecodeResults(parsed, [c1, c2, c3].filter(Boolean), clientName, data.result);
-      if (isTestMode()) incrementTestCounter();
+      // Читаем SSE-стрим
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let fullText = '';
+      let sseBuffer = '';
 
-      // Скролл к результатам на мобильном
-      if (window.innerWidth < 720) {
-        setTimeout(() => {
-          document.getElementById('decode-results').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 300);
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        sseBuffer += decoder.decode(value, { stream: true });
+        const lines = sseBuffer.split('\n');
+        sseBuffer = lines.pop();
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          const raw = line.slice(6).trim();
+          if (!raw) continue;
+          let evt;
+          try { evt = JSON.parse(raw); } catch(_) { continue; }
+          if (evt.error) throw new Error(evt.error + (evt.details ? ' | ' + evt.details : ''));
+          if (evt.text) fullText += evt.text;
+          if (evt.done) {
+            const parsed = parseDecodeResponse(fullText);
+            renderDecodeResults(parsed, [c1, c2, c3].filter(Boolean), clientName, fullText);
+            if (isTestMode()) incrementTestCounter();
+            if (window.innerWidth < 720) {
+              setTimeout(() => {
+                document.getElementById('decode-results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }, 300);
+            }
+          }
+        }
       }
 
     } catch (err) {
