@@ -901,6 +901,79 @@ ${thinkingReason && thinkingReason.trim() ? `Что сказал / как име
     }
   }
 
+  // ── РЕЖИМ ЧАТА ──
+  if (mode === 'chat') {
+    const chatMessages = req.body.messages || [];
+    const analysisContext = req.body.analysisContext || '';
+
+    if (!chatMessages.length) return res.status(400).json({ error: 'Нет сообщений' });
+
+    const chatSystem = SYSTEM_PROMPT + (analysisContext
+      ? `\n\n═══ КОНТЕКСТ ТЕКУЩЕЙ КОНСУЛЬТАЦИИ ═══\n\nРасшифровка уже выполнена. Вот её полный текст:\n\n${analysisContext}\n\nТы продолжаешь работу с дистрибьютором. Отвечай кратко и по делу. Можешь корректировать протокол: добавлять/убирать/заменять продукты, объяснять дозировки, отвечать на вопросы. Пиши обычным текстом — без XML-тегов, без markdown-заголовков.`
+      : '');
+
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('X-Accel-Buffering', 'no');
+
+    try {
+      const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 1500,
+          stream: true,
+          system: chatSystem,
+          messages: chatMessages
+        })
+      });
+
+      if (!anthropicRes.ok) {
+        const errorText = await anthropicRes.text();
+        res.write(`data: ${JSON.stringify({ error: 'Ошибка Claude API', details: errorText })}\n\n`);
+        return res.end();
+      }
+
+      const chatReader = anthropicRes.body.getReader();
+      const chatDecoder = new TextDecoder();
+      let chatBuffer = '';
+      let chatDoneSent = false;
+
+      while (true) {
+        const { done, value } = await chatReader.read();
+        if (done) break;
+        chatBuffer += chatDecoder.decode(value, { stream: true });
+        const lines = chatBuffer.split('\n');
+        chatBuffer = lines.pop();
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          const raw = line.slice(6).trim();
+          if (!raw || raw === '[DONE]') continue;
+          try {
+            const evt = JSON.parse(raw);
+            if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta') {
+              res.write(`data: ${JSON.stringify({ text: evt.delta.text })}\n\n`);
+            } else if (evt.type === 'message_stop') {
+              res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+              chatDoneSent = true;
+            }
+          } catch (_) {}
+        }
+      }
+      if (!chatDoneSent) res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+
+    } catch (err) {
+      console.error('Handler error (chat):', err);
+      res.write(`data: ${JSON.stringify({ error: 'Внутренняя ошибка', details: err.message })}\n\n`);
+    }
+    return res.end();
+  }
+
   // ── РЕЖИМ РАСШИФРОВКИ (по умолчанию) ──
   const allImages = images || (image ? [{ base64: image, mimeType: imageType || 'image/jpeg' }] : []);
 

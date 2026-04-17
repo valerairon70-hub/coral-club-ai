@@ -1308,6 +1308,102 @@
       .stats-summary { grid-template-columns: 1fr 1fr; }
       .stats-summary .stat-card:last-child { grid-column: span 2; }
     }
+
+    /* ── Чат после анализа ── */
+    .analysis-chat {
+      background: #242424;
+      border: 1px solid #333;
+      border-radius: 16px;
+      margin-top: 1.5rem;
+      overflow: hidden;
+    }
+
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.25rem;
+      border-bottom: 1px solid #2e2e2e;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #f0f0f0;
+    }
+
+    .chat-header span { color: #999; font-weight: 400; font-size: 0.8rem; margin-left: auto; }
+
+    .chat-messages {
+      padding: 1rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      max-height: 420px;
+      overflow-y: auto;
+    }
+
+    .chat-msg {
+      max-width: 85%;
+      padding: 0.65rem 0.9rem;
+      border-radius: 12px;
+      font-size: 0.87rem;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .chat-msg-user {
+      align-self: flex-end;
+      background: #ff6b35;
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+
+    .chat-msg-assistant {
+      align-self: flex-start;
+      background: #2d2d2d;
+      color: #f0f0f0;
+      border-bottom-left-radius: 4px;
+      border: 1px solid #3a3a3a;
+    }
+
+    .chat-msg-assistant.streaming { opacity: 0.85; }
+
+    .chat-input-row {
+      display: flex;
+      gap: 0.5rem;
+      padding: 0.85rem 1.25rem;
+      border-top: 1px solid #2e2e2e;
+    }
+
+    .chat-input-row input {
+      flex: 1;
+      background: #1a1a1a;
+      border: 1px solid #3a3a3a;
+      border-radius: 8px;
+      padding: 0.6rem 0.85rem;
+      color: #f0f0f0;
+      font-size: 0.87rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .chat-input-row input:focus { border-color: #ff6b35; }
+    .chat-input-row input::placeholder { color: #555; }
+
+    .btn-chat-send {
+      background: #ff6b35;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.6rem 1.1rem;
+      font-size: 0.87rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+    }
+
+    .btn-chat-send:hover { opacity: 0.88; }
+    .btn-chat-send:disabled { opacity: 0.45; cursor: default; }
   </style>
 </head>
 <body>
@@ -1592,6 +1688,22 @@
             </div>
 
           </div>
+
+          <!-- Чат после анализа -->
+          <div class="analysis-chat" id="analysis-chat" style="display:none">
+            <div class="chat-header">
+              💬 Продолжить консультацию
+              <span>Задайте вопрос или скорректируйте протокол</span>
+            </div>
+            <div class="chat-messages" id="chat-messages"></div>
+            <div class="chat-input-row">
+              <input type="text" id="chat-input"
+                placeholder="Например: добавь Омега-3, или объясни дозировку..."
+                onkeydown="if(event.key==='Enter' && !event.shiftKey) { event.preventDefault(); sendChatMessage(); }">
+              <button class="btn-chat-send" id="chat-send-btn" onclick="sendChatMessage()">Отправить</button>
+            </div>
+          </div>
+
         </div>
 
         <!-- ════════════════════════════════
@@ -2172,6 +2284,100 @@
     }
   }
 
+  // ════════════════════════════════════════
+  // ЧАТ ПОСЛЕ АНАЛИЗА
+  // ════════════════════════════════════════
+  let currentAnalysisContext = '';
+  let chatHistory = [];
+
+  function showChat() {
+    document.getElementById('analysis-chat').style.display = 'block';
+    document.getElementById('chat-messages').innerHTML = '';
+    chatHistory = [];
+  }
+
+  function appendChatMessage(role, text, streaming) {
+    const container = document.getElementById('chat-messages');
+    const div = document.createElement('div');
+    div.className = 'chat-msg ' + (role === 'user' ? 'chat-msg-user' : 'chat-msg-assistant' + (streaming ? ' streaming' : ''));
+    div.textContent = text;
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+    return div;
+  }
+
+  async function sendChatMessage() {
+    const input = document.getElementById('chat-input');
+    const sendBtn = document.getElementById('chat-send-btn');
+    const text = input.value.trim();
+    if (!text) return;
+
+    input.value = '';
+    input.disabled = true;
+    sendBtn.disabled = true;
+
+    appendChatMessage('user', text);
+    chatHistory.push({ role: 'user', content: text });
+
+    const assistantDiv = appendChatMessage('assistant', '...', true);
+    let responseText = '';
+
+    try {
+      const res = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mode: 'chat',
+          messages: chatHistory,
+          analysisContext: currentAnalysisContext,
+          token: sessionStorage.getItem('auth_token')
+        })
+      });
+
+      if (!res.ok && res.headers.get('content-type')?.includes('application/json')) {
+        const data = await res.json();
+        throw new Error(data.error || 'Ошибка сервера');
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let sseBuffer = '';
+      assistantDiv.textContent = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        sseBuffer += decoder.decode(value, { stream: true });
+        const lines = sseBuffer.split('\n');
+        sseBuffer = lines.pop();
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          const raw = line.slice(6).trim();
+          if (!raw) continue;
+          let evt;
+          try { evt = JSON.parse(raw); } catch(_) { continue; }
+          if (evt.error) throw new Error(evt.error);
+          if (evt.text) {
+            responseText += evt.text;
+            assistantDiv.textContent = responseText;
+            document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
+          }
+        }
+      }
+
+      assistantDiv.classList.remove('streaming');
+      if (responseText) chatHistory.push({ role: 'assistant', content: responseText });
+
+    } catch (err) {
+      assistantDiv.textContent = 'Ошибка: ' + err.message;
+      assistantDiv.classList.remove('streaming');
+    } finally {
+      input.disabled = false;
+      sendBtn.disabled = false;
+      input.focus();
+    }
+  }
+
   function parseDecodeResponse(text) {
     const extract = tag => {
       const m = text.match(new RegExp(`<${tag}>[\\s\\S]*?<\\/${tag}>`));
@@ -2218,6 +2424,12 @@
         <div class="result-card-body">${renderText(c.content || '—')}</div>
       </div>
     `).join('') + renderDecodeOutcomeBlock(recId, clientDesc);
+
+    // Показываем чат и сохраняем контекст анализа
+    if (resultText) {
+      currentAnalysisContext = resultText;
+      showChat();
+    }
   }
 
   function renderDecodeOutcomeBlock(recId, clientDesc) {
