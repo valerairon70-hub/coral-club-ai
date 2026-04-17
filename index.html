@@ -2116,6 +2116,20 @@
       const decoder = new TextDecoder();
       let fullText = '';
       let sseBuffer = '';
+      let resultsRendered = false;
+
+      const finishRender = () => {
+        if (resultsRendered) return;
+        resultsRendered = true;
+        const parsed = parseDecodeResponse(fullText);
+        renderDecodeResults(parsed, [c1, c2, c3].filter(Boolean), clientName, fullText);
+        if (isTestMode()) incrementTestCounter();
+        if (window.innerWidth < 720) {
+          setTimeout(() => {
+            document.getElementById('decode-results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 300);
+        }
+      };
 
       while (true) {
         const { done, value } = await reader.read();
@@ -2131,18 +2145,11 @@
           try { evt = JSON.parse(raw); } catch(_) { continue; }
           if (evt.error) throw new Error(evt.error + (evt.details ? ' | ' + evt.details : ''));
           if (evt.text) fullText += evt.text;
-          if (evt.done) {
-            const parsed = parseDecodeResponse(fullText);
-            renderDecodeResults(parsed, [c1, c2, c3].filter(Boolean), clientName, fullText);
-            if (isTestMode()) incrementTestCounter();
-            if (window.innerWidth < 720) {
-              setTimeout(() => {
-                document.getElementById('decode-results').scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }, 300);
-            }
-          }
+          if (evt.done) finishRender();
         }
       }
+      // Страховка: стрим закрылся без evt.done, но текст есть
+      if (!resultsRendered && fullText) finishRender();
 
     } catch (err) {
       alert('Ошибка: ' + err.message);

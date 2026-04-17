@@ -997,6 +997,7 @@ ${hasPrev
     const decoder = new TextDecoder();
     let buffer = '';
 
+    let doneSent = false;
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
@@ -1013,9 +1014,14 @@ ${hasPrev
             res.write(`data: ${JSON.stringify({ text: evt.delta.text })}\n\n`);
           } else if (evt.type === 'message_stop') {
             res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+            doneSent = true;
           }
         } catch (_) { /* пропускаем битые строки */ }
       }
+    }
+    // Страховка: если message_stop застрял в буфере без хвостового \n — всё равно посылаем done
+    if (!doneSent) {
+      res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
     }
 
   } catch (err) {
