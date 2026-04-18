@@ -1428,6 +1428,234 @@
 
     .btn-chat-send:hover { opacity: 0.88; }
     .btn-chat-send:disabled { opacity: 0.45; cursor: default; }
+
+    /* ══════════════════════════════════════════
+       ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ — кнопка в хедере
+       ══════════════════════════════════════════ */
+    .btn-theme-toggle {
+      background: none;
+      border: 1px solid #444;
+      border-radius: 20px;
+      padding: 0.28rem 0.75rem;
+      color: #888;
+      font-size: 0.78rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.25s;
+      white-space: nowrap;
+      letter-spacing: 0.01em;
+      font-family: inherit;
+    }
+    .btn-theme-toggle:hover { border-color: #ff6b35; color: #ff6b35; }
+
+    /* ══════════════════════════════════════════
+       СВЕТЛАЯ ТЕМА — Golden Premium
+       ══════════════════════════════════════════ */
+
+    body.light {
+      background: #f5ede2;
+      color: #1a0f07;
+    }
+
+    /* Экран пароля */
+    body.light #password-screen { background: #f5ede2; }
+
+    body.light .password-card {
+      background: #fffaf4;
+      border-color: #dfc9a8;
+      box-shadow: 0 8px 32px rgba(180,130,60,0.12), 0 2px 8px rgba(180,130,60,0.08);
+    }
+    body.light .password-card h1 { color: #1a0f07; }
+    body.light .password-card .subtitle { color: #907050; }
+    body.light .password-card input[type="password"] {
+      background: #fff8f0; border-color: #d4b890; color: #1a0f07;
+    }
+    body.light .password-card input[type="password"]::placeholder { color: #c4a07a; }
+    body.light .password-card input[type="password"]:focus { border-color: #b8860b; box-shadow: 0 0 0 2px rgba(184,134,11,0.12); }
+
+    /* Хедер */
+    body.light header {
+      background: #fffaf4;
+      border-bottom-color: #dfc9a8;
+      box-shadow: 0 1px 0 rgba(201,162,39,0.18), 0 2px 8px rgba(180,130,60,0.07);
+    }
+    body.light header h1 { color: #1a0f07; }
+    body.light header .tagline { color: #907050; }
+    body.light header .logout { border-color: #d4b890; color: #907050; }
+    body.light header .logout:hover { border-color: #b8860b; color: #8b6914; }
+
+    /* Кнопка темы в светлом режиме — золотая */
+    body.light .btn-theme-toggle {
+      background: linear-gradient(135deg, #fdf6e8 0%, #fff9f0 100%);
+      border-color: #c9a227;
+      color: #8b6914;
+      box-shadow: 0 1px 4px rgba(201,162,39,0.22), inset 0 1px 0 rgba(255,255,255,0.65);
+    }
+    body.light .btn-theme-toggle:hover {
+      background: linear-gradient(135deg, #fff4d6 0%, #fffaed 100%);
+      border-color: #b8860b;
+      color: #7a5a0b;
+      box-shadow: 0 2px 10px rgba(184,134,11,0.28), inset 0 1px 0 rgba(255,255,255,0.65);
+    }
+
+    /* Вкладки */
+    body.light .tab-nav { background: #fdf6ec; border-bottom-color: #e8d4b0; }
+    body.light .tab-btn { color: #907050; }
+    body.light .tab-btn:hover { color: #5a3a1a; }
+    body.light .tab-btn.active { color: #8b6914; border-bottom-color: #c9a227; }
+
+    /* Панели ввода */
+    body.light .input-panel {
+      background: #fffaf4; border-color: #dfc9a8;
+      box-shadow: 0 2px 10px rgba(180,130,60,0.07);
+    }
+    body.light .input-panel h2 { color: #1a0f07; }
+    body.light .field-label { color: #907050; }
+
+    body.light textarea.field-input, body.light input.field-input {
+      background: #fff8f0; border-color: #d4b890; color: #1a0f07;
+    }
+    body.light textarea.field-input:focus, body.light input.field-input:focus { border-color: #b8860b; }
+    body.light textarea.field-input::placeholder, body.light input.field-input::placeholder { color: #c4a07a; }
+
+    /* Сегментированные переключатели */
+    body.light .seg-option + label { background: #fff8f0; border-color: #d4b890; color: #907050; }
+    body.light .seg-option:checked + label { background: rgba(184,134,11,0.1); border-color: #b8860b; color: #8b6914; }
+    body.light .seg-option + label:hover { border-color: #c9a227; color: #5a3a1a; }
+
+    /* Радио-кнопки канала */
+    body.light .channel-option + label { background: #fff8f0; border-color: #d4b890; color: #907050; }
+    body.light .channel-option:checked + label { background: rgba(184,134,11,0.1); border-color: #b8860b; color: #1a0f07; }
+    body.light .channel-option + label:hover { border-color: #c9a227; color: #5a3a1a; }
+
+    /* Зона загрузки */
+    body.light .upload-zone { border-color: #d4b890; background: #fffbf7; }
+    body.light .upload-zone:hover, body.light .upload-zone.drag-over {
+      border-color: #b8860b; background: rgba(184,134,11,0.04);
+    }
+    body.light .upload-zone .upload-text { color: #5a3a1a; }
+    body.light .upload-zone .upload-hint { color: #907050; }
+
+    /* Жалобы */
+    body.light .complaint-num { background: rgba(184,134,11,0.12); color: #8b6914; }
+    body.light .complaint-row input { background: #fff8f0; border-color: #d4b890; color: #1a0f07; }
+    body.light .complaint-row input:focus { border-color: #b8860b; }
+    body.light .complaint-row input::placeholder { color: #c4a07a; }
+
+    body.light .btn-action:disabled { background: #c4b0a0; }
+
+    /* Карточки результатов */
+    body.light .result-card {
+      background: #fffaf4; border-color: #dfc9a8;
+      box-shadow: 0 2px 8px rgba(180,130,60,0.07);
+    }
+    body.light .result-card-header { border-bottom-color: #ead4b0; }
+    body.light .result-card-body { color: #2c1a0e; }
+    body.light .result-card-body strong { color: #1a0f07; }
+    body.light .result-card-body .status-red    { color: #c0392b; }
+    body.light .result-card-body .status-yellow { color: #d97706; }
+    body.light .result-card-body .status-green  { color: #16a34a; }
+
+    body.light .btn-copy { border-color: #d4b890; color: #907050; }
+    body.light .btn-copy:hover { border-color: #b8860b; color: #8b6914; }
+
+    /* Разделитель секций */
+    body.light .section-divider { color: #c4a07a; }
+    body.light .section-divider::after { background: #e8d4b0; }
+
+    /* Блок исхода */
+    body.light .outcome-block { background: #f4faf6; border-color: #b8d8c0; }
+    body.light .outcome-block h3 { color: #6a8070; }
+    body.light .btn-outcome { background: #fff8f0; border-color: #d4b890; color: #907050; }
+    body.light .btn-outcome:hover { border-color: #907050; color: #1a0f07; }
+    body.light .objection-row input { background: #fff8f0; border-color: #d4b890; color: #1a0f07; }
+    body.light .objection-row input::placeholder { color: #c4a07a; }
+
+    /* Блок отказа */
+    body.light .rejection-block { background: #fff5f5; border-color: #f0c0c0; }
+    body.light .rejection-block .rejection-hint { color: #907050; }
+
+    /* Блок "Думает" */
+    body.light .thinking-block { background: #fdf8f0; border-color: #e8d090; }
+    body.light .thinking-block .thinking-hint { color: #907050; }
+
+    /* Пустое состояние */
+    body.light .empty-state { background: #fffaf4; border-color: #dfc9a8; color: #c4a07a; }
+
+    /* Статистика */
+    body.light .stat-card { background: #fffaf4; border-color: #dfc9a8; box-shadow: 0 2px 6px rgba(180,130,60,0.06); }
+    body.light .stat-card .stat-label { color: #907050; }
+    body.light .stats-section { background: #fffaf4; border-color: #dfc9a8; }
+    body.light .stats-section h3 { color: #5a3a1a; }
+
+    body.light .btn-filter { background: #fff8f0; border-color: #d4b890; color: #907050; }
+    body.light .btn-filter.active { background: rgba(184,134,11,0.1); border-color: #b8860b; color: #8b6914; }
+    body.light .btn-filter:hover:not(.active) { border-color: #c9a227; color: #5a3a1a; }
+
+    body.light .records-table th { color: #907050; border-bottom-color: #e8d4b0; }
+    body.light .records-table td { border-bottom-color: #f0e0c8; color: #4a3020; }
+    body.light .top-objections-list li { border-bottom-color: #f0e0c8; color: #4a3020; }
+
+    body.light .btn-export { border-color: #d4b890; color: #907050; }
+    body.light .btn-export:hover { border-color: #b8860b; color: #8b6914; }
+    body.light .btn-clear-stats { border-color: #e0c4c4; color: #c4a07a; }
+    body.light .no-records { color: #c4a07a; }
+
+    /* Напоминания */
+    body.light .reminder-item { border-bottom-color: #e8d4b0; }
+    body.light .reminder-title { color: #1a0f07; }
+    body.light .reminder-client { color: #907050; }
+    body.light .reminder-date { color: #b09070; }
+    body.light .btn-reminder-done { border-color: #d4b890; color: #907050; }
+    body.light .btn-reminder-done:hover { border-color: #22c55e; color: #16a34a; }
+
+    /* Модал серии */
+    body.light .series-modal { background: #fffaf4; border-color: #dfc9a8; }
+    body.light .series-modal-title { color: #1a0f07; }
+    body.light .series-modal-sub { color: #907050; }
+    body.light .btn-series-result { background: #fff8f0; border-color: #dfc9a8; color: #2c1a0e; }
+    body.light .btn-series-result:hover { background: #fdf0e0; }
+
+    /* Модал лимита */
+    body.light .limit-card {
+      background: #fffaf4; border-color: #dfc9a8;
+      box-shadow: 0 8px 32px rgba(180,130,60,0.15);
+    }
+    body.light .limit-card h2 { color: #1a0f07; }
+    body.light .limit-card .limit-sub { color: #907050; }
+    body.light .limit-card .limit-sub strong { color: #1a0f07; }
+
+    /* Таблица схемы приёма */
+    body.light .tbl-wrap { border-color: #e8d4b0; }
+    body.light .proto-tbl th { background: #fdf0e0; color: #907050; border-bottom-color: #e8d4b0; }
+    body.light .proto-tbl td { border-bottom-color: #f0e0c8; color: #4a3020; }
+    body.light .proto-tbl td:first-child { color: #1a0f07; }
+    body.light .proto-tbl td:last-child { color: #907050; }
+    body.light .proto-tbl .dash { color: #d4b890; }
+
+    /* Модал истории */
+    body.light .history-modal-inner { background: #fffaf4; border-color: #dfc9a8; }
+    body.light .history-modal-title { color: #1a0f07; }
+    body.light .history-modal-meta { color: #907050; }
+    body.light .btn-close-modal { border-color: #d4b890; color: #907050; }
+    body.light .btn-close-modal:hover { border-color: #907050; color: #1a0f07; }
+    body.light .btn-open-record { border-color: #d4b890; color: #907050; }
+    body.light .btn-open-record:hover { border-color: #b8860b; color: #8b6914; }
+
+    /* Чат после анализа */
+    body.light .analysis-chat { background: #fffaf4; border-color: #dfc9a8; }
+    body.light .chat-header { border-bottom-color: #e8d4b0; color: #1a0f07; }
+    body.light .chat-header span { color: #907050; }
+    body.light .chat-msg-assistant { background: #fdf5e8; color: #1a0f07; border-color: #e8d4b0; }
+    body.light .chat-input-row { border-top-color: #e8d4b0; }
+    body.light .chat-input-row input { background: #fff8f0; border-color: #d4b890; color: #1a0f07; }
+    body.light .chat-input-row input::placeholder { color: #c4a07a; }
+    body.light .chat-input-row input:focus { border-color: #b8860b; }
+    body.light .chat-copy-btn { background: #fdf0e0; border-color: #d4b890; color: #907050; }
+    body.light .chat-copy-btn:hover { color: #fff; background: #b8860b; border-color: #b8860b; }
+    body.light .chat-copy-btn.copied { color: #16a34a; border-color: #16a34a; background: #f0faf4; }
   </style>
 </head>
 <body>
@@ -1507,6 +1735,7 @@
           <div class="tagline">Метод Бутаковой · Coral Club</div>
         </div>
         <button class="btn-reminder-badge" id="reminder-badge" onclick="switchTab('stats')" style="display:none" title="Есть запланированные касания"></button>
+        <button class="btn-theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Сменить тему">☀️ Светлая</button>
         <button class="logout" onclick="logout()">Выйти</button>
       </div>
     </header>
@@ -1742,6 +1971,44 @@
   </div>
 
 <script>
+  // ════════════════════════════════════════
+  // ТЕМА
+  // ════════════════════════════════════════
+
+  function applyTheme(theme) {
+    const btn = document.getElementById('theme-toggle');
+    if (theme === 'light') {
+      document.body.classList.add('light');
+      localStorage.setItem('theme', 'light');
+      if (btn) btn.innerHTML = '🌙 Тёмная';
+    } else {
+      document.body.classList.remove('light');
+      localStorage.setItem('theme', 'dark');
+      if (btn) btn.innerHTML = '☀️ Светлая';
+    }
+  }
+
+  function toggleTheme() {
+    applyTheme(document.body.classList.contains('light') ? 'dark' : 'light');
+  }
+
+  // Применяем сохранённую тему сразу при загрузке страницы
+  (function() {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'light') {
+      document.body.classList.add('light');
+      // Кнопка ещё не в DOM — она будет обновлена после рендера
+    }
+  })();
+
+  // После загрузки DOM синхронизируем текст кнопки
+  document.addEventListener('DOMContentLoaded', function() {
+    if (document.body.classList.contains('light')) {
+      const btn = document.getElementById('theme-toggle');
+      if (btn) btn.innerHTML = '🌙 Тёмная';
+    }
+  });
+
   // ════════════════════════════════════════
   // АВТОРИЗАЦИЯ
   // ════════════════════════════════════════
