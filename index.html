@@ -1367,6 +1367,30 @@
 
     .chat-msg-assistant.streaming { opacity: 0.85; }
 
+    .chat-msg-assistant {
+      position: relative;
+    }
+
+    .chat-copy-btn {
+      position: absolute;
+      top: 0.4rem;
+      right: 0.4rem;
+      background: #3a3a3a;
+      border: 1px solid #555;
+      border-radius: 6px;
+      color: #aaa;
+      font-size: 0.72rem;
+      padding: 0.2rem 0.5rem;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+
+    .chat-msg-assistant:hover .chat-copy-btn { opacity: 1; }
+    .chat-copy-btn:hover { color: #fff; background: #ff6b35; border-color: #ff6b35; }
+    .chat-copy-btn.copied { color: #4ade80; border-color: #4ade80; background: #1a2d1a; opacity: 1; }
+
     .chat-input-row {
       display: flex;
       gap: 0.5rem;
@@ -2301,6 +2325,22 @@
     const div = document.createElement('div');
     div.className = 'chat-msg ' + (role === 'user' ? 'chat-msg-user' : 'chat-msg-assistant' + (streaming ? ' streaming' : ''));
     div.textContent = text;
+    if (role === 'assistant') {
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'chat-copy-btn';
+      copyBtn.textContent = 'Копировать';
+      copyBtn.onclick = () => {
+        navigator.clipboard.writeText(div.textContent.replace('Копировать', '').trim()).then(() => {
+          copyBtn.textContent = 'Скопировано ✓';
+          copyBtn.classList.add('copied');
+          setTimeout(() => {
+            copyBtn.textContent = 'Копировать';
+            copyBtn.classList.remove('copied');
+          }, 2000);
+        });
+      };
+      div.appendChild(copyBtn);
+    }
     container.appendChild(div);
     container.scrollTop = container.scrollHeight;
     return div;
