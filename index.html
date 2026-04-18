@@ -1363,33 +1363,55 @@
       color: #f0f0f0;
       border-bottom-left-radius: 4px;
       border: 1px solid #3a3a3a;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
     }
 
     .chat-msg-assistant.streaming { opacity: 0.85; }
 
-    .chat-msg-assistant {
-      position: relative;
+    .chat-msg-text {
+      padding: 0.65rem 0.9rem;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
 
-    .chat-copy-btn {
-      position: absolute;
-      top: 0.4rem;
-      right: 0.4rem;
-      background: #3a3a3a;
-      border: 1px solid #555;
-      border-radius: 6px;
-      color: #aaa;
-      font-size: 0.72rem;
-      padding: 0.2rem 0.5rem;
+    .chat-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0.4rem 0.75rem 0.55rem;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      gap: 0.5rem;
+    }
+
+    .btn-messenger-copy {
+      background: none;
+      border: 1px solid #444;
+      border-radius: 8px;
+      color: #777;
+      font-size: 0.74rem;
+      padding: 0.28rem 0.75rem;
       cursor: pointer;
-      opacity: 0;
-      transition: opacity 0.15s, color 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.2s;
+      font-family: inherit;
       white-space: nowrap;
     }
 
-    .chat-msg-assistant:hover .chat-copy-btn { opacity: 1; }
-    .chat-copy-btn:hover { color: #fff; background: #ff6b35; border-color: #ff6b35; }
-    .chat-copy-btn.copied { color: #4ade80; border-color: #4ade80; background: #1a2d1a; opacity: 1; }
+    .btn-messenger-copy:hover {
+      border-color: #ff6b35;
+      color: #ff6b35;
+      background: rgba(255,107,53,0.08);
+    }
+
+    .btn-messenger-copy.copied {
+      border-color: #22c55e;
+      color: #22c55e;
+      background: rgba(34,197,94,0.09);
+    }
 
     .chat-input-row {
       display: flex;
@@ -1649,13 +1671,14 @@
     body.light .chat-header { border-bottom-color: #e8d4b0; color: #1a0f07; }
     body.light .chat-header span { color: #907050; }
     body.light .chat-msg-assistant { background: #fdf5e8; color: #1a0f07; border-color: #e8d4b0; }
+    body.light .chat-actions { border-top-color: rgba(0,0,0,0.07); }
+    body.light .btn-messenger-copy { border-color: #d4b890; color: #907050; }
+    body.light .btn-messenger-copy:hover { border-color: #b8860b; color: #8b6914; background: rgba(184,134,11,0.07); }
+    body.light .btn-messenger-copy.copied { border-color: #16a34a; color: #16a34a; background: rgba(22,163,74,0.08); }
     body.light .chat-input-row { border-top-color: #e8d4b0; }
     body.light .chat-input-row input { background: #fff8f0; border-color: #d4b890; color: #1a0f07; }
     body.light .chat-input-row input::placeholder { color: #c4a07a; }
     body.light .chat-input-row input:focus { border-color: #b8860b; }
-    body.light .chat-copy-btn { background: #fdf0e0; border-color: #d4b890; color: #907050; }
-    body.light .chat-copy-btn:hover { color: #fff; background: #b8860b; border-color: #b8860b; }
-    body.light .chat-copy-btn.copied { color: #16a34a; border-color: #16a34a; background: #f0faf4; }
   </style>
 </head>
 <body>
@@ -2590,24 +2613,45 @@
   function appendChatMessage(role, text, streaming) {
     const container = document.getElementById('chat-messages');
     const div = document.createElement('div');
-    div.className = 'chat-msg ' + (role === 'user' ? 'chat-msg-user' : 'chat-msg-assistant' + (streaming ? ' streaming' : ''));
-    div.textContent = text;
-    if (role === 'assistant') {
+
+    if (role === 'user') {
+      div.className = 'chat-msg chat-msg-user';
+      div.textContent = text;
+    } else {
+      div.className = 'chat-msg chat-msg-assistant' + (streaming ? ' streaming' : '');
+
+      // Отдельный элемент для текста — не будет стираться при обновлении через _textEl
+      const textEl = document.createElement('div');
+      textEl.className = 'chat-msg-text';
+      textEl.textContent = text;
+      div.appendChild(textEl);
+      div._textEl = textEl;
+
+      // Блок действий — появляется после завершения стриминга
+      const actionsEl = document.createElement('div');
+      actionsEl.className = 'chat-actions';
+      actionsEl.style.display = 'none';
+
       const copyBtn = document.createElement('button');
-      copyBtn.className = 'chat-copy-btn';
-      copyBtn.textContent = 'Копировать';
+      copyBtn.className = 'btn-messenger-copy';
+      copyBtn.innerHTML = '📋 В мессенджер';
       copyBtn.onclick = () => {
-        navigator.clipboard.writeText(div.textContent.replace('Копировать', '').trim()).then(() => {
-          copyBtn.textContent = 'Скопировано ✓';
+        const content = textEl.textContent.trim();
+        navigator.clipboard.writeText(content).then(() => {
+          copyBtn.innerHTML = '✅ Скопировано — вставляй!';
           copyBtn.classList.add('copied');
           setTimeout(() => {
-            copyBtn.textContent = 'Копировать';
+            copyBtn.innerHTML = '📋 В мессенджер';
             copyBtn.classList.remove('copied');
-          }, 2000);
+          }, 2500);
         });
       };
-      div.appendChild(copyBtn);
+
+      actionsEl.appendChild(copyBtn);
+      div.appendChild(actionsEl);
+      div._actionsEl = actionsEl;
     }
+
     container.appendChild(div);
     container.scrollTop = container.scrollHeight;
     return div;
@@ -2649,7 +2693,8 @@
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let sseBuffer = '';
-      assistantDiv.textContent = '';
+      const textEl = assistantDiv._textEl || assistantDiv;
+      textEl.textContent = '';
 
       while (true) {
         const { done, value } = await reader.read();
@@ -2666,17 +2711,19 @@
           if (evt.error) throw new Error(evt.error);
           if (evt.text) {
             responseText += evt.text;
-            assistantDiv.textContent = responseText;
+            textEl.textContent = responseText;
             document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
           }
         }
       }
 
       assistantDiv.classList.remove('streaming');
+      if (assistantDiv._actionsEl) assistantDiv._actionsEl.style.display = 'flex';
       if (responseText) chatHistory.push({ role: 'assistant', content: responseText });
 
     } catch (err) {
-      assistantDiv.textContent = 'Ошибка: ' + err.message;
+      const errEl = assistantDiv._textEl || assistantDiv;
+      errEl.textContent = 'Ошибка: ' + err.message;
       assistantDiv.classList.remove('streaming');
     } finally {
       input.disabled = false;
