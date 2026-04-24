@@ -4,38 +4,53 @@ function makeToken(mode, secret) {
   return crypto.createHmac('sha256', secret).update(mode).digest('hex').slice(0, 32);
 }
 
-async function kvGet(key) {
-  const url = `${process.env.KV_REST_API_URL}/get/${encodeURIComponent(key)}`;
-  const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${process.env.KV_REST_API_TOKEN}` }
-  });
-  const data = await res.json();
-  return data.result ? JSON.parse(data.result) : null;
-}
-
-async function kvSet(key, value) {
-  const url = `${process.env.KV_REST_API_URL}/set/${encodeURIComponent(key)}`;
-  await fetch(url, {
+async function kvCmd(...args) {
+  const res = await fetch(process.env.KV_REST_API_URL, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${process.env.KV_REST_API_TOKEN}`,
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ value: JSON.stringify(value) })
+    body: JSON.stringify(args)
   });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error);
+  return data.result;
+}
+
+async function kvGet(key) {
+  const result = await kvCmd('GET', key);
+  return result ? JSON.parse(result) : null;
+}
+
+async function kvSet(key, value) {
+  await kvCmd('SET', key, JSON.stringify(value));
 }
 
 async function kvDel(key) {
-  const url = `${process.env.KV_REST_API_URL}/del/${encodeURIComponent(key)}`;
-  await fetch(url, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${process.env.KV_REST_API_TOKEN}` }
-  });
+  await kvCmd('DEL', key);
 }
 
 function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
+
+function addDays(dateStr, days) {
+  const d = new Date(dateStr);
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
+const STATUS_NEXT_DAYS = {
+  invited: 3,
+  tracker_given: 7,
+  awaiting_decode: 0,
+  protocol_given: 3,
+  on_protocol: 14,
+  repeat_tracker: 0,
+  permanent: 30,
+  rejected: null
+};
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -91,15 +106,16 @@ module.exports = async function handler(req, res) {
 
       const id = generateId();
       const now = new Date().toISOString().slice(0, 10);
+      const nextActionDate = addDays(now, 3);
 
-      const client = { id, name, age: age || '', gender: gender || '', phone: phone || '', notes: notes || '', created: now, sessions: [] };
+      const client = { id, name, age: age || '', gender: gender || '', phone: phone || '', notes: notes || '', created: now, status: 'invited', nextActionDate, sessions: [] };
 
       // Сохраняем клиента
       await kvSet(`client:${id}`, client);
 
       // Обновляем индекс
       const index = await kvGet('clients:index') || [];
-      index.unshift({ id, name, age: age || '', gender: gender || '', created: now, lastSession: null });
+      index.unshift({ id, name, age: age || '', gender: gender || '', created: now, status: 'invited', nextActionDate, lastSession: null });
       await kvSet('clients:index', index);
 
       return res.status(200).json({ ok: true, client });
@@ -164,6 +180,32 @@ module.exports = async function handler(req, res) {
       }
 
       return res.status(200).json({ ok: true, client });
+    }
+
+    // ── POST: сменить статус ──
+    if (action === 'set-status') {
+      const { clientId, status, nextActionDate } = req.body;
+      if (!clientId || !status) return res.status(400).json({ error: 'Не указан clientId или status' });
+
+      const client = await kvGet(`client:${clientId}`);
+      if (!client) return res.status(404).json({ error: 'Клиент не найден' });
+
+      client.status = status;
+      const days = STATUS_NEXT_DAYS[status];
+      const today = new Date().toISOString().slice(0, 10);
+      client.nextActionDate = nextActionDate || (days !== null ? addDays(today, days) : null);
+
+      await kvSet(`client:${clientId}`, client);
+
+      const index = await kvGet('clients:index') || [];
+      const entry = index.find(c => c.id === clientId);
+      if (entry) {
+        entry.status = client.status;
+        entry.nextActionDate = client.nextActionDate;
+        await kvSet('clients:index', index);
+      }
+
+      return res.status(200).json({ ok: true, status: client.status, nextActionDate: client.nextActionDate });
     }
 
     // ── POST: удалить клиента ──

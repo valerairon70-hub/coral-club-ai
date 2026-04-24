@@ -1039,6 +1039,50 @@
     .type-invite  { background: rgba(74,158,255,0.12); color: #4a9eff; }
     .type-decode  { background: rgba(255,107,53,0.12); color: #ff6b35; }
 
+    .invite-refine-block {
+      margin-top: 1.5rem;
+      padding: 1rem 1.25rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid #333;
+      border-radius: 10px;
+    }
+    .invite-refine-label {
+      font-size: 0.82rem;
+      color: #888;
+      margin-bottom: 0.6rem;
+    }
+    .invite-refine-row {
+      display: flex;
+      gap: 0.6rem;
+      align-items: flex-start;
+    }
+    .invite-refine-row textarea {
+      flex: 1;
+      background: #1e1e1e;
+      border: 1px solid #444;
+      border-radius: 8px;
+      color: #f0f0f0;
+      font-size: 0.88rem;
+      padding: 0.55rem 0.75rem;
+      resize: none;
+      font-family: inherit;
+      line-height: 1.4;
+    }
+    .invite-refine-row textarea:focus { outline: none; border-color: #ff6b35; }
+    .invite-refine-btn {
+      background: #ff6b35;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.55rem 1.1rem;
+      font-size: 0.88rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+    .invite-refine-btn:hover { background: #e85c2a; }
+    .invite-refine-btn:disabled { background: #555; cursor: default; }
+
     .objection-tag {
       display: inline-block;
       background: rgba(168,85,247,0.1);
@@ -1934,6 +1978,99 @@
     }
     .btn-delete-client:hover { border-color: #c0392b; color: #c0392b; }
 
+    /* ── Статусы клиентов ── */
+    .status-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      margin-bottom: 0.5rem;
+    }
+    .status-invited      { background: #2a2a1a; color: #f0c040; border: 1px solid #5a4a10; }
+    .status-tracker_given { background: #1a2a3a; color: #60b0f0; border: 1px solid #1a4a7a; }
+    .status-awaiting_decode { background: #2a1a1a; color: #f08060; border: 1px solid #7a3010; }
+    .status-protocol_given  { background: #1a2a2a; color: #60d0b0; border: 1px solid #0a5a4a; }
+    .status-on_protocol    { background: #1a2a1a; color: #70e070; border: 1px solid #1a5a1a; }
+    .status-repeat_tracker { background: #1a1a2a; color: #a080f0; border: 1px solid #3a1a7a; }
+    .status-permanent      { background: #2a2010; color: #f0a030; border: 1px solid #7a5010; }
+    .status-rejected       { background: #222; color: #666; border: 1px solid #333; }
+
+    .overdue-badge {
+      font-size: 0.68rem;
+      background: #c0392b22;
+      color: #e74c3c;
+      border: 1px solid #c0392b44;
+      border-radius: 20px;
+      padding: 0.15rem 0.5rem;
+      margin-left: 0.4rem;
+    }
+
+    .next-action-row {
+      font-size: 0.75rem;
+      color: #666;
+      margin-top: 0.3rem;
+    }
+    .next-action-row.overdue { color: #e74c3c; }
+
+    .status-select-row {
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #2e2e2e;
+    }
+    .status-select-row label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #777;
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+    .status-select-row select {
+      background: #1a1a1a;
+      border: 1px solid #444;
+      border-radius: 8px;
+      color: #f0f0f0;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.85rem;
+      width: 100%;
+      outline: none;
+      cursor: pointer;
+    }
+    .status-select-row select:focus { border-color: #ff6b35; }
+
+    .next-date-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      font-size: 0.78rem;
+      color: #777;
+    }
+    .next-date-row input[type=date] {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 6px;
+      color: #f0f0f0;
+      padding: 0.3rem 0.6rem;
+      font-size: 0.78rem;
+      outline: none;
+    }
+    .next-date-row input[type=date]:focus { border-color: #ff6b35; }
+
+    .clients-tab-label {
+      position: relative;
+    }
+    .clients-overdue-dot {
+      display: none;
+      position: absolute;
+      top: -2px;
+      right: -8px;
+      width: 7px;
+      height: 7px;
+      background: #e74c3c;
+      border-radius: 50%;
+    }
+
   </style>
 </head>
 <body>
@@ -2031,7 +2168,7 @@
           <span class="tab-icon">📊</span> Статистика
         </button>
         <button class="tab-btn" onclick="switchTab('clients')">
-          <span class="tab-icon">👥</span> Клиенты
+          <span class="tab-icon">👥</span> <span class="clients-tab-label">Клиенты<span class="clients-overdue-dot" id="clients-overdue-dot"></span></span>
         </button>
       </div>
     </nav>
@@ -2310,6 +2447,24 @@
             <div class="client-detail-meta" id="detail-meta"></div>
           </div>
           <button class="btn-close-detail" onclick="closeClientDetail()">✕ Закрыть</button>
+        </div>
+        <div class="status-select-row">
+          <label>Этап</label>
+          <select id="detail-status" onchange="onStatusChange()">
+            <option value="invited">🟡 Приглашён</option>
+            <option value="tracker_given">🔵 Трекер на руках</option>
+            <option value="awaiting_decode">🟠 Ожидает расшифровки</option>
+            <option value="protocol_given">🟢 Протокол выдан</option>
+            <option value="on_protocol">✅ На протоколе</option>
+            <option value="repeat_tracker">🔄 Повторный трекер</option>
+            <option value="permanent">⭐ Постоянный клиент</option>
+            <option value="rejected">❌ Отказался</option>
+          </select>
+          <div class="next-date-row">
+            <span>Следующий шаг:</span>
+            <input type="date" id="detail-next-date" onchange="saveStatusChange()">
+            <span id="detail-overdue-label" style="color:#e74c3c;display:none">просрочено</span>
+          </div>
         </div>
         <div class="sessions-title">История сессий</div>
         <div id="detail-sessions"></div>
@@ -2675,6 +2830,7 @@
       if (!res.ok || data.error) throw new Error((data.error || 'Ошибка сервера') + (data.details ? ' | ' + data.details : ''));
 
       const parsed = parseInviteResponse(data.result);
+      lastInviteContext = { personDesc, hints, channel, senderGender, resultText: data.result };
       renderInviteResults(parsed, personDesc, data.result);
       if (isTestMode()) incrementTestCounter();
 
@@ -2682,6 +2838,40 @@
       alert('Ошибка: ' + err.message);
     } finally {
       setInviteLoading(false);
+    }
+  }
+
+  async function refineInvite() {
+    const instruction = document.getElementById('invite-refine-input')?.value.trim();
+    if (!instruction) { alert('Напиши, что нужно изменить'); return; }
+    if (!lastInviteContext) return;
+    if (!checkTestLimit()) return;
+
+    const btn = document.getElementById('invite-refine-btn');
+    btn.disabled = true;
+    btn.textContent = 'Обновляю...';
+
+    try {
+      const { personDesc, hints, channel, senderGender, resultText } = lastInviteContext;
+      const res = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'invite', clientDesc: personDesc, healthHints: hints, channel, senderGender, refinement: instruction, previousResult: resultText, token: sessionStorage.getItem('auth_token') })
+      });
+
+      const rawText = await res.text();
+      let data;
+      try { data = JSON.parse(rawText); } catch(e) { throw new Error(`Ошибка сервера ${res.status}: ${rawText.substring(0, 400)}`); }
+      if (!res.ok || data.error) throw new Error((data.error || 'Ошибка сервера') + (data.details ? ' | ' + data.details : ''));
+
+      const parsed = parseInviteResponse(data.result);
+      lastInviteContext = { ...lastInviteContext, resultText: data.result };
+      renderInviteResults(parsed, personDesc, data.result);
+      if (isTestMode()) incrementTestCounter();
+
+    } catch (err) {
+      alert('Ошибка: ' + err.message);
+      if (btn) { btn.disabled = false; btn.textContent = 'Обновить'; }
     }
   }
 
@@ -2785,7 +2975,16 @@
         </button>
       </div>`;
 
-    panel.innerHTML = touchHtml + segHtml + tipHtml + renderInviteOutcomeBlock(recId, personDesc) + newClientHtml;
+    const refineHtml = `
+      <div class="invite-refine-block" id="invite-refine-block">
+        <div class="invite-refine-label">Хочешь что-то изменить?</div>
+        <div class="invite-refine-row">
+          <textarea id="invite-refine-input" placeholder="Например: сделай 3-е касание короче, или — клиент занимается спортом, учти это" rows="2"></textarea>
+          <button class="invite-refine-btn" id="invite-refine-btn" onclick="refineInvite()">Обновить</button>
+        </div>
+      </div>`;
+
+    panel.innerHTML = touchHtml + segHtml + tipHtml + renderInviteOutcomeBlock(recId, personDesc) + newClientHtml + refineHtml;
   }
 
   function resetInviteForm() {
@@ -3139,6 +3338,7 @@
   // ════════════════════════════════════════
   let pendingOutcomes = {}; // recId → {type, clientDesc}
   let pendingResults  = {}; // recId → {resultText, type, clientDesc}
+  let lastInviteContext = null; // { personDesc, hints, channel, senderGender, resultText }
 
   function selectOutcome(recId, outcome, type, clientDesc, btn) {
     btn.closest('.outcome-btns').querySelectorAll('.btn-outcome').forEach(b => {
@@ -3781,6 +3981,27 @@
 
   let _currentClientId = null;
 
+  const CLIENT_STATUSES = {
+    invited:         { label: '🟡 Приглашён',             cls: 'status-invited',        days: 3  },
+    tracker_given:   { label: '🔵 Трекер на руках',        cls: 'status-tracker_given',  days: 7  },
+    awaiting_decode: { label: '🟠 Ожидает расшифровки',    cls: 'status-awaiting_decode', days: 0  },
+    protocol_given:  { label: '🟢 Протокол выдан',         cls: 'status-protocol_given', days: 3  },
+    on_protocol:     { label: '✅ На протоколе',            cls: 'status-on_protocol',    days: 14 },
+    repeat_tracker:  { label: '🔄 Повторный трекер',        cls: 'status-repeat_tracker', days: 0  },
+    permanent:       { label: '⭐ Постоянный клиент',       cls: 'status-permanent',      days: 30 },
+    rejected:        { label: '❌ Отказался',               cls: 'status-rejected',       days: null }
+  };
+
+  function statusBadge(status) {
+    const s = CLIENT_STATUSES[status] || CLIENT_STATUSES.invited;
+    return `<span class="status-badge ${s.cls}">${s.label}</span>`;
+  }
+
+  function isOverdue(nextActionDate) {
+    if (!nextActionDate) return false;
+    return nextActionDate < new Date().toISOString().slice(0, 10);
+  }
+
   function clientsApiToken() {
     return sessionStorage.getItem('auth_token') || '';
   }
@@ -3802,18 +4023,27 @@
     const container = document.getElementById('clients-list-container');
     if (!clients.length) {
       container.innerHTML = '<div class="clients-empty">Клиентов пока нет — нажмите «+ Новый клиент»</div>';
+      document.getElementById('clients-overdue-dot').style.display = 'none';
       return;
     }
     const genderLabel = g => g === 'male' ? 'муж' : g === 'female' ? 'жен' : '';
-    container.innerHTML = `<div class="clients-grid">${clients.map(c => `
+    const today = new Date().toISOString().slice(0, 10);
+    const overdueCount = clients.filter(c => c.nextActionDate && c.nextActionDate < today && c.status !== 'rejected').length;
+    const dot = document.getElementById('clients-overdue-dot');
+    dot.style.display = overdueCount > 0 ? 'block' : 'none';
+
+    container.innerHTML = `<div class="clients-grid">${clients.map(c => {
+      const overdue = c.nextActionDate && c.nextActionDate < today && c.status !== 'rejected';
+      return `
       <div class="client-card" onclick="openClientDetail('${c.id}')">
+        ${statusBadge(c.status)}${overdue ? '<span class="overdue-badge">просрочено</span>' : ''}
         <div class="client-card-name">${c.name}</div>
         <div class="client-card-meta">${[c.age ? c.age + ' лет' : '', genderLabel(c.gender)].filter(Boolean).join(' · ')}</div>
-        <div class="client-card-sessions">
-          <span>Начало: ${c.created}</span>
-          ${c.lastSession ? `<span>Последняя сессия: ${c.lastSession}</span>` : ''}
+        <div class="next-action-row${overdue ? ' overdue' : ''}">
+          ${c.nextActionDate ? 'Следующий шаг: ' + c.nextActionDate : ''}
         </div>
-      </div>`).join('')}
+      </div>`;
+    }).join('')}
     </div>`;
   }
 
@@ -3891,6 +4121,14 @@
         c.phone || ''
       ].filter(Boolean).join(' · ');
 
+      // Статус
+      const statusEl = document.getElementById('detail-status');
+      statusEl.value = c.status || 'invited';
+      const nextDateEl = document.getElementById('detail-next-date');
+      nextDateEl.value = c.nextActionDate || '';
+      const overdueLabel = document.getElementById('detail-overdue-label');
+      overdueLabel.style.display = isOverdue(c.nextActionDate) ? 'inline' : 'none';
+
       const sessionsEl = document.getElementById('detail-sessions');
       if (!c.sessions || !c.sessions.length) {
         sessionsEl.innerHTML = '<div style="color:#555;font-size:0.85rem;padding:0.5rem 0">Сессий пока нет</div>';
@@ -3917,6 +4155,33 @@
   function closeClientDetail() {
     document.getElementById('client-detail-overlay').classList.remove('open');
     _currentClientId = null;
+  }
+
+  function onStatusChange() {
+    const status = document.getElementById('detail-status').value;
+    const days = CLIENT_STATUSES[status]?.days;
+    if (days !== null && days !== undefined) {
+      const d = new Date();
+      d.setDate(d.getDate() + days);
+      document.getElementById('detail-next-date').value = d.toISOString().slice(0, 10);
+    } else {
+      document.getElementById('detail-next-date').value = '';
+    }
+    document.getElementById('detail-overdue-label').style.display = 'none';
+    saveStatusChange();
+  }
+
+  async function saveStatusChange() {
+    if (!_currentClientId) return;
+    const status = document.getElementById('detail-status').value;
+    const nextActionDate = document.getElementById('detail-next-date').value;
+    try {
+      await fetch('/api/clients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'set-status', token: clientsApiToken(), clientId: _currentClientId, status, nextActionDate })
+      });
+    } catch (e) { /* тихая ошибка, не мешаем пользователю */ }
   }
 
   async function deleteCurrentClient() {
