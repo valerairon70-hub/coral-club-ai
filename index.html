@@ -1966,7 +1966,10 @@
 
     .session-date { font-size: 0.8rem; font-weight: 600; color: #ff6b35; }
     .session-type { font-size: 0.72rem; color: #666; }
-    .session-complaints { font-size: 0.82rem; color: #bbb; }
+    .session-label { font-size: 0.68rem; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.55rem; margin-bottom: 0.2rem; }
+    .session-label:first-of-type { margin-top: 0; }
+    .session-complaints { font-size: 0.83rem; color: #ccc; }
+    .session-protocol { font-size: 0.81rem; color: #999; line-height: 1.55; }
 
     .btn-delete-client {
       background: none;
@@ -2153,6 +2156,57 @@
       background: #e74c3c;
       border-radius: 50%;
     }
+
+    /* ── Автосохранение в клиенты после расшифровки ── */
+    .save-to-clients-block {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.7rem 0.9rem;
+      background: rgba(255,107,53,0.06);
+      border: 1px solid rgba(255,107,53,0.2);
+      border-radius: 10px;
+      margin-bottom: 0.65rem;
+      flex-wrap: wrap;
+    }
+    .btn-save-to-clients {
+      background: #ff6b35;
+      color: #fff;
+      border: none;
+      padding: 0.48rem 0.9rem;
+      border-radius: 7px;
+      font-size: 0.87rem;
+      cursor: pointer;
+      white-space: nowrap;
+      font-weight: 600;
+      transition: background 0.15s;
+    }
+    .btn-save-to-clients:hover { background: #e85d2a; }
+    .btn-save-to-clients:disabled { opacity: 0.55; cursor: not-allowed; }
+    .btn-open-client-card {
+      background: transparent;
+      border: 1px solid #ff6b35;
+      color: #ff6b35;
+      padding: 0.42rem 0.85rem;
+      border-radius: 7px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.15s;
+    }
+    .btn-open-client-card:hover { background: rgba(255,107,53,0.1); }
+    .save-to-clients-hint { font-size: 0.8rem; color: #888; flex: 1; min-width: 100px; }
+    .stc-name-input {
+      border: 1px solid #333;
+      background: #1e1e1e;
+      color: #f0f0f0;
+      border-radius: 6px;
+      padding: 0.4rem 0.65rem;
+      font-size: 0.87rem;
+      width: 180px;
+      outline: none;
+    }
+    .stc-name-input:focus { border-color: #ff6b35; }
 
   </style>
 </head>
@@ -3174,7 +3228,7 @@
         if (resultsRendered) return;
         resultsRendered = true;
         const parsed = parseDecodeResponse(fullText);
-        renderDecodeResults(parsed, [c1, c2, c3].filter(Boolean), clientName, fullText);
+        renderDecodeResults(parsed, [c1, c2, c3].filter(Boolean), clientName, fullText, clientGender);
         if (isTestMode()) incrementTestCounter();
         if (window.innerWidth < 720) {
           setTimeout(() => {
@@ -3376,11 +3430,12 @@
     };
   }
 
-  function renderDecodeResults(data, complaints, clientName, resultText) {
+  function renderDecodeResults(data, complaints, clientName, resultText, clientGender) {
     const panel = document.getElementById('decode-results');
     const recId = genId();
     const clientDesc = (clientName ? clientName + ' — ' : '') + 'Жалобы: ' + complaints.join(', ');
     if (resultText) pendingResults[recId] = { resultText, type: 'decode', clientDesc };
+    pendingDecodes[recId] = { clientName: clientName || '', clientGender: clientGender || 'female', complaints, resultText: resultText || '', protocol: data.protocol || '', systems: data.systems || '' };
 
     const allCards = [
       { cls: 'card-urgent',   icon: '🔴', title: 'Важно: нужна консультация врача', content: data.urgent,   copyable: true,  optional: true },
@@ -3395,7 +3450,9 @@
     ];
     const cards = allCards.filter(c => !c.optional || c.content);
 
-    panel.innerHTML = cards.map((c, i) => `
+    const saveBlock = renderSaveToClientsBlock(recId, clientName);
+
+    panel.innerHTML = saveBlock + cards.map((c, i) => `
       <div class="result-card ${c.cls}" style="animation-delay:${i * 0.07}s">
         <div class="result-card-header">
           <div class="card-title">${c.icon} ${c.title}</div>
@@ -3435,10 +3492,122 @@
   }
 
   // ════════════════════════════════════════
+  // АВТОСОХРАНЕНИЕ В КЛИЕНТЫ
+  // ════════════════════════════════════════
+
+  function renderSaveToClientsBlock(recId, clientName) {
+    const hint = clientName
+      ? `Создать карточку для «${clientName}»`
+      : 'Сохранить жалобы и протокол в карточке клиента';
+    const nameInput = clientName
+      ? ''
+      : `<input type="text" class="stc-name-input" id="stc-name-input-${recId}" placeholder="Имя клиента...">`;
+    return `
+      <div class="save-to-clients-block" id="stc-${recId}">
+        ${nameInput}
+        <button class="btn-save-to-clients" id="stc-btn-${recId}" onclick="autoSaveToClients('${recId}')">👤 Сохранить в «Клиенты»</button>
+        <span class="save-to-clients-hint" id="stc-hint-${recId}">${hint}</span>
+      </div>`;
+  }
+
+  async function autoSaveToClients(recId) {
+    const pd = pendingDecodes[recId];
+    if (!pd) return;
+
+    const btn = document.getElementById('stc-btn-' + recId);
+    const hintEl = document.getElementById('stc-hint-' + recId);
+    const nameInput = document.getElementById('stc-name-input-' + recId);
+
+    let rawName = pd.clientName;
+    if (!rawName && nameInput) {
+      rawName = nameInput.value.trim();
+      if (!rawName) {
+        nameInput.style.borderColor = '#ff6b35';
+        nameInput.focus();
+        return;
+      }
+    }
+
+    // Парсим имя и возраст из строки вида "Марина, 42" или "Иван 35"
+    let name = rawName, age = '';
+    const m = rawName.match(/^(.*?)[,\s]+(\d{1,3})\s*(?:лет|года?)?$/);
+    if (m) { name = m[1].trim(); age = m[2]; }
+
+    btn.disabled = true;
+    btn.textContent = 'Сохраняю...';
+    if (hintEl) hintEl.textContent = '';
+
+    try {
+      const token = clientsApiToken();
+      const stage = document.querySelector('input[name="stage"]:checked')?.value || '';
+      const readiness = document.querySelector('input[name="readiness"]:checked')?.value || '';
+
+      // Создаём клиента
+      const createRes = await fetch('/api/clients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'create', token,
+          name, age,
+          gender: pd.clientGender,
+          notes: pd.complaints.join(' · ')
+        })
+      });
+      const createData = await createRes.json();
+      if (!createRes.ok) throw new Error(createData.error || 'Ошибка создания');
+      const clientId = createData.client.id;
+
+      // Добавляем сессию с результатами расшифровки
+      await fetch('/api/clients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'add-session', token,
+          clientId,
+          complaints: pd.complaints.join(', '),
+          stage, mood: readiness,
+          result: pd.resultText.slice(0, 3000),
+          protocol: pd.protocol || '',
+          systems: pd.systems || '',
+          sessionType: 'tracker'
+        })
+      });
+
+      // Устанавливаем статус "Протокол выдан"
+      await fetch('/api/clients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'set-status', token, clientId, status: 'protocol_given' })
+      });
+
+      // Обновляем блок
+      const block = document.getElementById('stc-' + recId);
+      block.innerHTML = `
+        <span style="color:#4caf50;font-weight:600;font-size:0.9rem">✅ Карточка создана</span>
+        <button class="btn-open-client-card" onclick="openClientAfterDecode('${clientId}')">Открыть карточку →</button>`;
+
+      // Фоновое обновление списка клиентов если вкладка открыта
+      const clientsPanel = document.getElementById('panel-clients');
+      if (clientsPanel && clientsPanel.classList.contains('active')) loadClients();
+
+    } catch (e) {
+      btn.disabled = false;
+      btn.textContent = '👤 Сохранить в «Клиенты»';
+      if (hintEl) hintEl.textContent = 'Ошибка: ' + e.message;
+    }
+  }
+
+  function openClientAfterDecode(clientId) {
+    switchTab('clients');
+    setTimeout(() => openClientDetail(clientId), 250);
+  }
+
+  // ════════════════════════════════════════
   // ФИКСАЦИЯ ИСХОДА
   // ════════════════════════════════════════
   let pendingOutcomes = {}; // recId → {type, clientDesc}
   let pendingResults  = {}; // recId → {resultText, type, clientDesc}
+  let pendingDecodes  = {}; // recId → {clientName, clientGender, complaints, resultText}
   let lastInviteContext = null; // { personDesc, hints, channel, senderGender, resultText }
 
   function selectOutcome(recId, outcome, type, clientDesc, btn) {
@@ -4246,14 +4415,29 @@
         sessionsEl.innerHTML = '<div style="color:#555;font-size:0.85rem;padding:0.5rem 0">Расшифровок пока нет</div>';
       } else {
         const typeLabel = t => t === 'medical' ? 'Мед. документы' : 'Трекер здоровья';
-        sessionsEl.innerHTML = [...c.sessions].reverse().map(s => `
+        sessionsEl.innerHTML = [...c.sessions].reverse().map(s => {
+          const isMedical = s.type === 'medical';
+          const proto = s.protocol || '';
+          const systems = s.systems || '';
+          const protoPreview   = proto.length   > 240 ? proto.slice(0, 240)   + '…' : proto;
+          const systemsPreview = systems.length > 300 ? systems.slice(0, 300) + '…' : systems;
+          const systemsLabel   = isMedical ? 'Что показало обследование' : 'Картина здоровья';
+          return `
           <div class="session-item">
             <div class="session-item-header">
               <span class="session-date">${s.date}</span>
               <span class="session-type">${typeLabel(s.type)}</span>
             </div>
+            <div class="session-label">С чем пришёл</div>
             <div class="session-complaints">${escHtml(s.complaints || '—')}</div>
-          </div>`).join('');
+            ${systemsPreview ? `
+            <div class="session-label">${systemsLabel}</div>
+            <div class="session-protocol">${escHtml(systemsPreview)}</div>` : ''}
+            ${protoPreview ? `
+            <div class="session-label">Рекомендовали</div>
+            <div class="session-protocol">${escHtml(protoPreview)}</div>` : ''}
+          </div>`;
+        }).join('');
       }
     } catch (e) {
       document.getElementById('detail-name').textContent = 'Ошибка загрузки';
