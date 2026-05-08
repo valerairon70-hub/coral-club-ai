@@ -239,6 +239,57 @@
     textarea.field-input:focus, input.field-input:focus { border-color: #ff6b35; }
     textarea.field-input::placeholder, input.field-input::placeholder { color: #555; }
 
+    .tracker-protocols-block { margin-top: 0.75rem; }
+    .tracker-protocols-block summary {
+      cursor: pointer;
+      font-size: 0.82rem;
+      color: #888;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      user-select: none;
+      padding: 0.3rem 0;
+    }
+    .tracker-protocols-block summary::-webkit-details-marker { display: none; }
+    .tracker-protocols-block summary::before { content: '▶'; font-size: 0.65rem; transition: transform 0.2s; }
+    .tracker-protocols-block[open] summary::before { transform: rotate(90deg); }
+    .tracker-protocols-block summary:hover { color: #bbb; }
+    .upload-zone.upload-protocols { border-color: #3a4a3a; padding: 0.85rem; min-height: 80px; }
+    .proto-or-divider {
+      text-align: center;
+      font-size: 0.75rem;
+      color: #555;
+      margin: 0.6rem 0 0.4rem;
+      position: relative;
+    }
+    .proto-or-divider::before, .proto-or-divider::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 38%;
+      height: 1px;
+      background: #333;
+    }
+    .proto-or-divider::before { left: 0; }
+    .proto-or-divider::after  { right: 0; }
+    .tracker-protocols-block textarea {
+      width: 100%;
+      background: #1a1a1a;
+      border: 1px solid #3a3a3a;
+      border-radius: 8px;
+      padding: 0.65rem 0.85rem;
+      color: #f0f0f0;
+      font-size: 0.82rem;
+      font-family: inherit;
+      outline: none;
+      resize: vertical;
+      transition: border-color 0.2s;
+      box-sizing: border-box;
+    }
+    .tracker-protocols-block textarea:focus { border-color: #ff6b35; }
+    .tracker-protocols-block textarea::placeholder { color: #555; }
+
     /* ── Сегментированный выбор (этап / настрой) ── */
     .seg-control {
       display: flex;
@@ -1377,6 +1428,19 @@
 
     .chat-header span { color: #999; font-weight: 400; font-size: 0.8rem; margin-left: auto; }
 
+    .btn-chat-clear {
+      margin-left: 0.5rem;
+      padding: 0.25rem 0.65rem;
+      font-size: 0.75rem;
+      border: 1px solid #444;
+      border-radius: 8px;
+      background: none;
+      color: #888;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .btn-chat-clear:hover { border-color: #ff6b35; color: #ff6b35; }
+
     .chat-messages {
       padding: 1rem 1.25rem;
       display: flex;
@@ -1587,6 +1651,14 @@
     }
     body.light textarea.field-input:focus, body.light input.field-input:focus { border-color: #b8860b; }
     body.light textarea.field-input::placeholder, body.light input.field-input::placeholder { color: #c4a07a; }
+    body.light .tracker-protocols-block summary { color: #a07040; }
+    body.light .tracker-protocols-block summary:hover { color: #5a3a1a; }
+    body.light .upload-zone.upload-protocols { border-color: #c4a87a; }
+    body.light .proto-or-divider { color: #c4a07a; }
+    body.light .proto-or-divider::before, body.light .proto-or-divider::after { background: #e8d4b0; }
+    body.light .tracker-protocols-block textarea { background: #fff8f0; border-color: #d4b890; color: #2c1a0e; }
+    body.light .tracker-protocols-block textarea:focus { border-color: #b8860b; }
+    body.light .tracker-protocols-block textarea::placeholder { color: #c4a07a; }
 
     /* Сегментированные переключатели */
     body.light .seg-option + label { background: #fff8f0; border-color: #d4b890; color: #907050; }
@@ -1716,6 +1788,8 @@
     body.light .analysis-chat { background: #fffaf4; border-color: #dfc9a8; }
     body.light .chat-header { border-bottom-color: #e8d4b0; color: #1a0f07; }
     body.light .chat-header span { color: #907050; }
+    body.light .btn-chat-clear { border-color: #d4b890; color: #907050; }
+    body.light .btn-chat-clear:hover { border-color: #b8860b; color: #8b6914; }
     body.light .chat-msg-assistant { background: #fdf5e8; color: #1a0f07; border-color: #e8d4b0; }
     body.light .chat-actions { border-top-color: rgba(0,0,0,0.07); }
     body.light .btn-messenger-copy { border-color: #d4b890; color: #907050; }
@@ -2626,6 +2700,26 @@
                 </div>
               </div>
 
+              <!-- Протоколы трекера (необязательно) -->
+              <details class="tracker-protocols-block" id="tracker-protocols-details">
+                <summary>Протоколы из трекера (если есть)</summary>
+                <div class="upload-zone upload-protocols" id="upload-zone-protocols" style="margin-top:0.6rem">
+                  <input type="file" id="file-input-protocols" accept="image/*" multiple style="display:none">
+                  <div id="upload-placeholder-protocols">
+                    <div class="upload-icon" style="font-size:1.3rem">📋</div>
+                    <div class="upload-text" style="font-size:0.82rem">Скриншоты протоколов из трекера</div>
+                    <div class="upload-hint">Claude сравнит их со своей базой и выдаст синтезированный протокол</div>
+                  </div>
+                  <div id="thumbs-container-protocols" style="display:none; flex-direction:column; align-items:center; width:100%; gap:0.5rem; padding:0.5rem 0;">
+                    <div class="thumbs-grid" id="thumbs-grid-protocols"></div>
+                    <span class="upload-add-more">+ добавить ещё</span>
+                  </div>
+                </div>
+                <div class="proto-or-divider">или вставьте текст из трекера</div>
+                <textarea id="tracker-protocols-text" rows="4"
+                  placeholder="Скопируйте текст из трекера (нажмите на систему → скопируйте рекомендации) — можно сразу несколько систем"></textarea>
+              </details>
+
               <button class="btn-action" id="analyze-btn" onclick="analyze()">
                 <span id="btn-icon">🔍</span>
                 <span id="btn-text">Проанализировать</span>
@@ -2647,6 +2741,7 @@
             <div class="chat-header">
               💬 Продолжить консультацию
               <span>Задайте вопрос или скорректируйте протокол</span>
+              <button class="btn-chat-clear" onclick="clearChat()" title="Начать новый чат">Новый чат</button>
             </div>
             <div class="chat-messages" id="chat-messages"></div>
             <div class="chat-input-row">
@@ -3041,12 +3136,27 @@
   }
 
   function copyDesc(btn, text) {
-    navigator.clipboard.writeText(text.trim()).then(() => {
+    const t = text.trim();
+    const done = () => {
       const orig = btn.textContent;
       btn.textContent = 'Скопировано!';
       btn.classList.add('copied');
       setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1800);
-    });
+    };
+    const fallback = () => {
+      const ta = document.createElement('textarea');
+      ta.value = t;
+      ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+      document.body.appendChild(ta);
+      ta.focus(); ta.select();
+      try { document.execCommand('copy'); done(); } catch(e) {}
+      document.body.removeChild(ta);
+    };
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(t).then(done).catch(fallback);
+    } else {
+      fallback();
+    }
   }
 
   async function generatePositioning() {
@@ -3305,6 +3415,75 @@
     renderThumbnailsPrev();
   }
 
+  // ════════════════════════════════════════
+  // ТРЕТЬЯ ЗОНА ЗАГРУЗКИ (протоколы трекера)
+  // ════════════════════════════════════════
+  let protocolImages = [];
+
+  const uploadZoneProto = document.getElementById('upload-zone-protocols');
+  const fileInputProto  = document.getElementById('file-input-protocols');
+
+  uploadZoneProto.addEventListener('click', e => {
+    if (e.target.classList.contains('thumb-remove')) return;
+    fileInputProto.click();
+  });
+  fileInputProto.addEventListener('change', function() { handleFilesProto(this.files); this.value = ''; });
+  uploadZoneProto.addEventListener('dragover',  e => { e.preventDefault(); uploadZoneProto.classList.add('drag-over'); });
+  uploadZoneProto.addEventListener('dragleave', ()  => uploadZoneProto.classList.remove('drag-over'));
+  uploadZoneProto.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadZoneProto.classList.remove('drag-over');
+    handleFilesProto(e.dataTransfer.files);
+  });
+
+  function handleFilesProto(files) {
+    Array.from(files).forEach(file => {
+      if (!file || !file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+          const maxW = 900;
+          let w = img.width, h = img.height;
+          if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.72);
+          protocolImages.push({ base64: dataUrl.split(',')[1], mimeType: 'image/jpeg', previewUrl: dataUrl });
+          renderThumbnailsProto();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function renderThumbnailsProto() {
+    const placeholder = document.getElementById('upload-placeholder-protocols');
+    const container   = document.getElementById('thumbs-container-protocols');
+    const grid        = document.getElementById('thumbs-grid-protocols');
+    if (protocolImages.length === 0) {
+      placeholder.style.display = 'flex';
+      container.style.display   = 'none';
+      return;
+    }
+    placeholder.style.display = 'none';
+    container.style.display   = 'flex';
+    grid.innerHTML = protocolImages.map((img, i) => `
+      <div class="thumb-item">
+        <img src="${img.previewUrl}" alt="Протокол ${i + 1}">
+        <button class="thumb-remove" onclick="removeProtoImage(${i}, event)">×</button>
+      </div>
+    `).join('');
+  }
+
+  function removeProtoImage(index, e) {
+    e.stopPropagation();
+    protocolImages.splice(index, 1);
+    renderThumbnailsProto();
+  }
+
   // Показ/скрытие блока при переключении этапа
   document.querySelectorAll('input[name="stage"]').forEach(radio => {
     radio.addEventListener('change', () => {
@@ -3445,7 +3624,7 @@
       <div class="result-card card-qualification" style="animation-delay:0s">
         <div class="result-card-header">
           <div class="card-title">🎯 Шаг 0 — Квалификация (до серии)</div>
-          <button class="btn-copy" onclick="copyText(this, \`${escBt(data.qualification)}\`)">Скопировать</button>
+          <button class="btn-copy" data-copy="${escHtml(data.qualification)}" onclick="copyText(this)">Скопировать</button>
         </div>
         <div class="touch-meta" style="padding:0.4rem 1.1rem 0">Задай этот вопрос ДО первого касания</div>
         <div class="result-card-body">${renderText(data.qualification)}</div>
@@ -3461,7 +3640,7 @@
               <span>Касание ${t.num} — ${t.goal}</span>
               ${t.key ? '<span class="touch-key-badge">КЛЮЧЕВОЕ</span>' : ''}
             </div>
-            <button class="btn-copy" onclick="copyText(this, \`${escBt(t.content)}\`)">Скопировать</button>
+            <button class="btn-copy" data-copy="${escHtml(t.content)}" onclick="copyText(this)">Скопировать</button>
           </div>
           <div class="touch-meta" style="padding:0.4rem 1.1rem 0">${t.when}</div>
           <div class="result-card-body">${renderText(t.content || '—')}</div>
@@ -3475,7 +3654,7 @@
         <div class="result-card ${s.cls}" style="animation-delay:${(touches.length + i) * 0.07}s">
           <div class="result-card-header">
             <div class="card-title">${s.icon} ${s.title}</div>
-            <button class="btn-copy" onclick="copyText(this, \`${escBt(s.content)}\`)">Скопировать</button>
+            <button class="btn-copy" data-copy="${escHtml(s.content)}" onclick="copyText(this)">Скопировать</button>
           </div>
           <div class="touch-meta" style="padding:0.4rem 1.1rem 0">${s.when}</div>
           <div class="result-card-body">${renderText(s.content || '—')}</div>
@@ -3559,10 +3738,14 @@
     if (uploadedImages.length === 0 && !c1) { alert('Загрузите диаграмму или укажите цель клиента'); return; }
     if (!checkTestLimit()) return;
 
-    const stage        = document.querySelector('input[name="stage"]:checked')?.value || 'first_contact';
-    const readiness    = document.querySelector('input[name="readiness"]:checked')?.value || 'open';
-    const clientName   = document.getElementById('client-name').value.trim();
-    const clientGender = document.querySelector('input[name="client-gender"]:checked')?.value || 'female';
+    const stage           = document.querySelector('input[name="stage"]:checked')?.value || 'first_contact';
+    const readiness       = document.querySelector('input[name="readiness"]:checked')?.value || 'open';
+    const clientName      = document.getElementById('client-name').value.trim();
+    const clientGender    = document.querySelector('input[name="client-gender"]:checked')?.value || 'female';
+    const trackerProtocols = protocolImages.length > 0
+      ? protocolImages.map(img => ({ base64: img.base64, mimeType: img.mimeType }))
+      : null;
+    const trackerProtocolsText = document.getElementById('tracker-protocols-text').value.trim() || null;
 
     setDecodeLoading(true);
 
@@ -3579,6 +3762,8 @@
           readiness,
           clientName,
           clientGender,
+          trackerProtocols: trackerProtocols || null,
+          trackerProtocolsText: trackerProtocolsText || null,
           token: sessionStorage.getItem('auth_token')
         })
       });
@@ -3661,6 +3846,12 @@
     chatHistory = [];
   }
 
+  function clearChat() {
+    document.getElementById('chat-messages').innerHTML = '';
+    chatHistory = [];
+    document.getElementById('chat-input').focus();
+  }
+
   function appendChatMessage(role, text, streaming) {
     const container = document.getElementById('chat-messages');
     const div = document.createElement('div');
@@ -3688,14 +3879,25 @@
       copyBtn.innerHTML = '📋 В мессенджер';
       copyBtn.onclick = () => {
         const content = textEl.textContent.trim();
-        navigator.clipboard.writeText(content).then(() => {
+        const done = () => {
           copyBtn.innerHTML = '✅ Скопировано — вставляй!';
           copyBtn.classList.add('copied');
-          setTimeout(() => {
-            copyBtn.innerHTML = '📋 В мессенджер';
-            copyBtn.classList.remove('copied');
-          }, 2500);
-        });
+          setTimeout(() => { copyBtn.innerHTML = '📋 В мессенджер'; copyBtn.classList.remove('copied'); }, 2500);
+        };
+        const fallback = () => {
+          const ta = document.createElement('textarea');
+          ta.value = content;
+          ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+          document.body.appendChild(ta);
+          ta.focus(); ta.select();
+          try { document.execCommand('copy'); done(); } catch(e) {}
+          document.body.removeChild(ta);
+        };
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(content).then(done).catch(fallback);
+        } else {
+          fallback();
+        }
       };
 
       actionsEl.appendChild(copyBtn);
@@ -3825,7 +4027,7 @@
       <div class="result-card ${c.cls}" style="animation-delay:${i * 0.07}s">
         <div class="result-card-header">
           <div class="card-title">${c.icon} ${c.title}</div>
-          ${c.copyable ? `<button class="btn-copy" onclick="copyText(this, \`${escBt(c.content)}\`)">Скопировать</button>` : ''}
+          ${c.copyable ? `<button class="btn-copy" data-copy="${escHtml(c.content)}" onclick="copyText(this)">Скопировать</button>` : ''}
         </div>
         <div class="result-card-body">${renderText(c.content || '—')}</div>
       </div>
@@ -4126,7 +4328,7 @@
       <div class="result-card card-rejection" style="margin-top:0.75rem;animation-delay:${i * 0.07}s">
         <div class="result-card-header">
           <div class="card-title">Касание ${t.num} — ${t.goal}</div>
-          <button class="btn-copy" onclick="copyText(this, \`${escBt(t.content)}\`)">Скопировать</button>
+          <button class="btn-copy" data-copy="${escHtml(t.content)}" onclick="copyText(this)">Скопировать</button>
         </div>
         <div class="touch-meta" style="padding:0.4rem 1.1rem 0">${t.when}</div>
         <div class="result-card-body">${renderText(t.content || '—')}</div>
@@ -4529,7 +4731,7 @@
   }
 
   function escHtml(str) {
-    return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
   // ════════════════════════════════════════
@@ -4563,7 +4765,7 @@
         <div class="result-card" style="margin-bottom:0.75rem">
           <div class="result-card-header">
             <div class="card-title">${c.icon} ${c.title}</div>
-            ${c.copyable ? `<button class="btn-copy" onclick="copyText(this, \`${escBt(c.content)}\`)">Скопировать</button>` : ''}
+            ${c.copyable ? `<button class="btn-copy" data-copy="${escHtml(c.content)}" onclick="copyText(this)">Скопировать</button>` : ''}
           </div>
           <div class="result-card-body">${renderText(c.content || '—')}</div>
         </div>
@@ -4585,7 +4787,7 @@
         <div class="result-card" style="margin-bottom:0.75rem">
           <div class="result-card-header">
             <div class="card-title">${i.label}</div>
-            <button class="btn-copy" onclick="copyText(this, \`${escBt(i.content)}\`)">Скопировать</button>
+            <button class="btn-copy" data-copy="${escHtml(i.content)}" onclick="copyText(this)">Скопировать</button>
           </div>
           <div class="result-card-body">${renderText(i.content)}</div>
         </div>
@@ -4603,14 +4805,26 @@
   }
 
   function copyText(btn, text) {
-    navigator.clipboard.writeText(text).then(() => {
+    const t = (text !== undefined ? text : btn.dataset.copy) || '';
+    const done = () => {
       btn.textContent = '✓ Скопировано';
       btn.classList.add('copied');
-      setTimeout(() => {
-        btn.textContent = 'Скопировать';
-        btn.classList.remove('copied');
-      }, 2000);
-    });
+      setTimeout(() => { btn.textContent = 'Скопировать'; btn.classList.remove('copied'); }, 2000);
+    };
+    const fallback = () => {
+      const ta = document.createElement('textarea');
+      ta.value = t;
+      ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+      document.body.appendChild(ta);
+      ta.focus(); ta.select();
+      try { document.execCommand('copy'); done(); } catch(e) {}
+      document.body.removeChild(ta);
+    };
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(t).then(done).catch(fallback);
+    } else {
+      fallback();
+    }
   }
 
   // ════════════════════════════════════════
