@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI-ассистент — Трекер здоровья</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -2424,6 +2425,149 @@
       margin-bottom: 0.5rem;
     }
 
+
+  /* ── Карточка протокола (для скачивания) ── */
+  #protocol-card-print {
+    position: fixed;
+    left: -9999px;
+    top: 0;
+    width: 480px;
+    background: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  }
+  .pc-header {
+    background: linear-gradient(135deg, #ff6b35, #e85520);
+    padding: 20px 24px 16px;
+    color: #fff;
+  }
+  .pc-header-brand {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    opacity: 0.85;
+    margin-bottom: 4px;
+  }
+  .pc-header-title {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  .pc-header-sub {
+    font-size: 13px;
+    opacity: 0.85;
+    margin-top: 4px;
+  }
+  .pc-body { padding: 20px 24px; background: #fff; }
+  .pc-month {
+    margin-bottom: 16px;
+  }
+  .pc-month-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #ff6b35;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #ffe8de;
+  }
+  .pc-system {
+    font-size: 11px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 8px 0 4px;
+  }
+  .pc-product {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 7px 10px;
+    background: #fafafa;
+    border-radius: 8px;
+    margin-bottom: 5px;
+    border-left: 3px solid #ff6b35;
+  }
+  .pc-product-dot {
+    width: 7px;
+    height: 7px;
+    background: #ff6b35;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 5px;
+  }
+  .pc-product-info { flex: 1; }
+  .pc-product-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a1a;
+    line-height: 1.3;
+  }
+  .pc-product-dose {
+    font-size: 11px;
+    color: #666;
+    margin-top: 1px;
+    line-height: 1.4;
+  }
+  .pc-min-block {
+    background: #fff8f4;
+    border: 1px solid #ffe0cc;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-top: 4px;
+  }
+  .pc-min-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #e85520;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .pc-min-item {
+    font-size: 12px;
+    color: #333;
+    padding: 3px 0;
+    border-bottom: 1px solid #ffe8de;
+  }
+  .pc-min-item:last-child { border-bottom: none; }
+  .pc-footer {
+    background: #f7f7f7;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .pc-footer-brand {
+    font-size: 11px;
+    color: #aaa;
+    font-weight: 500;
+  }
+  .pc-footer-date {
+    font-size: 11px;
+    color: #ccc;
+  }
+  .btn-download-card {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: 1px solid #ff6b35;
+    color: #ff6b35;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .btn-download-card:hover { background: #ff6b35; color: #fff; }
+  .btn-download-card.loading { opacity: 0.6; pointer-events: none; }
   </style>
 </head>
 <body>
@@ -4013,7 +4157,7 @@
       { cls: 'card-urgent',   icon: '🔴', title: 'Важно: нужна консультация врача', content: data.urgent,   copyable: true,  optional: true },
       { cls: 'card-systems',  icon: '📊', title: 'Картина здоровья',                content: data.systems,  copyable: true },
       { cls: 'card-chain',    icon: '🔗', title: 'Причинно-следственная цепочка',   content: data.chain,    copyable: true },
-      { cls: 'card-protocol', icon: '💊', title: 'Протокол восстановления (Coral Club)', content: data.protocol, copyable: true },
+      { cls: 'card-protocol', icon: '💊', title: 'Протокол восстановления (Coral Club)', content: data.protocol, copyable: true, downloadable: true },
       { cls: 'card-script',   icon: '💬', title: 'Скрипт консультации',             content: data.script,   copyable: true },
       { cls: 'card-logic',    icon: '💡', title: 'Почему такой протокол',           content: data.logic,    copyable: false },
       { cls: 'card-pointab',  icon: '🎯', title: 'Точка А → Точка Б (цель 90 дней)', content: data.pointab,  copyable: true },
@@ -4027,7 +4171,10 @@
       <div class="result-card ${c.cls}" style="animation-delay:${i * 0.07}s">
         <div class="result-card-header">
           <div class="card-title">${c.icon} ${c.title}</div>
-          ${c.copyable ? `<button class="btn-copy" data-copy="${escHtml(c.content)}" onclick="copyText(this)">Скопировать</button>` : ''}
+          <div style="display:flex;gap:6px;align-items:center;">
+            ${c.downloadable ? `<button class="btn-download-card" onclick="downloadProtocolCard(this,'${escBt(clientName || '')}')">📥 Карточку</button>` : ''}
+            ${c.copyable ? `<button class="btn-copy" data-copy="${escHtml(c.content)}" onclick="copyText(this)">Скопировать</button>` : ''}
+          </div>
         </div>
         <div class="result-card-body">${renderText(c.content || '—')}</div>
       </div>
@@ -5139,6 +5286,108 @@
   document.getElementById('client-detail-overlay').addEventListener('click', function(e) {
     if (e.target === this) closeClientDetail();
   });
+
+  // ── Скачать карточку протокола как PNG ──
+  function downloadProtocolCard(btn, clientName) {
+    const protocolCard = document.querySelector('.card-protocol .result-card-body');
+    if (!protocolCard) return;
+    const protocolText = protocolCard.innerText || '';
+
+    btn.classList.add('loading');
+    btn.textContent = '⏳ Готовлю...';
+
+    // Заполняем шаблон
+    const card = document.getElementById('protocol-card-print');
+    document.getElementById('pc-title').textContent = clientName
+      ? 'Программа для ' + clientName
+      : 'Программа восстановления';
+    document.getElementById('pc-sub').textContent = 'Нутрициологическая поддержка · Coral Club';
+    document.getElementById('pc-date').textContent = new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+    document.getElementById('pc-body').innerHTML = buildProtocolCardBody(protocolText);
+
+    // Временно показываем карточку для захвата
+    card.style.left = '-9999px';
+    card.style.top = '0';
+    card.style.display = 'block';
+
+    html2canvas(card, { scale: 2, backgroundColor: '#ffffff', useCORS: true }).then(canvas => {
+      card.style.display = 'none';
+      const link = document.createElement('a');
+      link.download = (clientName ? clientName.replace(/\s+/g, '_') : 'protokol') + '_coral_club.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      btn.classList.remove('loading');
+      btn.innerHTML = '📥 Карточку';
+    }).catch(() => {
+      card.style.display = 'none';
+      btn.classList.remove('loading');
+      btn.innerHTML = '📥 Карточку';
+    });
+  }
+
+  function buildProtocolCardBody(text) {
+    const lines = text.split('\n');
+    let html = '';
+    let inMin = false;
+
+    for (const raw of lines) {
+      const line = raw.trim();
+      if (!line) continue;
+
+      // Заголовок месяца
+      if (/^МЕСЯЦ\s+1/i.test(line) || /^МЕСЯЦ\s+2/i.test(line)) {
+        const m = line.match(/^(МЕСЯЦ\s+\d+[^:]*)/i);
+        html += `<div class="pc-month"><div class="pc-month-title">${m ? m[1] : line}</div>`;
+        inMin = false;
+        continue;
+      }
+
+      // Минимальный старт
+      if (/^Минимальный/i.test(line)) {
+        html += `</div><div class="pc-min-block"><div class="pc-min-title">Минимальный старт</div>`;
+        inMin = true;
+        continue;
+      }
+
+      // Система (в скобках или без)
+      if (/^\[.+\]/.test(line) || (/^[А-ЯЁ]/.test(line) && line.endsWith(':'))) {
+        const sys = line.replace(/[\[\]:]/g, '').trim();
+        html += `<div class="pc-system">${sys}</div>`;
+        continue;
+      }
+
+      // Продукт: - **Название**: зачем → дозировка
+      const prodMatch = line.match(/^[-•]\s+\*{0,2}(.+?)\*{0,2}:?\s*(.+?)\s*→\s*(.+)$/);
+      if (prodMatch) {
+        const name = prodMatch[1].replace(/\*/g, '').trim();
+        const dose = prodMatch[3].trim();
+        if (inMin) {
+          html += `<div class="pc-min-item"><b>${name}</b> — ${dose}</div>`;
+        } else {
+          html += `<div class="pc-product"><div class="pc-product-dot"></div><div class="pc-product-info"><div class="pc-product-name">${name}</div><div class="pc-product-dose">${dose}</div></div></div>`;
+        }
+        continue;
+      }
+
+      // Простая строка с продуктом без →
+      const simpleMatch = line.match(/^[-•]\s+\*{0,2}(.+?)\*{0,2}:?\s*(.+)$/);
+      if (simpleMatch) {
+        const name = simpleMatch[1].replace(/\*/g, '').trim();
+        const desc = simpleMatch[2].trim();
+        if (inMin) {
+          html += `<div class="pc-min-item"><b>${name}</b> — ${desc}</div>`;
+        } else {
+          html += `<div class="pc-product"><div class="pc-product-dot"></div><div class="pc-product-info"><div class="pc-product-name">${name}</div><div class="pc-product-dose">${desc}</div></div></div>`;
+        }
+      }
+    }
+
+    // Закрываем открытые блоки
+    if (inMin) html += '</div>';
+    else html += '</div>';
+
+    return html;
+  }
 </script>
 
   <!-- Модал завершения серии касаний -->
@@ -5160,6 +5409,21 @@
       </div>
     </div>
   </div>
+
+
+<!-- Скрытый шаблон карточки протокола для скачивания -->
+<div id="protocol-card-print">
+  <div class="pc-header">
+    <div class="pc-header-brand">Coral Club · Метод Бутаковой</div>
+    <div class="pc-header-title" id="pc-title">Программа восстановления</div>
+    <div class="pc-header-sub" id="pc-sub"></div>
+  </div>
+  <div class="pc-body" id="pc-body"></div>
+  <div class="pc-footer">
+    <div class="pc-footer-brand">Нутрициологическая поддержка · AI-ассистент</div>
+    <div class="pc-footer-date" id="pc-date"></div>
+  </div>
+</div>
 
 </body>
 </html>
