@@ -2527,6 +2527,26 @@
       transition: all 0.2s;
     }
     .client-action-copy:hover { background: #1a3a1a; }
+    .client-action-prep {
+      display: none;
+      margin-top: 1rem;
+      border-top: 1px solid #2d2d2d;
+      padding-top: 0.85rem;
+    }
+    .client-action-prep.visible { display: block; }
+    .client-action-prep-title {
+      font-size: 0.72rem;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+    .client-action-prep-text {
+      font-size: 0.85rem;
+      color: #c8c8c8;
+      line-height: 1.65;
+      white-space: pre-wrap;
+    }
 
     /* ── Журнал контактов ── */
     .contact-section-title {
@@ -3832,6 +3852,10 @@
           <div class="client-action-result-text" id="client-action-text"></div>
           <button class="client-action-copy" onclick="copyClientAction()">Скопировать</button>
           <div class="client-action-hint" id="client-action-hint"></div>
+          <div class="client-action-prep" id="client-action-prep">
+            <div class="client-action-prep-title">📞 Если позвонит — скрипт разговора</div>
+            <div class="client-action-prep-text" id="client-action-prep-text"></div>
+          </div>
         </div>
         <button class="btn-delete-client" onclick="deleteCurrentClient()">Удалить клиента</button>
       </div>
@@ -6407,6 +6431,7 @@
     document.getElementById('detail-sessions').innerHTML = '';
     document.getElementById('detail-contacts-list').innerHTML = '';
     document.getElementById('client-action-result').classList.remove('visible');
+    document.getElementById('client-action-prep').classList.remove('visible');
     const prevNotes = document.getElementById('detail-notes-block');
     if (prevNotes) prevNotes.remove();
     try {
@@ -6584,6 +6609,8 @@
     const resultEl = document.getElementById('client-action-result');
     const textEl = document.getElementById('client-action-text');
     const hintEl = document.getElementById('client-action-hint');
+    const prepEl = document.getElementById('client-action-prep');
+    const prepTextEl = document.getElementById('client-action-prep-text');
 
     btn.disabled = true;
     btn.textContent = '⏳ Генерирую...';
@@ -6627,16 +6654,23 @@
       const raw = data.result || '';
       const msgMatch = raw.match(/<сообщение>([\s\S]*?)<\/сообщение>/);
       const hintMatch = raw.match(/<подсказка>([\s\S]*?)<\/подсказка>/);
+      const prepMatch = raw.match(/<подготовка>([\s\S]*?)<\/подготовка>/);
 
       const msg = msgMatch ? msgMatch[1].trim() : raw.trim();
       const hint = hintMatch ? hintMatch[1].trim() : '';
+      const prep = prepMatch ? prepMatch[1].trim() : '';
 
       textEl.textContent = msg;
       hintEl.textContent = hint;
+      prepTextEl.textContent = prep;
+      if (prep) prepEl.classList.add('visible');
+      else prepEl.classList.remove('visible');
       resultEl.classList.add('visible');
     } catch (e) {
       textEl.textContent = 'Ошибка: ' + e.message;
       hintEl.textContent = '';
+      prepTextEl.textContent = '';
+      prepEl.classList.remove('visible');
       resultEl.classList.add('visible');
     } finally {
       btn.disabled = false;
