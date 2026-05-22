@@ -1389,13 +1389,12 @@
     /* ── Аккордеон касаний ── */
     .touch-body-wrap {
       overflow: hidden;
-      max-height: 600px;
-      transition: max-height 0.3s ease, opacity 0.2s ease;
-      opacity: 1;
+      max-height: 2000px;
+      transition: max-height 0.4s ease;
     }
     .touch-collapsed .touch-body-wrap {
-      max-height: 0;
-      opacity: 0;
+      max-height: 0 !important;
+      overflow: hidden;
     }
     .touch-toggle-btn {
       background: none;
@@ -1431,12 +1430,11 @@
     .decode-body-wrap {
       overflow: hidden;
       max-height: 3000px;
-      transition: max-height 0.35s ease, opacity 0.25s ease;
-      opacity: 1;
+      transition: max-height 0.4s ease;
     }
     .decode-collapsed .decode-body-wrap {
-      max-height: 0;
-      opacity: 0;
+      max-height: 0 !important;
+      overflow: hidden;
     }
     .decode-toggle-btn {
       background: none;
