@@ -4697,30 +4697,32 @@
       </div>
     ` : '';
 
+    const renderTouch = (t, i) => {
+      const isFirst = i === 0;
+      const cardId = `touch-card-${recId}-${i}`;
+      return `
+      <div class="result-card ${t.cls} ${isFirst ? 'touch-expanded' : 'touch-collapsed'}" id="${cardId}" style="animation-delay:${i * 0.07}s">
+        <div class="result-card-header" style="cursor:pointer" onclick="toggleTouch('${cardId}')">
+          <div class="card-title" style="flex:1">
+            <span>Сообщение ${t.num} — ${t.goal}</span>
+            ${t.key ? '<span class="touch-key-badge">ГЛАВНОЕ</span>' : ''}
+            <span style="color:#555;font-size:0.75rem;font-weight:400;margin-left:0.5rem">${t.when}</span>
+          </div>
+          <div style="display:flex;gap:0.4rem;align-items:center">
+            <button class="btn-sent" onclick="event.stopPropagation();markTouchSent('${cardId}')">Отправил ✓</button>
+            <button class="btn-copy" data-copy="${escHtml(t.content)}" onclick="event.stopPropagation();copyText(this)">Скопировать</button>
+            <button class="touch-toggle-btn">${isFirst ? '▲' : '▼'}</button>
+          </div>
+        </div>
+        <div class="touch-body-wrap">
+          <div class="result-card-body">${renderText(t.content || '—')}</div>
+        </div>
+      </div>`;
+    };
+
     const touchHtml = qualHtml + `
       <div class="section-divider">Серия сообщений — ${touches.length} шагов</div>
-      ${touches.map((t, i) => {
-        const isFirst = i === 0;
-        const cardId = `touch-card-${recId}-${i}`;
-        return `
-        <div class="result-card ${t.cls} ${isFirst ? 'touch-expanded' : 'touch-collapsed'}" id="${cardId}" style="animation-delay:${i * 0.07}s">
-          <div class="result-card-header" style="cursor:pointer" onclick="toggleTouch('${cardId}')">
-            <div class="card-title" style="flex:1">
-              <span>Сообщение ${t.num} — ${t.goal}</span>
-              ${t.key ? '<span class="touch-key-badge">ГЛАВНОЕ</span>' : ''}
-              <span style="color:#555;font-size:0.75rem;font-weight:400;margin-left:0.5rem">${t.when}</span>
-            </div>
-            <div style="display:flex;gap:0.4rem;align-items:center">
-              <button class="btn-sent" onclick="event.stopPropagation();markTouchSent('${cardId}')">Отправил ✓</button>
-              <button class="btn-copy" data-copy="${escHtml(t.content)}" onclick="event.stopPropagation();copyText(this)">Скопировать</button>
-              <button class="touch-toggle-btn">${isFirst ? '▲' : '▼'}</button>
-            </div>
-          </div>
-          <div class="touch-body-wrap">
-            <div class="result-card-body">${renderText(t.content || '—')}</div>
-          </div>
-        </div>`;
-      }).join('')}
+      ${renderTouch(touches[0], 0)}
     `;
 
     const dialogHtml = `
@@ -4775,7 +4777,8 @@
         </div>
       </div>`;
 
-    panel.innerHTML = touchHtml + dialogHtml + segHtml + tipHtml + renderInviteOutcomeBlock(recId, personDesc) + newClientHtml + refineHtml;
+    const restTouches = touches.slice(1).map((t, i) => renderTouch(t, i + 1)).join('');
+    panel.innerHTML = touchHtml + dialogHtml + restTouches + segHtml + tipHtml + renderInviteOutcomeBlock(recId, personDesc) + newClientHtml + refineHtml;
   }
 
   function resetInviteForm() {
