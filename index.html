@@ -1389,12 +1389,7 @@
     /* ── Аккордеон касаний ── */
     .touch-body-wrap {
       overflow: hidden;
-      max-height: 2000px;
       transition: max-height 0.4s ease;
-    }
-    .touch-collapsed .touch-body-wrap {
-      max-height: 0 !important;
-      overflow: hidden;
     }
     .touch-toggle-btn {
       background: none;
@@ -1429,12 +1424,7 @@
     /* ── Аккордеон карточек расшифровки ── */
     .decode-body-wrap {
       overflow: hidden;
-      max-height: 3000px;
       transition: max-height 0.4s ease;
-    }
-    .decode-collapsed .decode-body-wrap {
-      max-height: 0 !important;
-      overflow: hidden;
     }
     .decode-toggle-btn {
       background: none;
@@ -4595,8 +4585,10 @@
     const card = document.getElementById(cardId);
     if (!card) return;
     const isCollapsed = card.classList.contains('touch-collapsed');
+    const wrap = card.querySelector('.touch-body-wrap');
     card.classList.toggle('touch-collapsed', !isCollapsed);
     card.classList.toggle('touch-expanded', isCollapsed);
+    if (wrap) wrap.style.maxHeight = isCollapsed ? wrap.scrollHeight + 'px' : '0';
     const btn = card.querySelector('.touch-toggle-btn');
     if (btn) btn.textContent = isCollapsed ? '▲' : '▼';
   }
@@ -4605,9 +4597,27 @@
     const card = document.getElementById(cardId);
     if (!card) return;
     const isCollapsed = card.classList.contains('decode-collapsed');
+    const wrap = card.querySelector('.decode-body-wrap');
     card.classList.toggle('decode-collapsed', !isCollapsed);
+    if (wrap) wrap.style.maxHeight = isCollapsed ? wrap.scrollHeight + 'px' : '0';
     const btn = card.querySelector('.decode-toggle-btn');
     if (btn) btn.textContent = isCollapsed ? '▲' : '▼';
+  }
+
+  function initAccordionCards(container) {
+    container.querySelectorAll('.touch-collapsed .touch-body-wrap').forEach(el => {
+      el.style.transition = 'none';
+      el.style.maxHeight = '0';
+    });
+    container.querySelectorAll('.decode-collapsed .decode-body-wrap').forEach(el => {
+      el.style.transition = 'none';
+      el.style.maxHeight = '0';
+    });
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      container.querySelectorAll('.touch-body-wrap, .decode-body-wrap').forEach(el => {
+        el.style.transition = '';
+      });
+    }));
   }
 
   function markTouchSent(cardId) {
@@ -4779,6 +4789,7 @@
 
     const restTouches = touches.slice(1).map((t, i) => renderTouch(t, i + 1)).join('');
     panel.innerHTML = touchHtml + dialogHtml + restTouches + segHtml + tipHtml + renderInviteOutcomeBlock(recId, personDesc) + newClientHtml + refineHtml;
+    initAccordionCards(panel);
   }
 
   function resetInviteForm() {
@@ -5190,6 +5201,7 @@
       </div>` : '';
 
     panel.innerHTML = saveBlock + urgentBlock + stepsHtml + consultantBlock + renderDecodeOutcomeBlock(recId, clientDesc);
+    initAccordionCards(panel);
 
     // Показываем чат и сохраняем контекст анализа
     if (resultText) {
