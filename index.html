@@ -4352,6 +4352,8 @@
     </div>`;
   }
 
+  const _homeResults = {};
+
   async function homeClientAction(clientId, clientName) {
     const btn = document.getElementById('home-btn-' + clientId);
     const resultEl = document.getElementById('home-result-' + clientId);
@@ -4367,6 +4369,14 @@
       const listData = await listRes.json();
       const client = listData.client || {};
 
+      let historyLines = [];
+      if (client.sessions && client.sessions.length) {
+        const last = client.sessions[client.sessions.length - 1];
+        if (last.complaints) historyLines.push('Жалобы: ' + last.complaints);
+        if (last.systems) historyLines.push('Системы: ' + last.systems);
+        if (last.protocol) historyLines.push('Протокол: ' + last.protocol.slice(0, 300));
+      }
+
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -4375,14 +4385,29 @@
           token: clientsApiToken(),
           clientName: client.name || clientName,
           clientStatus: client.status || '',
-          sessions: client.sessions || []
+          clientGender: client.gender || '',
+          clientHistory: historyLines.join('\n')
         })
       });
       const data = await res.json();
-      const text = data.result || data.text || data.content || 'Не удалось получить ответ';
+      if (!res.ok) throw new Error(data.error || 'Ошибка');
 
-      resultEl.innerHTML = `<div class="home-item-result">${escHtml(text)}</div>
-        <button class="home-item-copy" onclick="navigator.clipboard.writeText(${JSON.stringify(text)}).then(()=>{ this.textContent='Скопировано ✓'; setTimeout(()=>{ this.textContent='Скопировать'; },2000); })">Скопировать</button>`;
+      const raw = data.result || '';
+      const msgMatch = raw.match(/<сообщение>([\s\S]*?)<\/сообщение>/);
+      const hintMatch = raw.match(/<подсказка>([\s\S]*?)<\/подсказка>/);
+      const msg  = msgMatch  ? msgMatch[1].trim()  : raw.trim();
+      const hint = hintMatch ? hintMatch[1].trim() : '';
+
+      _homeResults[clientId] = msg;
+
+      const hintHTML = hint
+        ? `<div style="margin-top:0.6rem;font-size:0.8rem;color:#888;line-height:1.5">${escHtml(hint)}</div>`
+        : '';
+
+      resultEl.innerHTML =
+        `<div class="home-item-result">${escHtml(msg)}</div>
+         ${hintHTML}
+         <button class="home-item-copy" onclick="copyHomeResult('${escHtml(clientId)}', this)">Скопировать</button>`;
       resultEl.style.display = 'block';
       btn.textContent = 'Обновить';
     } catch(e) {
@@ -4391,6 +4416,15 @@
       btn.textContent = 'Подготовить сообщение';
     }
     btn.disabled = false;
+  }
+
+  function copyHomeResult(clientId, btn) {
+    const text = _homeResults[clientId] || '';
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'Скопировано ✓';
+      setTimeout(() => { btn.textContent = 'Скопировать'; }, 2000);
+    });
   }
 
   // ════════════════════════════════════════
