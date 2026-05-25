@@ -4131,8 +4131,8 @@
         return;
       }
 
-      sessionStorage.setItem('auth', data.mode);
-      sessionStorage.setItem('auth_token', data.token);
+      localStorage.setItem('auth', data.mode);
+      localStorage.setItem('auth_token', data.token);
       document.getElementById('password-screen').style.display = 'none';
       document.getElementById('app').style.display = 'block';
       updateReminderBadge();
@@ -4146,8 +4146,8 @@
   }
 
   function logout() {
-    sessionStorage.removeItem('auth');
-    sessionStorage.removeItem('auth_token');
+    localStorage.removeItem('auth');
+    localStorage.removeItem('auth_token');
     document.getElementById('password-screen').style.display = 'flex';
     document.getElementById('app').style.display = 'none';
     document.getElementById('limit-overlay').style.display = 'none';
@@ -4155,8 +4155,8 @@
     document.getElementById('pwd-error').textContent = '';
   }
 
-  const stored = sessionStorage.getItem('auth');
-  if ((stored === 'main' || stored === 'test') && sessionStorage.getItem('auth_token')) {
+  const stored = localStorage.getItem('auth');
+  if ((stored === 'main' || stored === 'test') && localStorage.getItem('auth_token')) {
     document.getElementById('password-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     updateReminderBadge();
@@ -4172,7 +4172,7 @@
   }
 
   function isTestMode() {
-    return sessionStorage.getItem('auth') === 'test';
+    return localStorage.getItem('auth') === 'test';
   }
 
   function checkTestLimit() {
@@ -4261,7 +4261,7 @@
       const resp = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'positioning', token: sessionStorage.getItem('auth_token'), strength, difference })
+        body: JSON.stringify({ mode: 'positioning', token: localStorage.getItem('auth_token'), strength, difference })
       });
 
       if (!resp.ok) {
@@ -4605,7 +4605,7 @@
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'invite', clientDesc: personDesc, healthHints: hints, channel, senderGender, token: sessionStorage.getItem('auth_token') })
+        body: JSON.stringify({ mode: 'invite', clientDesc: personDesc, healthHints: hints, channel, senderGender, token: localStorage.getItem('auth_token') })
       });
 
       const rawText1 = await res.text();
@@ -4641,7 +4641,7 @@
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'invite', clientDesc: personDesc, healthHints: hints, channel, senderGender, refinement: instruction, previousResult: resultText, token: sessionStorage.getItem('auth_token') })
+        body: JSON.stringify({ mode: 'invite', clientDesc: personDesc, healthHints: hints, channel, senderGender, refinement: instruction, previousResult: resultText, token: localStorage.getItem('auth_token') })
       });
 
       const rawText = await res.text();
@@ -4677,7 +4677,7 @@
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'dialog', clientDesc: personDesc, healthHints: hints, channel, senderGender, clientMessage, token: sessionStorage.getItem('auth_token') })
+        body: JSON.stringify({ mode: 'dialog', clientDesc: personDesc, healthHints: hints, channel, senderGender, clientMessage, token: localStorage.getItem('auth_token') })
       });
 
       const rawText = await res.text();
@@ -5013,7 +5013,7 @@
           clientGender,
           trackerProtocols: trackerProtocols || null,
           trackerProtocolsText: trackerProtocolsText || null,
-          token: sessionStorage.getItem('auth_token')
+          token: localStorage.getItem('auth_token')
         })
       });
 
@@ -5188,7 +5188,7 @@
           mode: 'chat',
           messages: chatHistory,
           analysisContext: currentAnalysisContext,
-          token: sessionStorage.getItem('auth_token')
+          token: localStorage.getItem('auth_token')
         })
       });
 
@@ -5968,7 +5968,7 @@
           rejectionReason: reason,
           senderGender,
           channel,
-          token: sessionStorage.getItem('auth_token')
+          token: localStorage.getItem('auth_token')
         })
       });
 
@@ -6587,7 +6587,7 @@
   }
 
   function clientsApiToken() {
-    return sessionStorage.getItem('auth_token') || '';
+    return localStorage.getItem('auth_token') || '';
   }
 
   async function loadClients() {
@@ -6900,7 +6900,7 @@
     try {
       const payload = {
         mode: 'client-action',
-        token: sessionStorage.getItem('auth_token') || '',
+        token: localStorage.getItem('auth_token') || '',
         clientStatus: status,
         clientName: c ? c.name : '',
         clientGender: c ? c.gender : '',
@@ -7305,7 +7305,7 @@
           healthHints: trackerSummary,
           channel, senderGender,
           clientMessage: clientMsg,
-          token: sessionStorage.getItem('auth_token')
+          token: localStorage.getItem('auth_token')
         })
       });
 
@@ -7356,7 +7356,7 @@
           mode: 'reengagement',
           clientName, timePassed, trackerSummary: summary,
           channel, senderGender,
-          token: sessionStorage.getItem('auth_token')
+          token: localStorage.getItem('auth_token')
         })
       });
 
