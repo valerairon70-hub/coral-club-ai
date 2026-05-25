@@ -3310,6 +3310,42 @@
   body.light .crm-touch-chip { background: #f0f0f0; border-color: #ddd; color: #888; }
   body.light .crm-card-footer { border-top-color: #eee; }
   body.light .crm-card-name { color: #222; }
+
+  /* ── ЭКРАН ПРИВЕТСТВИЯ ── */
+  .home-screen { max-width: 680px; margin: 0 auto; padding: 2rem 1rem 3rem; }
+  .home-greeting { font-size: 1.6rem; font-weight: 700; color: #f0f0f0; margin-bottom: 0.25rem; }
+  .home-subtitle { color: #888; font-size: 0.95rem; margin-bottom: 2rem; }
+  .home-section { margin-bottom: 1.5rem; }
+  .home-section-title { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #888; margin-bottom: 0.75rem; }
+  .home-item { border-radius: 12px; padding: 1rem 1.1rem; margin-bottom: 0.6rem; background: #242424; border: 1px solid #2e2e2e; }
+  .home-item-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.2rem; }
+  .home-item-name { font-weight: 600; color: #f0f0f0; font-size: 0.97rem; }
+  .home-item-meta { font-size: 0.83rem; color: #888; margin-bottom: 0.75rem; }
+  .home-item.urgent { border-left: 3px solid #e74c3c; }
+  .home-item.upcoming { border-left: 3px solid #f0a500; }
+  .home-item-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .home-item.urgent .home-item-dot { background: #e74c3c; }
+  .home-item.upcoming .home-item-dot { background: #f0a500; }
+  .home-item-btn { font-size: 0.83rem; padding: 0.45rem 1rem; border-radius: 8px; border: 1px solid #ff6b35; color: #ff6b35; background: transparent; cursor: pointer; transition: background 0.15s; }
+  .home-item-btn:hover { background: rgba(255,107,53,0.1); }
+  .home-item-btn:disabled { opacity: 0.5; cursor: default; }
+  .home-item-result { margin-top: 0.85rem; background: #1a1a1a; border-radius: 8px; padding: 0.9rem 1rem; font-size: 0.87rem; color: #ddd; line-height: 1.6; white-space: pre-wrap; }
+  .home-item-copy { margin-top: 0.5rem; font-size: 0.78rem; padding: 0.35rem 0.8rem; border-radius: 7px; border: 1px solid #444; color: #aaa; background: transparent; cursor: pointer; }
+  .home-item-copy:hover { border-color: #ff6b35; color: #ff6b35; }
+  .home-divider { border: none; border-top: 1px solid #2a2a2a; margin: 1.75rem 0 1.5rem; }
+  .home-quick-title { font-size: 0.9rem; color: #aaa; margin-bottom: 1rem; }
+  .home-quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; }
+  .home-quick-btn { padding: 0.9rem 1rem; border-radius: 12px; border: 1px solid #2e2e2e; background: #1e1e1e; color: #ccc; cursor: pointer; font-size: 0.88rem; text-align: left; transition: border-color 0.15s, color 0.15s; }
+  .home-quick-btn:hover { border-color: #ff6b35; color: #ff6b35; }
+  .home-quick-btn .qb-icon { font-size: 1.2rem; display: block; margin-bottom: 0.35rem; }
+  .home-empty { text-align: center; padding: 2rem 1rem; color: #666; font-size: 0.92rem; line-height: 1.7; }
+  .home-empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+  body.light .home-greeting { color: #222; }
+  body.light .home-item { background: #fff; border-color: #e8e0d5; }
+  body.light .home-item-name { color: #222; }
+  body.light .home-item-result { background: #f7f3ee; color: #444; }
+  body.light .home-quick-btn { background: #f7f3ee; border-color: #e0d8cc; color: #555; }
+  body.light .home-divider { border-color: #e8e0d5; }
   </style>
 </head>
 <body>
@@ -3431,9 +3467,36 @@
       <div class="container">
 
         <!-- ════════════════════════════════
+             ЭКРАН ПРИВЕТСТВИЯ (СТАРТОВЫЙ)
+             ════════════════════════════════ -->
+        <div class="tab-panel active" id="panel-home">
+          <div class="home-screen">
+            <div class="home-greeting" id="home-greeting">Добрый день!</div>
+            <div class="home-subtitle" id="home-subtitle">Загружаю данные...</div>
+            <div id="home-priorities"></div>
+            <hr class="home-divider">
+            <div class="home-quick-title">Чем займёмся сегодня?</div>
+            <div class="home-quick-grid">
+              <button class="home-quick-btn" onclick="switchTab('decode')">
+                <span class="qb-icon">🔍</span>Расшифровать трекер
+              </button>
+              <button class="home-quick-btn" onclick="switchTab('invite')">
+                <span class="qb-icon">🤝</span>Пригласить клиента
+              </button>
+              <button class="home-quick-btn" onclick="switchTab('reengagement')">
+                <span class="qb-icon">🔄</span>Возобновить диалог
+              </button>
+              <button class="home-quick-btn" onclick="switchTab('clients')">
+                <span class="qb-icon">👥</span>Все клиенты
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ════════════════════════════════
              ВКЛАДКА 1: ПРИГЛАСИТЬ НА ТРЕКЕР
              ════════════════════════════════ -->
-        <div class="tab-panel active" id="panel-invite">
+        <div class="tab-panel" id="panel-invite">
           <div class="layout">
 
             <!-- Форма приглашения -->
@@ -4136,6 +4199,7 @@
       document.getElementById('password-screen').style.display = 'none';
       document.getElementById('app').style.display = 'block';
       updateReminderBadge();
+      switchTab('home');
 
     } catch (e) {
       document.getElementById('pwd-error').textContent = 'Ошибка соединения с сервером';
@@ -4160,6 +4224,7 @@
     document.getElementById('password-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     updateReminderBadge();
+    switchTab('home');
   }
 
   // ── Счётчик тестовых генераций ──
@@ -4199,6 +4264,133 @@
     document.getElementById('panel-' + name).classList.add('active');
     if (name === 'stats') renderStats();
     if (name === 'clients') loadClients();
+    if (name === 'home') loadHomeScreen();
+  }
+
+  // ════════════════════════════════════════
+  // ЭКРАН ПРИВЕТСТВИЯ
+  // ════════════════════════════════════════
+  async function loadHomeScreen() {
+    const hour = new Date().getHours();
+    const greeting = hour < 12 ? 'Доброе утро!' : hour < 18 ? 'Добрый день!' : 'Добрый вечер!';
+    document.getElementById('home-greeting').textContent = greeting;
+
+    const token = clientsApiToken();
+    if (!token) { document.getElementById('home-subtitle').textContent = ''; return; }
+
+    document.getElementById('home-subtitle').textContent = 'Загружаю данные...';
+    document.getElementById('home-priorities').innerHTML = '';
+
+    try {
+      const res = await fetch('/api/clients?action=list&token=' + encodeURIComponent(token));
+      const data = await res.json();
+      if (!res.ok || !Array.isArray(data.clients)) {
+        document.getElementById('home-subtitle').textContent = '';
+        return;
+      }
+      const clients = data.clients.filter(c => c.status !== 'rejected');
+      const today = new Date().toISOString().slice(0, 10);
+      const weekLater = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+      const urgent   = clients.filter(c => c.nextActionDate && c.nextActionDate <= today);
+      const upcoming = clients.filter(c => c.nextActionDate && c.nextActionDate > today && c.nextActionDate <= weekLater);
+
+      if (urgent.length === 0 && upcoming.length === 0) {
+        const subtitle = clients.length === 0
+          ? 'Добавь первого клиента и начни отслеживать прогресс'
+          : 'Все задачи выполнены — хороший день!';
+        document.getElementById('home-subtitle').textContent = subtitle;
+        if (clients.length === 0) {
+          document.getElementById('home-priorities').innerHTML =
+            '<div class="home-empty"><div class="home-empty-icon">👥</div>Клиентов пока нет.<br>Добавь первого — и система начнёт помогать тебе вести каждого до результата.<br><br><button class="home-item-btn" onclick="switchTab(\'clients\')" style="margin-top:0.5rem">Добавить клиента</button></div>';
+        }
+        return;
+      }
+
+      document.getElementById('home-subtitle').textContent = 'Вот что важно сделать сегодня';
+      let html = '';
+
+      if (urgent.length > 0) {
+        html += `<div class="home-section"><div class="home-section-title">🔴 Требуют внимания — ${urgent.length} ${declClients(urgent.length)}</div>`;
+        urgent.forEach(c => { html += homeItemHTML(c, 'urgent'); });
+        html += '</div>';
+      }
+      if (upcoming.length > 0) {
+        html += `<div class="home-section"><div class="home-section-title">🟡 На этой неделе — ${upcoming.length} ${declClients(upcoming.length)}</div>`;
+        upcoming.forEach(c => { html += homeItemHTML(c, 'upcoming'); });
+        html += '</div>';
+      }
+      document.getElementById('home-priorities').innerHTML = html;
+    } catch(e) {
+      document.getElementById('home-subtitle').textContent = '';
+    }
+  }
+
+  function declClients(n) {
+    if (n % 10 === 1 && n % 100 !== 11) return 'клиент';
+    if ([2,3,4].includes(n % 10) && ![12,13,14].includes(n % 100)) return 'клиента';
+    return 'клиентов';
+  }
+
+  function homeItemHTML(c, type) {
+    const statusInfo = CLIENT_STATUSES[c.status] || { label: c.status };
+    const today = new Date().toISOString().slice(0, 10);
+    let meta = statusInfo.label;
+    if (c.nextActionDate) {
+      if (c.nextActionDate < today) {
+        const days = Math.round((Date.now() - new Date(c.nextActionDate)) / 86400000);
+        meta += ` · ${days} ${days === 1 ? 'день' : days < 5 ? 'дня' : 'дней'} назад`;
+      } else {
+        const days = Math.round((new Date(c.nextActionDate) - Date.now()) / 86400000);
+        meta += ` · через ${days} ${days === 1 ? 'день' : days < 5 ? 'дня' : 'дней'}`;
+      }
+    }
+    return `<div class="home-item ${type}" id="home-item-${escHtml(c.id)}">
+      <div class="home-item-header"><span class="home-item-dot"></span><span class="home-item-name">${escHtml(c.name)}</span></div>
+      <div class="home-item-meta">${escHtml(meta)}</div>
+      <button class="home-item-btn" id="home-btn-${escHtml(c.id)}" onclick="homeClientAction('${escHtml(c.id)}', '${escHtml(c.name)}')">Подготовить сообщение</button>
+      <div id="home-result-${escHtml(c.id)}" style="display:none"></div>
+    </div>`;
+  }
+
+  async function homeClientAction(clientId, clientName) {
+    const btn = document.getElementById('home-btn-' + clientId);
+    const resultEl = document.getElementById('home-result-' + clientId);
+    if (!btn || !resultEl) return;
+
+    btn.disabled = true;
+    btn.textContent = 'Готовлю...';
+    resultEl.style.display = 'none';
+    resultEl.innerHTML = '';
+
+    try {
+      const listRes = await fetch('/api/clients?action=get&id=' + encodeURIComponent(clientId) + '&token=' + encodeURIComponent(clientsApiToken()));
+      const listData = await listRes.json();
+      const client = listData.client || {};
+
+      const res = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mode: 'client-action',
+          token: clientsApiToken(),
+          clientName: client.name || clientName,
+          clientStatus: client.status || '',
+          sessions: client.sessions || []
+        })
+      });
+      const data = await res.json();
+      const text = data.result || data.text || data.content || 'Не удалось получить ответ';
+
+      resultEl.innerHTML = `<div class="home-item-result">${escHtml(text)}</div>
+        <button class="home-item-copy" onclick="navigator.clipboard.writeText(${JSON.stringify(text)}).then(()=>{ this.textContent='Скопировано ✓'; setTimeout(()=>{ this.textContent='Скопировать'; },2000); })">Скопировать</button>`;
+      resultEl.style.display = 'block';
+      btn.textContent = 'Обновить';
+    } catch(e) {
+      resultEl.innerHTML = '<div class="home-item-result" style="color:#e74c3c">Ошибка — попробуй ещё раз</div>';
+      resultEl.style.display = 'block';
+      btn.textContent = 'Подготовить сообщение';
+    }
+    btn.disabled = false;
   }
 
   // ════════════════════════════════════════
