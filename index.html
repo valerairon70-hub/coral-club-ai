@@ -1480,6 +1480,39 @@
     .decode-toggle-btn:hover { border-color: #ff6b35; color: #ff6b35; }
     .decode-collapsed .decode-toggle-btn { border-color: #555; }
 
+    /* ── Карточка "Готовое сообщение клиенту" ── */
+    .ready-msg-card {
+      background: #1e2a1e;
+      border: 2px solid #3a7a3a;
+      border-radius: 12px;
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+      animation: fadeIn 0.4s ease both;
+    }
+    .ready-msg-header {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.9rem 1rem;
+      cursor: pointer;
+    }
+    .ready-msg-title-wrap { flex: 1; min-width: 0; }
+    .ready-msg-title { font-weight: 700; font-size: 0.96rem; color: #7ecf7e; }
+    .ready-msg-hint  { font-size: 0.72rem; color: #5a9a5a; margin-top: 0.15rem; }
+    .ready-msg-body  { padding: 0 1rem 1rem; }
+    .ready-copy-btn  { background: #3a7a3a !important; }
+    .ready-copy-btn:hover { background: #2d6b2d !important; }
+
+    /* ── Подпись перед поэтапной подачей ── */
+    .steps-section-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.75rem 0 0.4rem;
+    }
+
     /* ── Шаговые карточки диалога (расшифровка) ── */
     .step-card {
       background: #242424;
@@ -5587,20 +5620,22 @@
       return m ? m[0].replace(new RegExp(`<\\/?${tag}>`,'g'),'').trim() : '';
     };
     return {
-      urgent:     extract('острая_фаза'),
-      systems:    extract('системы'),
-      chain:      extract('цепочка'),
-      protocol:   extract('протокол'),
-      program:    extract('программа'),
-      nutrition:  extract('питание'),
-      practices:  extract('практики'),
-      mirror:     extract('зеркало'),
-      reason:     extract('причина'),
-      path:       extract('путь'),
-      step1:      extract('шаг_1'),
-      objections: extract('возражения'),
-      logic:      extract('логика'),
-      water:      extract('вода')
+      urgent:       extract('острая_фаза'),
+      systems:      extract('системы'),
+      rootcause:    extract('первопричина'),
+      readymsg:     extract('готовое_сообщение'),
+      chain:        extract('цепочка'),
+      protocol:     extract('протокол'),
+      program:      extract('программа'),
+      nutrition:    extract('питание'),
+      practices:    extract('практики'),
+      mirror:       extract('зеркало'),
+      reason:       extract('причина'),
+      path:         extract('путь'),
+      step1:        extract('шаг_1'),
+      objections:   extract('возражения'),
+      logic:        extract('логика'),
+      water:        extract('вода')
     };
   }
 
@@ -5707,7 +5742,7 @@
     const recId = genId();
     const clientDesc = (clientName ? clientName + ' — ' : '') + 'Жалобы: ' + complaints.join(', ');
     if (resultText) pendingResults[recId] = { resultText, type: 'decode', clientDesc };
-    pendingDecodes[recId] = { clientName: clientName || '', clientGender: clientGender || 'female', complaints, resultText: resultText || '', protocol: data.protocol || '', systems: data.systems || '' };
+    pendingDecodes[recId] = { clientName: clientName || '', clientGender: clientGender || 'female', complaints, resultText: resultText || '', protocol: data.protocol || '', systems: data.rootcause || data.systems || '' };
 
     const saveBlock = renderSaveToClientsBlock(recId, clientName);
 
@@ -5721,7 +5756,28 @@
         <div class="result-card-body">${renderText(data.urgent)}</div>
       </div>` : '';
 
-    // Шаговые карточки для клиента (1–4)
+    // Карточка "Готовое сообщение клиенту"
+    const readymsgCardId = `ready-card-${recId}`;
+    const readymsgHtml = data.readymsg ? `
+      <div class="ready-msg-card" id="${readymsgCardId}" style="animation-delay:${(data.urgent ? 1 : 0) * 0.07}s">
+        <div class="ready-msg-header" onclick="toggleDecodeCard('${readymsgCardId}')">
+          <div class="ready-msg-title-wrap">
+            <div class="ready-msg-title">📩 Готовое сообщение клиенту</div>
+            <div class="ready-msg-hint">Скопируй и отправь — без правок</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <button class="btn-copy-msg ready-copy-btn" data-copy="${escHtml(data.readymsg)}" onclick="event.stopPropagation();copyMsgText(this)">📋 Скопировать</button>
+            <button class="decode-toggle-btn">▲</button>
+          </div>
+        </div>
+        <div class="decode-body-wrap">
+          <div class="ready-msg-body">
+            <div class="step-msg-text">${renderText(data.readymsg)}</div>
+          </div>
+        </div>
+      </div>` : '';
+
+    // Шаговые карточки для клиента (поэтапная подача)
     const stepDefs = [
       { n: 1, icon: '🪞', title: 'Зеркало',            hint: 'Отправь первым — жди ответа',         content: data.mirror },
       { n: 2, icon: '💡', title: 'Причина',             hint: 'После того как клиент откликнулся',   content: data.reason },
@@ -5729,18 +5785,19 @@
       { n: 4, icon: '🚀', title: 'Первый шаг',          hint: 'Один продукт — одно действие',        content: data.step1  },
     ].filter(s => s.content);
 
-    const stepsHtml = stepDefs.map((s, i) => {
-      const cardId = `step-card-${recId}-${s.n}`;
-      const isFirst = i === 0;
-      return `
-        <div class="step-card${isFirst ? '' : ' decode-collapsed'}" id="${cardId}" style="animation-delay:${(i + (data.urgent ? 1 : 0)) * 0.07}s">
+    const stepsHtml = stepDefs.length > 0 ? `
+      <div class="steps-section-label">или поэтапная подача — шаг за шагом</div>
+      ${stepDefs.map((s, i) => {
+        const cardId = `step-card-${recId}-${s.n}`;
+        return `
+        <div class="step-card decode-collapsed" id="${cardId}" style="animation-delay:${(i + (data.urgent ? 1 : 0)) * 0.07}s">
           <div class="step-card-header" onclick="toggleDecodeCard('${cardId}')">
             <div class="step-badge">Шаг ${s.n}</div>
             <div class="step-title-wrap">
               <div class="step-card-title">${s.icon} ${s.title}</div>
               <div class="step-card-hint">${s.hint}</div>
             </div>
-            <button class="decode-toggle-btn">${isFirst ? '▲' : '▼'}</button>
+            <button class="decode-toggle-btn">▼</button>
           </div>
           <div class="decode-body-wrap">
             <div class="step-card-body">
@@ -5749,19 +5806,19 @@
             </div>
           </div>
         </div>`;
-    }).join('');
+      }).join('')}` : '';
 
     // Внутренние карточки консультанта
     const internalDefs = [
-      { icon: '💊', title: 'Протокол восстановления',       content: data.protocol,   copyable: true,  downloadable: true  },
-      { icon: '🛒', title: 'Программа и цены',              content: data.program,    copyable: true,  downloadable: false },
-      { icon: '🥗', title: 'Коррекция питания',             content: data.nutrition,  copyable: true,  downloadable: false },
-      { icon: '🏃', title: 'Дополнительные практики',       content: data.practices,  copyable: true,  downloadable: false },
-      { icon: '⚡', title: 'Возражения — как ответить',     content: data.objections, copyable: true,  downloadable: false },
-      { icon: '💡', title: 'Почему такой протокол',         content: data.logic,      copyable: false, downloadable: false },
-      { icon: '📊', title: 'Картина здоровья',              content: data.systems,    copyable: true,  downloadable: false },
-      { icon: '🔗', title: 'Причинно-следственная цепочка', content: data.chain,      copyable: true,  downloadable: false },
-      { icon: '💧', title: 'Вода и гидратация',             content: data.water,      copyable: false, downloadable: false },
+      { icon: '🔍', title: 'Первопричина — главный инсайт',   content: data.rootcause,  copyable: false, downloadable: false },
+      { icon: '💊', title: 'Протокол восстановления',          content: data.protocol,   copyable: true,  downloadable: true  },
+      { icon: '🛒', title: 'Программа и цены',                 content: data.program,    copyable: true,  downloadable: false },
+      { icon: '🥗', title: 'Коррекция питания',                content: data.nutrition,  copyable: true,  downloadable: false },
+      { icon: '🏃', title: 'Дополнительные практики',          content: data.practices,  copyable: true,  downloadable: false },
+      { icon: '⚡', title: 'Возражения — как ответить',        content: data.objections, copyable: true,  downloadable: false },
+      { icon: '💡', title: 'Почему такой протокол',            content: data.logic,      copyable: false, downloadable: false },
+      { icon: '🔗', title: 'Причинно-следственная цепочка',    content: data.chain,      copyable: true,  downloadable: false },
+      { icon: '💧', title: 'Вода и гидратация',                content: data.water,      copyable: false, downloadable: false },
     ].filter(c => c.content);
 
     const internalHtml = internalDefs.map((c, i) => {
@@ -5788,7 +5845,7 @@
         ${internalHtml}
       </div>` : '';
 
-    panel.innerHTML = saveBlock + urgentBlock + stepsHtml + renderPurchaseBlock() + consultantBlock + renderDecodeOutcomeBlock(recId, clientDesc);
+    panel.innerHTML = saveBlock + urgentBlock + readymsgHtml + stepsHtml + renderPurchaseBlock() + consultantBlock + renderDecodeOutcomeBlock(recId, clientDesc);
     initAccordionCards(panel);
 
     // Показываем чат и сохраняем контекст анализа
@@ -6793,12 +6850,13 @@
         { n: 4, icon: '🚀', title: 'Первый шаг',   content: parsed.step1  },
       ].filter(c => c.content);
       const infoCards = [
-        { icon: '💊', title: 'Протокол',              content: parsed.protocol,   copyable: true  },
-        { icon: '⚡', title: 'Возражения',             content: parsed.objections, copyable: true  },
-        { icon: '💡', title: 'Почему такой протокол', content: parsed.logic,      copyable: false },
-        { icon: '📊', title: 'Картина здоровья',      content: parsed.systems,    copyable: true  },
-        { icon: '🔗', title: 'Цепочка',               content: parsed.chain,      copyable: true  },
-        { icon: '💧', title: 'Вода',                  content: parsed.water,      copyable: false },
+        { icon: '📩', title: 'Готовое сообщение',      content: parsed.readymsg,   copyable: true  },
+        { icon: '🔍', title: 'Первопричина',            content: parsed.rootcause,  copyable: false },
+        { icon: '💊', title: 'Протокол',               content: parsed.protocol,   copyable: true  },
+        { icon: '⚡', title: 'Возражения',              content: parsed.objections, copyable: true  },
+        { icon: '💡', title: 'Почему такой протокол',  content: parsed.logic,      copyable: false },
+        { icon: '🔗', title: 'Цепочка',                content: parsed.chain,      copyable: true  },
+        { icon: '💧', title: 'Вода',                   content: parsed.water,      copyable: false },
       ].filter(c => c.content);
       body.innerHTML =
         stepCards.map(c => `
@@ -7080,7 +7138,7 @@
           const systems = s.systems || '';
           const protoPreview   = proto.length   > 240 ? proto.slice(0, 240)   + '…' : proto;
           const systemsPreview = systems.length > 300 ? systems.slice(0, 300) + '…' : systems;
-          const systemsLabel   = isMedical ? 'Что показало обследование' : 'Картина здоровья';
+          const systemsLabel   = isMedical ? 'Что показало обследование' : 'Первопричина';
           return `
           <div class="session-item">
             <div class="session-item-header">
