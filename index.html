@@ -695,6 +695,20 @@
       gap: 1rem;
     }
 
+    /* ── Вертикальный layout (Расшифровать) ── */
+    .layout-single {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .layout-single .input-panel {
+      max-width: 700px;
+      margin: 0 auto;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .layout-single .results-panel .empty-state { display: none; }
+
     .result-card {
       background: #242424;
       border: 1px solid #333;
@@ -1947,6 +1961,8 @@
     .card-water    .result-card-header { border-left: 3px solid #3b82f6; }
     .card-urgent   .result-card-header { border-left: 3px solid #ef4444; }
     .card-urgent { border-color: rgba(239,68,68,0.35); box-shadow: 0 0 0 1px rgba(239,68,68,0.2); }
+    .card-screening .result-card-header { border-left: 3px solid #ff6b35; }
+    .card-screening { border-color: rgba(255,107,53,0.35); box-shadow: 0 0 0 1px rgba(255,107,53,0.15); }
 
     /* ── Модальное окно истории ── */
     .history-modal {
@@ -3909,7 +3925,7 @@
              ВКЛАДКА 2: РАСШИФРОВАТЬ ТРЕКЕР
              ════════════════════════════════ -->
         <div class="tab-panel" id="panel-decode">
-          <div class="layout">
+          <div class="layout-single">
 
             <!-- Форма расшифровки -->
             <div class="input-panel">
@@ -4430,11 +4446,14 @@
     /* ── Пищеварение ── */
     { id:'assimil',      name:'Ассимилятор',                       aliases:['ассимилятор'],                               system:'ПС',    club:2494,  retail:3118,  pts:17  },
     { id:'superflora',   name:'Супер-Флора',                       aliases:['супер-флора','супер флора'],                 system:'ПС',    club:1720,  retail:2150,  pts:12  },
-    { id:'lecithin',     name:'Корал Лецитин',                     aliases:['лецитин'],                                   system:'ПС',    club:1290,  retail:1634,  pts:8   },
+    { id:'lecithin',     name:'Корал Лецитин',                     aliases:['лецитин','корал лецитин','соевый лецитин'],   system:'ПС',    club:1290,  retail:1634,  pts:8   },
+    { id:'sunflower_l',  name:'Лецитин Подсолнечный',              aliases:['лецитин подсолнечный','подсолнечный лецитин','sunflower lecithin'], system:'ПС', club:1290, retail:1613, pts:8 },
     { id:'artichoke',    name:'Корал Артишок',                     aliases:['артишок'],                                   system:'ПС',    club:1548,  retail:1935,  pts:11  },
-    { id:'colova_l',     name:'Коло-Вада Лайт (программа)',        aliases:['коло-вада лайт','коловада лайт'],             system:'ПС',    club:6622,  retail:8278,  pts:46  },
-    { id:'colova_p',     name:'Коло-Вада Плюс (программа)',        aliases:['коло-вада плюс','коловада плюс'],             system:'ПС',    club:7663,  retail:9579,  pts:53  },
-    { id:'parashield',   name:'Парашилд',                          aliases:['паращилд','parashield'],                     system:'ПС',    club:7224,  retail:9030,  pts:50  },
+    { id:'colova_l',     name:'Коло-Вада Лайт (программа)',        aliases:['коло-вада лайт','коловада лайт'],             system:'ПС',    club:6622,  retail:8278,  pts:43  },
+    { id:'colova_p',     name:'Коло-Вада Плюс (программа)',        aliases:['коло-вада плюс','коловада плюс'],             system:'ПС',    club:7663,  retail:9579,  pts:45  },
+    { id:'colova_gr',    name:'Коло-Вада Грин (программа)',        aliases:['коло-вада грин','коловада грин'],             system:'ПС',    club:8514,  retail:10643, pts:50  },
+    { id:'parashield',   name:'Парашилд',                          aliases:['паращилд','parashield'],                     system:'ПС',    club:7224,  retail:9030,  pts:51  },
+    { id:'parashield_p', name:'Парашилд Плюс',                     aliases:['парашилд плюс','parashield plus'],            system:'ПС',    club:12986, retail:16233, pts:91  },
     /* ── Лимфа / Вода ── */
     { id:'coralmine',    name:'Корал-Майн (10 саше)',              aliases:['корал-майн','coral-mine','coral mine'],       system:'Лимфа', club:688,   retail:860,   pts:5   },
     { id:'h500',         name:'H-500',                             aliases:['h-500','н-500'],                             system:'Лимфа', club:2752,  retail:3440,  pts:20  },
@@ -4444,7 +4463,7 @@
     { id:'selenium',     name:'Селен',                             aliases:['selenium'],                                  system:'ИС',    club:1118,  retail:1398,  pts:8   },
     { id:'protiviti',    name:'Противити Ультра',                  aliases:['противити','protivity'],                     system:'ИС',    club:3526,  retail:4408,  pts:25  },
     { id:'chlorella',    name:'Хлорелла',                          aliases:['хлорелл'],                                   system:'ИС',    club:2021,  retail:2527,  pts:14  },
-    { id:'triplec',      name:'Трипл Си',                          aliases:['triple c','triple-c','трипл'],               system:'ИС',    club:2150,  retail:2688,  pts:15  },
+
     /* ── Эндокринная ── */
     { id:'lipostick',    name:'Липостик Фит (60 стиков)',          aliases:['липостик','lipostick'],                      system:'ЭДС',   club:6450,  retail:8067,  pts:45  },
     /* ── Репродуктивная ── */
@@ -5991,8 +6010,182 @@
       schedule:     extract('расписание_дня'),
       objections:   extract('возражения'),
       logic:        extract('логика'),
-      water:        extract('вода')
+      water:        extract('вода'),
+      screening:    extract('скрининг')
     };
+  }
+
+  // ════════════════════════════════════════
+  // КАЛЬКУЛЯТОР НАБОРА ПРОДУКТОВ
+  // ════════════════════════════════════════
+
+  function calcDetectProducts(text) {
+    if (!text) return [];
+    const lower = text.toLowerCase();
+    const found = [], seen = new Set();
+    for (const p of PRODUCTS_DB) {
+      if (seen.has(p.id)) continue;
+      const terms = [p.name, ...p.aliases].map(s => s.toLowerCase()).filter(Boolean);
+      if (terms.some(t => lower.includes(t))) { found.push(p.id); seen.add(p.id); }
+    }
+    return found;
+  }
+
+  function calcRowHtml(recId, id, qty) {
+    const p = PRODUCTS_DB.find(x => x.id === id);
+    if (!p) return '';
+    return `<div class="calc-row" id="calc-row-${recId}-${id}">
+      <div class="calc-row-left">
+        <div class="calc-name">${p.name}</div>
+        <span class="calc-sys-badge">${p.system}</span>
+      </div>
+      <div class="calc-row-right">
+        <div class="calc-prices">
+          <span class="calc-retail-price">${p.retail.toLocaleString('ru')} ₽</span>
+          <span class="calc-club-price">${p.club.toLocaleString('ru')} ₽</span>
+        </div>
+        <div class="calc-qty-ctrl">
+          <button onclick="calcChangeQty('${recId}','${id}',-1)">−</button>
+          <span class="calc-qty-val" id="calc-qty-${recId}-${id}">${qty}</span>
+          <button onclick="calcChangeQty('${recId}','${id}',1)">+</button>
+        </div>
+        <button class="calc-remove" title="Убрать" onclick="calcRemove('${recId}','${id}')">✕</button>
+      </div>
+    </div>`;
+  }
+
+  function renderPriceCalculator(protocolText, programText, recId) {
+    const combined = (protocolText || '') + ' ' + (programText || '');
+    const detected = calcDetectProducts(combined);
+    calcState[recId] = {};
+    detected.forEach(id => { calcState[recId][id] = 1; });
+
+    const link = getDiscountLink();
+    const btnClass = link ? 'calc-register-btn' : 'calc-register-btn no-link';
+    const btnAttrs = link
+      ? `href="${escHtml(link)}" target="_blank" rel="noopener"`
+      : `href="#" onclick="event.preventDefault();switchTab('identity')"`;
+    const btnText = link ? 'Зарегистрироваться со скидкой →' : '⚠️ Добавьте вашу ссылку в «Кто я?»';
+
+    const rowsHtml = detected.length > 0
+      ? detected.map(id => calcRowHtml(recId, id, 1)).join('')
+      : '<div class="calc-empty">Продукты не распознаны — добавьте вручную ниже</div>';
+
+    const selectOpts = [...PRODUCTS_DB]
+      .sort((a, b) => a.name.localeCompare(b.name, 'ru'))
+      .filter(p => !detected.includes(p.id))
+      .map(p => `<option value="${p.id}">${p.name} — ${p.club.toLocaleString('ru')} ₽</option>`)
+      .join('');
+
+    return `<div class="calc-block" id="calc-block-${recId}">
+      <div class="calc-block-title">💰 Стоимость набора</div>
+      <div class="calc-note">На 1 месяц · клубная цена на 20% ниже розничной</div>
+      <div id="calc-rows-${recId}">${rowsHtml}</div>
+      <div class="calc-add-row">
+        <select class="calc-add-select" id="calc-sel-${recId}">
+          <option value="">+ Добавить продукт...</option>
+          ${selectOpts}
+        </select>
+        <button class="btn-calc-add" onclick="calcAddProduct('${recId}')">Добавить</button>
+      </div>
+      <div class="calc-totals">
+        <div class="calc-total-row"><span>Розничная цена:</span><span id="calc-t-retail-${recId}">0 ₽</span></div>
+        <div class="calc-total-row hl"><span>По карте Coral Club (−20%):</span><span class="calc-total-club" id="calc-t-club-${recId}">0 ₽</span></div>
+        <div class="calc-total-row savings"><span>Экономия:</span><span id="calc-t-save-${recId}">0 ₽</span></div>
+        <div class="calc-cashback-note">+ до 10% кешбека накапливается с каждой покупкой — тратите на следующие заказы или забираете деньгами</div>
+        <a class="${btnClass}" ${btnAttrs}>${btnText}</a>
+      </div>
+      <div class="calc-distributor">
+        <div class="calc-dist-label">только для вас</div>
+        <div class="calc-dist-row"><span>Баллы набора:</span><span class="calc-pts-val" id="calc-pts-${recId}">0</span></div>
+        <div class="calc-progress-wrap"><div class="calc-progress-bar" id="calc-bar-${recId}" style="width:0%"></div></div>
+        <div class="calc-dist-targets" id="calc-targets-${recId}"></div>
+      </div>
+    </div>`;
+  }
+
+  function calcUpdateTotals(recId) {
+    const state = calcState[recId];
+    if (!state) return;
+    let totalRetail = 0, totalClub = 0, totalPts = 0;
+    for (const [id, qty] of Object.entries(state)) {
+      const p = PRODUCTS_DB.find(x => x.id === id);
+      if (p) { totalRetail += p.retail * qty; totalClub += p.club * qty; totalPts += p.pts * qty; }
+    }
+    const fmt = n => n.toLocaleString('ru') + ' ₽';
+    const g = id => document.getElementById(id);
+    if (g(`calc-t-retail-${recId}`)) g(`calc-t-retail-${recId}`).textContent = fmt(totalRetail);
+    if (g(`calc-t-club-${recId}`))   g(`calc-t-club-${recId}`).textContent   = fmt(totalClub);
+    if (g(`calc-t-save-${recId}`))   g(`calc-t-save-${recId}`).textContent   = fmt(totalRetail - totalClub);
+    if (g(`calc-pts-${recId}`))      g(`calc-pts-${recId}`).textContent      = totalPts;
+    const bar = g(`calc-bar-${recId}`);
+    if (bar) bar.style.width = Math.min(100, Math.round(totalPts / 500 * 100)) + '%';
+    const targ = g(`calc-targets-${recId}`);
+    if (targ) {
+      const lines = [];
+      if (totalPts < 50)       lines.push(`Нужно ещё ${50  - totalPts} баллов до ЛО Директора (50)`);
+      else if (totalPts < 70)  lines.push('✓ Покрывает ЛО Директора (50 баллов)');
+      else if (totalPts < 100) lines.push('✓ Покрывает ЛО Золотого директора (70 баллов)');
+      else                     lines.push('✓ Покрывает ЛО Мастера (100 баллов)');
+      if (totalPts < 500)      lines.push(`${500 - totalPts} баллов до порога ГО 500 (Директор)`);
+      else if (totalPts < 750) lines.push('✓ Порог ГО 500 — квалификация Директора');
+      else                     lines.push('✓ ГО 750 — Экстрабонус 50 у.е.!');
+      targ.innerHTML = lines.join('<br>');
+    }
+  }
+
+  function calcChangeQty(recId, id, delta) {
+    if (!calcState[recId]) return;
+    calcState[recId][id] = Math.max(1, (calcState[recId][id] || 1) + delta);
+    const el = document.getElementById(`calc-qty-${recId}-${id}`);
+    if (el) el.textContent = calcState[recId][id];
+    calcUpdateTotals(recId);
+  }
+
+  function calcRemove(recId, id) {
+    if (!calcState[recId]) return;
+    delete calcState[recId][id];
+    const row = document.getElementById(`calc-row-${recId}-${id}`);
+    if (row) row.remove();
+    const p = PRODUCTS_DB.find(x => x.id === id);
+    const sel = document.getElementById(`calc-sel-${recId}`);
+    if (p && sel) {
+      const opt = document.createElement('option');
+      opt.value = p.id;
+      opt.textContent = `${p.name} — ${p.club.toLocaleString('ru')} ₽`;
+      const opts = Array.from(sel.options).slice(1);
+      let inserted = false;
+      for (const o of opts) {
+        if (o.textContent.localeCompare(opt.textContent, 'ru') > 0) { sel.insertBefore(opt, o); inserted = true; break; }
+      }
+      if (!inserted) sel.appendChild(opt);
+    }
+    const rowsEl = document.getElementById(`calc-rows-${recId}`);
+    if (rowsEl && Object.keys(calcState[recId]).length === 0) {
+      rowsEl.innerHTML = '<div class="calc-empty">Продуктов нет — добавьте вручную ниже</div>';
+    }
+    calcUpdateTotals(recId);
+  }
+
+  function calcAddProduct(recId) {
+    const sel = document.getElementById(`calc-sel-${recId}`);
+    if (!sel || !sel.value) return;
+    const id = sel.value;
+    const p = PRODUCTS_DB.find(x => x.id === id);
+    if (!p) return;
+    if (!calcState[recId]) calcState[recId] = {};
+    if (calcState[recId][id]) { calcChangeQty(recId, id, 1); sel.value = ''; return; }
+    calcState[recId][id] = 1;
+    const opt = Array.from(sel.options).find(o => o.value === id);
+    if (opt) opt.remove();
+    sel.value = '';
+    const rowsEl = document.getElementById(`calc-rows-${recId}`);
+    if (rowsEl) {
+      const emptyEl = rowsEl.querySelector('.calc-empty');
+      if (emptyEl) emptyEl.remove();
+      rowsEl.insertAdjacentHTML('beforeend', calcRowHtml(recId, id, 1));
+    }
+    calcUpdateTotals(recId);
   }
 
   // ════════════════════════════════════════
@@ -6112,6 +6305,16 @@
         <div class="result-card-body">${renderText(data.urgent)}</div>
       </div>` : '';
 
+    // Блок скрининга безопасности (показывается перед протоколом при первом контакте)
+    const screeningBlock = data.screening ? `
+      <div class="result-card card-screening" style="animation-delay:${data.urgent ? '0.07s' : '0s'}">
+        <div class="result-card-header">
+          <div class="card-title">🛡 Проверка перед протоколом</div>
+          <button class="btn-copy" data-copy="${escHtml(data.screening)}" onclick="copyText(this)">Скопировать</button>
+        </div>
+        <div class="result-card-body">${renderText(data.screening)}</div>
+      </div>` : '';
+
     // Карточка "Готовое сообщение клиенту"
     const readymsgCardId = `ready-card-${recId}`;
     const readymsgHtml = data.readymsg ? `
@@ -6206,8 +6409,9 @@
         ${internalHtml}
       </div>` : '';
 
-    panel.innerHTML = saveBlock + urgentBlock + readymsgHtml + stepsHtml + renderPurchaseBlock() + consultantBlock + renderDecodeOutcomeBlock(recId, clientDesc);
+    panel.innerHTML = saveBlock + urgentBlock + screeningBlock + readymsgHtml + stepsHtml + renderPurchaseBlock() + renderPriceCalculator(data.protocol, data.program, recId) + consultantBlock + renderDecodeOutcomeBlock(recId, clientDesc);
     initAccordionCards(panel);
+    calcUpdateTotals(recId);
 
     // Показываем чат и сохраняем контекст анализа
     if (resultText) {
