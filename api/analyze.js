@@ -2809,6 +2809,9 @@ ${trackerProtocolsText}` : ''}
   // до таймаута и показывает "Load failed", даже если сервер думает
   res.write(':ok\n\n');
 
+  // Периодический ping — держит соединение живым пока Anthropic обрабатывает запрос
+  const keepAlive = setInterval(() => { try { res.write(':ping\n\n'); } catch(_) {} }, 5000);
+
   try {
     const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -2877,6 +2880,8 @@ ${trackerProtocolsText}` : ''}
       error: isTerminated ? 'Соединение прервано — попробуйте ещё раз' : 'Внутренняя ошибка',
       details: err.message
     })}\n\n`);
+  } finally {
+    clearInterval(keepAlive);
   }
   res.end();
 };
