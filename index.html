@@ -861,6 +861,8 @@
     .btn-wa:hover { background: #25D366; color: #fff; }
     .btn-tg { border-color: #229ED9; color: #229ED9; }
     .btn-tg:hover { background: #229ED9; color: #fff; }
+    .btn-share { border-color: #a855f7; color: #a855f7; }
+    .btn-share:hover { background: #a855f7; color: #fff; }
 
     /* ── Блок исхода консультации ── */
     .outcome-block {
@@ -2694,7 +2696,7 @@
     }
 
     .client-detail-name { font-size: 1.15rem; font-weight: 700; }
-    .client-detail-meta { font-size: 0.8rem; color: #777; margin-top: 0.2rem; }
+    .client-detail-meta { font-size: 0.8rem; color: #aaa; margin-top: 0.2rem; }
 
     .btn-close-detail {
       background: none;
@@ -2710,7 +2712,7 @@
     .sessions-title {
       font-size: 0.82rem;
       font-weight: 700;
-      color: #777;
+      color: #aaa;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       margin-bottom: 0.75rem;
@@ -2753,6 +2755,55 @@
     .compare-section.msg   .compare-section-title { color: #c084fc; }
     .compare-section-body { color: #ccc; white-space: pre-wrap; }
 
+    .story-result {
+      display: none;
+      margin-top: 1rem;
+      border: 1px solid #3a2a5e;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #12101a;
+    }
+    .story-result.visible { display: block; }
+    .story-format {
+      border-bottom: 1px solid #2a2040;
+    }
+    .story-format:last-child { border-bottom: none; }
+    .story-format-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.7rem 1rem;
+      cursor: pointer;
+      background: #1a1528;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #c084fc;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .story-format-header:hover { background: #221a38; }
+    .story-format-body {
+      padding: 0.9rem 1rem;
+      color: #e0d8f0;
+      font-size: 0.88rem;
+      white-space: pre-wrap;
+      line-height: 1.55;
+    }
+    .btn-create-case {
+      margin-top: 0.75rem;
+      padding: 0.55rem 1.1rem;
+      background: linear-gradient(135deg, #6d28d9, #a855f7);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-create-case:hover { opacity: 0.88; }
+    .btn-create-case:disabled { opacity: 0.45; cursor: default; }
+
     .session-item {
       background: #1e1e1e;
       border: 1px solid #2e2e2e;
@@ -2769,8 +2820,8 @@
     }
 
     .session-date { font-size: 0.8rem; font-weight: 600; color: #ff6b35; }
-    .session-type { font-size: 0.72rem; color: #666; }
-    .session-label { font-size: 0.68rem; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.55rem; margin-bottom: 0.2rem; }
+    .session-type { font-size: 0.72rem; color: #999; }
+    .session-label { font-size: 0.68rem; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.55rem; margin-bottom: 0.2rem; }
     .session-label:first-of-type { margin-top: 0; }
     .session-complaints { font-size: 0.83rem; color: #ccc; }
     .session-protocol { font-size: 0.81rem; color: #999; line-height: 1.55; }
@@ -2862,7 +2913,7 @@
     .contact-section-title {
       font-size: 0.82rem;
       font-weight: 700;
-      color: #777;
+      color: #aaa;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       margin: 1rem 0 0.6rem;
@@ -3475,7 +3526,7 @@
     display: flex; justify-content: space-between; align-items: center;
     margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #2a2a2a;
   }
-  .crm-card-meta { font-size: 0.72rem; color: #555; }
+  .crm-card-meta { font-size: 0.72rem; color: #888; }
   .crm-delete-btn {
     background: none; border: 1px solid #3a3a3a; color: #666;
     font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 8px; cursor: pointer; transition: all 0.15s;
@@ -3978,6 +4029,14 @@
                   placeholder="Вставьте данные трекера — например:&#10;НАГРУЗКА 45% КРОВЕТВОРНАЯ СИСТЕМА / КС&#10;НАГРУЗКА 35% ЦЕНТРАЛЬНАЯ НЕРВНАЯ СИСТЕМА / ЦНС&#10;НАГРУЗКА 20% ОПОРНО-ДВИГАТЕЛЬНАЯ СИСТЕМА / ОДС"></textarea>
               </div>
 
+              <!-- Привязать к клиенту -->
+              <div class="field-group">
+                <div class="field-label">Привязать к клиенту <span style="color:#555">(из базы)</span></div>
+                <select id="decode-linked-client" class="field-input" style="width:100%" onchange="onDecodeClientSelect(this.value)">
+                  <option value="">— Новый клиент —</option>
+                </select>
+              </div>
+
               <!-- Клиент -->
               <div class="field-group">
                 <div class="field-label">Кто клиент? <span style="color:#555">(необязательно)</span></div>
@@ -4009,6 +4068,75 @@
                   <div class="complaint-num">3</div>
                   <input type="text" id="c3" placeholder="Жалоба или цель: скачки давления / больше энергии">
                 </div>
+              </div>
+
+              <!-- Главная цель — программа Бутаковой -->
+              <div class="field-group">
+                <div class="field-label">Главная цель клиента <span style="color:#555">(уточняет программу из 95)</span></div>
+                <select id="main-goal" class="field-input" style="width:100%">
+                  <option value="">— не указана (AI определит по трекеру и жалобам) —</option>
+                  <optgroup label="ЦНС — нервная система">
+                    <option value="Стресс, тревога, раздражительность (ЦНС — антистресс)">Стресс, тревога, раздражительность</option>
+                    <option value="Плохой сон, бессонница (ЦНС — нарушения сна)">Плохой сон, бессонница</option>
+                    <option value="Хроническая усталость, упадок сил (ЦНС — СХУ)">Хроническая усталость, упадок сил</option>
+                    <option value="Депрессия, апатия, плохое настроение (ЦНС — депрессия)">Депрессия, апатия, плохое настроение</option>
+                    <option value="Головные боли, мигрени (ЦНС — головные боли)">Головные боли, мигрени</option>
+                    <option value="Память, концентрация, деменция (ЦНС 60+ — память)">Память, концентрация, ясность ума (60+)</option>
+                    <option value="Антистресс для мужчин (ЦНС — мужской антистресс)">Антистресс для мужчин</option>
+                  </optgroup>
+                  <optgroup label="ССС — сердечно-сосудистая">
+                    <option value="Высокое давление, гипертония (ССС — гипертония)">Высокое давление, гипертония</option>
+                    <option value="Аритмия, тахикардия, перебои в сердце (ССС — аритмия)">Аритмия, тахикардия, перебои в сердце</option>
+                    <option value="Высокий холестерин, атеросклероз (ССС — атеросклероз)">Высокий холестерин, атеросклероз</option>
+                    <option value="Варикоз, тромбофлебит (ССС — варикоз)">Варикоз, тромбофлебит</option>
+                    <option value="Реабилитация после инфаркта или инсульта (ССС — реабилитация)">Реабилитация после инфаркта / инсульта</option>
+                  </optgroup>
+                  <optgroup label="КС — кровь">
+                    <option value="Анемия, низкий гемоглобин, низкий ферритин (КС — анемия)">Анемия, низкий гемоглобин / ферритин</option>
+                  </optgroup>
+                  <optgroup label="ПС — пищеварение">
+                    <option value="Вздутие, СРК, нарушения пищеварения (ПС — кишечник)">Вздутие, СРК, нарушения пищеварения</option>
+                    <option value="Хронические запоры (ПС — запоры)">Хронические запоры</option>
+                    <option value="Гастрит, рефлюкс, язва желудка (ПС — гастрит)">Гастрит, рефлюкс, язва желудка</option>
+                    <option value="Желчный пузырь, застой желчи, камни (ПС — желчный)">Желчный пузырь, застой желчи / камни</option>
+                    <option value="Избыточный вес, похудение (ПС + ЭС — снижение веса)">Избыточный вес, похудение</option>
+                    <option value="Паразитоз, описторхоз, гельминты (ПС — паразиты)">Паразитоз, гельминты</option>
+                  </optgroup>
+                  <optgroup label="МВС + Кожа">
+                    <option value="Хронический цистит, инфекции мочевых путей (МВС — цистит)">Хронический цистит, МВП-инфекции</option>
+                    <option value="Отёки хронические (МВС — отёки)">Отёки хронические</option>
+                    <option value="Камни в почках (МВС — почки)">Камни в почках</option>
+                    <option value="Проблемы с кожей: акне, псориаз, экзема (Кожа — дерматозы)">Проблемы с кожей (акне, псориаз, экзема)</option>
+                  </optgroup>
+                  <optgroup label="РС — репродуктивная">
+                    <option value="ПМС, болезненные менструации, нерегулярный цикл (РС — менструальный цикл)">ПМС, болезненные менструации, нерегулярный цикл</option>
+                    <option value="Менопауза, климакс, приливы (РС — климакс)">Менопауза, климакс, приливы</option>
+                    <option value="Фибромиома, эндометриоз, кисты (РС — гинекология)">Фибромиома, эндометриоз, кисты</option>
+                    <option value="Мужское здоровье: простата, либидо, потенция (РС — мужская)">Мужское здоровье: простата, либидо, потенция</option>
+                    <option value="Подготовка к беременности, бесплодие (РС — беременность)">Подготовка к беременности / бесплодие</option>
+                  </optgroup>
+                  <optgroup label="ЭС — эндокринная">
+                    <option value="Щитовидная железа, гипотиреоз, узлы (ЭС — щитовидка)">Щитовидная железа, гипотиреоз</option>
+                    <option value="Сахарный диабет 2 типа, нарушение сахара (ЭС — диабет)">Сахарный диабет 2 типа, нарушение сахара</option>
+                  </optgroup>
+                  <optgroup label="КМС — костно-мышечная">
+                    <option value="Боли в суставах, артрит, артроз (КМС — суставы)">Боли в суставах, артрит, артроз</option>
+                    <option value="Боли в спине, остеохондроз, грыжа (КМС — позвоночник)">Боли в спине, остеохондроз, грыжа</option>
+                    <option value="Остеопороз, хрупкость костей (КМС — остеопороз)">Остеопороз, хрупкость костей</option>
+                    <option value="Восстановление после травмы или операции (КМС — реабилитация)">Восстановление после травмы / операции</option>
+                  </optgroup>
+                  <optgroup label="ИС — иммунная">
+                    <option value="Частые ОРВИ, слабый иммунитет (ИС — иммунитет)">Частые ОРВИ, слабый иммунитет</option>
+                    <option value="Аллергии, поллиноз (ИС — аллергия)">Аллергии, поллиноз</option>
+                  </optgroup>
+                  <optgroup label="ДС — дыхательная">
+                    <option value="Хронический кашель, бронхит (ДС — бронхит)">Хронический кашель, бронхит</option>
+                    <option value="Бронхиальная астма — поддержка (ДС — астма)">Бронхиальная астма (поддержка)</option>
+                  </optgroup>
+                  <optgroup label="Общее очищение">
+                    <option value="Общее очищение организма, детоксикация (Коло-Вада, ЛС)">Общее очищение, детоксикация</option>
+                  </optgroup>
+                </select>
               </div>
 
               <!-- Этап работы -->
@@ -4420,6 +4548,8 @@
         <div id="detail-sessions"></div>
         <button class="btn-compare-sessions" id="btn-compare-sessions" onclick="compareClientSessions()" style="display:none">🔄 Сравнить трекеры До → После</button>
         <div class="compare-result" id="compare-result"></div>
+        <button class="btn-create-case" id="btn-create-case" onclick="generateClientCase()" style="display:none">✨ Создать кейс для соцсетей</button>
+        <div class="story-result" id="story-result"></div>
         <div class="contact-section-title" style="margin-top:1.5rem">Следующий шаг</div>
         <button class="btn-client-action" id="btn-client-action" onclick="generateClientAction()">✍️ Что написать клиенту</button>
         <div class="client-action-result" id="client-action-result">
@@ -4715,6 +4845,7 @@
     if (name === 'stats') renderStats();
     if (name === 'clients') loadClients();
     if (name === 'home') loadHomeScreen();
+    if (name === 'decode') loadDecodeClientList();
   }
 
   // ════════════════════════════════════════
@@ -4757,7 +4888,19 @@
       }
 
       document.getElementById('home-subtitle').textContent = 'Вот что важно сделать сегодня';
-      let html = '';
+
+      // Статистика недели
+      const activeCount   = clients.filter(c => !['rejected','permanent'].includes(c.status)).length;
+      const protocolCount = clients.filter(c => c.status === 'protocol_given' || c.status === 'on_protocol').length;
+      const totalCount = urgent.length + upcoming.length;
+      const doneCount = getHomeDoneToday().filter(id => clients.some(c => c.id === id)).length;
+      const statsHtml = `<div id="home-done-counter" data-total="${totalCount}" style="font-size:0.8rem;color:#888;margin-bottom:0.75rem;display:${totalCount > 0 ? 'block' : 'none'}">Сегодня сделано: ${Math.min(doneCount, totalCount)} из ${totalCount}</div>
+        <div style="display:flex;gap:1rem;margin-bottom:1.25rem;flex-wrap:wrap">
+          <span style="font-size:0.8rem;color:#666">В работе: <strong style="color:#f0f0f0">${activeCount}</strong></span>
+          <span style="font-size:0.8rem;color:#666">На протоколе: <strong style="color:#4ade80">${protocolCount}</strong></span>
+          <span style="font-size:0.8rem;color:#666">Всего клиентов: <strong style="color:#f0f0f0">${clients.length}</strong></span>
+        </div>`;
+      let html = statsHtml;
 
       if (urgent.length > 0) {
         const urgCollapsed = localStorage.getItem('home_collapsed_urgent') === '1';
@@ -4818,9 +4961,56 @@
     return `<div class="home-item ${type}" id="home-item-${escHtml(c.id)}">
       <div class="home-item-header"><span class="home-item-dot"></span><span class="home-item-name">${escHtml(c.name)}</span></div>
       <div class="home-item-meta">${escHtml(meta)}</div>
-      <button class="home-item-btn" id="home-btn-${escHtml(c.id)}" onclick="homeClientAction('${escHtml(c.id)}', '${escHtml(c.name)}')">Подготовить сообщение</button>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.5rem">
+        <button class="home-item-btn" id="home-btn-${escHtml(c.id)}" onclick="homeClientAction('${escHtml(c.id)}', '${escHtml(c.name)}')">Подготовить сообщение</button>
+        <button class="home-item-btn" style="background:none;border:1px solid #3a3a3a;color:#666" onclick="homePostpone('${escHtml(c.id)}', '${escHtml(c.status || 'invited')}')">Отложить на завтра</button>
+      </div>
       <div id="home-result-${escHtml(c.id)}" style="display:none"></div>
     </div>`;
+  }
+
+  async function homePostpone(clientId, status) {
+    const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
+    try {
+      await fetch('/api/clients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'set-status', token: clientsApiToken(), clientId, status, nextActionDate: tomorrow })
+      });
+      const item = document.getElementById('home-item-' + clientId);
+      if (item) item.style.opacity = '0.4';
+      homeDoneToday(clientId);
+      updateHomeDoneCounter();
+    } catch(_) {}
+  }
+
+  // ─ Счётчик «Сегодня сделано» ─
+  function homeDoneToday(clientId) {
+    const today = new Date().toISOString().slice(0, 10);
+    let state = {};
+    try { state = JSON.parse(localStorage.getItem('home_done') || '{}'); } catch(_) {}
+    if (state.date !== today) state = { date: today, ids: [] };
+    if (!state.ids.includes(clientId)) state.ids.push(clientId);
+    localStorage.setItem('home_done', JSON.stringify(state));
+  }
+
+  function getHomeDoneToday() {
+    const today = new Date().toISOString().slice(0, 10);
+    try {
+      const state = JSON.parse(localStorage.getItem('home_done') || '{}');
+      return state.date === today ? state.ids : [];
+    } catch(_) { return []; }
+  }
+
+  function updateHomeDoneCounter() {
+    const el = document.getElementById('home-done-counter');
+    if (!el) return;
+    const total = parseInt(el.dataset.total || '0', 10);
+    const done = getHomeDoneToday().length;
+    if (total > 0) {
+      el.textContent = `Сегодня сделано: ${Math.min(done, total)} из ${total}`;
+      el.style.display = 'block';
+    }
   }
 
   const _homeResults = {};
@@ -4885,6 +5075,8 @@
          </div>`;
       resultEl.style.display = 'block';
       btn.textContent = 'Обновить';
+      homeDoneToday(clientId);
+      updateHomeDoneCounter();
     } catch(e) {
       resultEl.innerHTML = '<div class="home-item-result" style="color:#e74c3c">Ошибка — попробуй ещё раз</div>';
       resultEl.style.display = 'block';
@@ -5671,6 +5863,9 @@
     document.getElementById('c2').value = '';
     document.getElementById('c3').value = '';
     document.getElementById('client-name').value = '';
+    document.getElementById('main-goal').value = '';
+    const linkedSel = document.getElementById('decode-linked-client');
+    if (linkedSel) linkedSel.value = '';
     const trackerText = document.getElementById('tracker-protocols-text');
     if (trackerText) trackerText.value = '';
 
@@ -5754,6 +5949,7 @@
       ? protocolImages.map(img => ({ base64: img.base64, mimeType: img.mimeType }))
       : null;
     const trackerProtocolsText = document.getElementById('tracker-protocols-text').value.trim() || null;
+    const mainGoal = document.getElementById('main-goal').value.trim() || null;
     const trackerText = trackerInputMode === 'text'
       ? (document.getElementById('tracker-text-input').value.trim() || null)
       : null;
@@ -5769,6 +5965,7 @@
           images: trackerInputMode === 'image' ? uploadedImages.map(img => ({ base64: img.base64, mimeType: img.mimeType })) : [],
           prevImages: prevImages.map(img => ({ base64: img.base64, mimeType: img.mimeType })),
           complaints: [c1, c2, c3].filter(Boolean),
+          mainGoal: mainGoal || null,
           stage,
           readiness,
           clientName,
@@ -6508,20 +6705,27 @@
       const stage = document.querySelector('input[name="stage"]:checked')?.value || '';
       const readiness = document.querySelector('input[name="readiness"]:checked')?.value || '';
 
-      // Создаём клиента
-      const createRes = await fetch('/api/clients', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'create', token,
-          name, age,
-          gender: pd.clientGender,
-          notes: pd.complaints.join(' · ')
-        })
-      });
-      const createData = await createRes.json();
-      if (!createRes.ok) throw new Error(createData.error || 'Ошибка создания');
-      const clientId = createData.client.id;
+      // Если выбран существующий клиент — не создаём нового
+      const linkedId = document.getElementById('decode-linked-client')?.value || '';
+      let clientId;
+      if (linkedId) {
+        clientId = linkedId;
+      } else {
+        // Создаём нового клиента
+        const createRes = await fetch('/api/clients', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'create', token,
+            name, age,
+            gender: pd.clientGender,
+            notes: pd.complaints.join(' · ')
+          })
+        });
+        const createData = await createRes.json();
+        if (!createRes.ok) throw new Error(createData.error || 'Ошибка создания');
+        clientId = createData.client.id;
+      }
 
       // Добавляем сессию с результатами расшифровки
       await fetch('/api/clients', {
@@ -6548,8 +6752,9 @@
 
       // Обновляем блок
       const block = document.getElementById('stc-' + recId);
+      const savedLabel = linkedId ? '✅ Сессия добавлена в карточку' : '✅ Карточка создана';
       block.innerHTML = `
-        <span style="color:#4caf50;font-weight:600;font-size:0.9rem">✅ Карточка создана</span>
+        <span style="color:#4caf50;font-weight:600;font-size:0.9rem">${savedLabel}</span>
         <button class="btn-open-client-card" onclick="openClientAfterDecode('${clientId}')">Открыть карточку →</button>`;
 
       // Фоновое обновление списка клиентов если вкладка открыта
@@ -7552,8 +7757,19 @@
   function messengerBtns(content, stopProp) {
     const sp = stopProp ? 'event.stopPropagation();' : '';
     const e = escHtml(content);
+    const shareBtn = navigator.share
+      ? `<button class="btn-share" data-copy="${e}" onclick="${sp}nativeShare(this)" title="Поделиться через мессенджер">📤</button>`
+      : '';
     return `<button class="btn-wa" data-copy="${e}" onclick="${sp}openMessenger('wa',this)" title="Отправить в WhatsApp">WA</button>` +
-           `<button class="btn-tg" data-copy="${e}" onclick="${sp}openMessenger('tg',this)" title="Отправить в Telegram">TG</button>`;
+           `<button class="btn-tg" data-copy="${e}" onclick="${sp}openMessenger('tg',this)" title="Отправить в Telegram">TG</button>` +
+           shareBtn;
+  }
+
+  async function nativeShare(btn) {
+    const text = btn.dataset.copy || '';
+    try {
+      await navigator.share({ text });
+    } catch (_) {}
   }
 
   // ════════════════════════════════════════
@@ -7586,6 +7802,45 @@
 
   function clientsApiToken() {
     return localStorage.getItem('auth_token') || '';
+  }
+
+  // Загружает список клиентов в дропдаун формы «Расшифровать»
+  let _decodeClientMap = {}; // id → {name, age, gender}
+  async function loadDecodeClientList() {
+    const sel = document.getElementById('decode-linked-client');
+    if (!sel) return;
+    try {
+      const res = await fetch(`/api/clients?action=list&token=${clientsApiToken()}`);
+      const data = await res.json();
+      if (!res.ok) return;
+      const clients = data.clients || [];
+      _decodeClientMap = {};
+      const current = sel.value;
+      sel.innerHTML = '<option value="">— Новый клиент —</option>';
+      clients.forEach(c => {
+        _decodeClientMap[c.id] = c;
+        const label = c.name + (c.age ? ', ' + c.age : '');
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = label;
+        if (c.id === current) opt.selected = true;
+        sel.appendChild(opt);
+      });
+    } catch (_) {}
+  }
+
+  function onDecodeClientSelect(clientId) {
+    if (!clientId) return;
+    const c = _decodeClientMap[clientId];
+    if (!c) return;
+    const nameInput = document.getElementById('client-name');
+    if (nameInput && !nameInput.value) {
+      nameInput.value = c.name + (c.age ? ', ' + c.age : '');
+    }
+    if (c.gender) {
+      const radio = document.querySelector(`input[name="client-gender"][value="${c.gender}"]`);
+      if (radio) radio.checked = true;
+    }
   }
 
   async function loadClients() {
@@ -7723,7 +7978,7 @@
 
       if (c.notes) {
         document.getElementById('detail-contacts-list').insertAdjacentHTML('beforebegin',
-          `<div id="detail-notes-block" style="font-size:0.82rem;color:#888;margin-bottom:0.75rem;padding:0.6rem 0.85rem;background:#1e1e1e;border-radius:8px;border:1px solid #2e2e2e">📝 ${escHtml(c.notes)}</div>`);
+          `<div id="detail-notes-block" style="font-size:0.82rem;color:#ccc;margin-bottom:0.75rem;padding:0.6rem 0.85rem;background:#1e1e1e;border-radius:8px;border:1px solid #2e2e2e">📝 ${escHtml(c.notes)}</div>`);
       }
 
       const sessionsEl = document.getElementById('detail-sessions');
@@ -7731,8 +7986,12 @@
       const compareRes = document.getElementById('compare-result');
       if (compareBtn) { compareBtn.style.display = 'none'; compareBtn.textContent = '🔄 Сравнить трекеры До → После'; compareBtn.disabled = false; }
       if (compareRes) { compareRes.classList.remove('visible'); compareRes.innerHTML = ''; }
+      const caseBtn = document.getElementById('btn-create-case');
+      const storyRes = document.getElementById('story-result');
+      if (caseBtn) { caseBtn.style.display = 'none'; caseBtn.disabled = false; }
+      if (storyRes) { storyRes.classList.remove('visible'); storyRes.innerHTML = ''; }
       if (!c.sessions || !c.sessions.length) {
-        sessionsEl.innerHTML = '<div style="color:#555;font-size:0.85rem;padding:0.5rem 0">Расшифровок пока нет</div>';
+        sessionsEl.innerHTML = '<div style="color:#aaa;font-size:0.85rem;padding:0.5rem 0">Расшифровок пока нет</div>';
       } else {
         const typeLabel = t => t === 'medical' ? 'Мед. документы' : 'Трекер здоровья';
         sessionsEl.innerHTML = [...c.sessions].reverse().map(s => {
@@ -7759,6 +8018,7 @@
           </div>`;
         }).join('');
         if (compareBtn && c.sessions.length >= 2) compareBtn.style.display = 'block';
+        if (caseBtn && c.sessions.length >= 2) caseBtn.style.display = 'block';
       }
     } catch (e) {
       document.getElementById('detail-name').textContent = 'Ошибка загрузки';
@@ -7831,6 +8091,140 @@
     btn.disabled = false;
   }
 
+  // Генерация кейса для основной вкладки «Клиенты» (KV-хранилище)
+  async function generateClientCase() {
+    const c = _currentClientData;
+    if (!c) return;
+    const btn = document.getElementById('btn-create-case');
+    const resultEl = document.getElementById('story-result');
+    btn.disabled = true;
+    btn.textContent = '⏳ Создаю кейс...';
+    resultEl.classList.remove('visible');
+    resultEl.innerHTML = '<div style="color:#c084fc;font-size:0.85rem;padding:1rem">Генерирую три формата...</div>';
+    resultEl.classList.add('visible');
+
+    const sessions = c.sessions || [];
+    const first = sessions[0] || {};
+    const last = sessions[sessions.length - 1] || {};
+    const pointA = first.complaints || first.systems || '';
+    const pointB = last.protocol || last.systems || '';
+
+    try {
+      await streamStoryResult(resultEl, {
+        pointA, pointB,
+        clientName: c.name,
+        protocol: last.protocol || '',
+        complaints: first.complaints ? [first.complaints] : []
+      });
+    } catch(e) {
+      resultEl.innerHTML = `<div style="color:#e74c3c;font-size:0.85rem;padding:1rem">Ошибка — ${escHtml(e.message)}</div>`;
+    }
+    btn.disabled = false;
+    btn.textContent = '✨ Создать кейс для соцсетей';
+  }
+
+  // Генерация кейса из мини-CRM вкладки «Пригласить» (localStorage)
+  async function crmGenerateCase(id) {
+    const c = crmGet(id);
+    if (!c) return;
+    const panel = document.getElementById('crm-card-panel');
+    let resultEl = document.getElementById('crm-story-' + id);
+    if (!resultEl) {
+      resultEl = document.createElement('div');
+      resultEl.id = 'crm-story-' + id;
+      resultEl.className = 'story-result';
+      const btn = panel.querySelector('.crm-case-btn');
+      if (btn) btn.after(resultEl);
+      else panel.appendChild(resultEl);
+    }
+    resultEl.innerHTML = '<div style="color:#c084fc;font-size:0.85rem;padding:1rem">Генерирую три формата...</div>';
+    resultEl.classList.add('visible');
+
+    try {
+      await streamStoryResult(resultEl, {
+        pointA: c.pointA || '',
+        pointB: c.pointB || '',
+        clientName: c.name || '',
+        protocol: c.notes || '',
+        complaints: []
+      });
+    } catch(e) {
+      resultEl.innerHTML = `<div style="color:#e74c3c;font-size:0.85rem;padding:1rem">Ошибка — ${escHtml(e.message)}</div>`;
+    }
+  }
+
+  // Общий SSE-стример для story результата
+  async function streamStoryResult(container, payload) {
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        mode: 'story',
+        token: localStorage.getItem('auth_token'),
+        ...payload
+      })
+    });
+    if (!res.ok) throw new Error('Ошибка сервера');
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    let fullText = '';
+
+    container.innerHTML = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop();
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const raw = line.slice(6).trim();
+        if (!raw) continue;
+        try {
+          const evt = JSON.parse(raw);
+          if (evt.text) {
+            fullText += evt.text;
+            renderStoryResult(container, fullText, false);
+          } else if (evt.done) {
+            renderStoryResult(container, fullText, true);
+          }
+        } catch(_) {}
+      }
+    }
+    renderStoryResult(container, fullText, true);
+  }
+
+  function renderStoryResult(container, text, final) {
+    const extract = (tag) => {
+      const m = text.match(new RegExp(`<${tag}>([\\s\\S]*?)(?:</${tag}>|$)`));
+      return m ? m[1].trim() : '';
+    };
+    const instagram = extract('instagram');
+    const telegram = extract('telegram');
+    const speech = extract('speech');
+
+    const section = (label, icon, content, tag) => {
+      if (!content && !final) return `<div class="story-format"><div class="story-format-header">${icon} ${label} <span style="color:#666">генерирую...</span></div></div>`;
+      if (!content) return '';
+      return `
+        <div class="story-format">
+          <div class="story-format-header" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+            ${icon} ${label}
+            <button class="btn-copy" data-copy="${escHtml(content)}" onclick="event.stopPropagation();copyText(this)" style="font-size:0.75rem">Скопировать</button>
+          </div>
+          <div class="story-format-body">${escHtml(content)}</div>
+        </div>`;
+    };
+
+    container.innerHTML =
+      section('Instagram', '📸', instagram, 'instagram') +
+      section('Telegram-пост', '✈️', telegram, 'telegram') +
+      section('Устный скрипт', '🎙️', speech, 'speech');
+  }
+
   function closeClientDetail() {
     document.getElementById('client-detail-overlay').classList.remove('open');
     _currentClientId = null;
@@ -7839,7 +8233,7 @@
   function renderContacts(contacts) {
     const el = document.getElementById('detail-contacts-list');
     if (!contacts || !contacts.length) {
-      el.innerHTML = '<div style="color:#555;font-size:0.85rem;padding:0.35rem 0">Записей пока нет — добавьте первый контакт</div>';
+      el.innerHTML = '<div style="color:#aaa;font-size:0.85rem;padding:0.35rem 0">Записей пока нет — добавьте первый контакт</div>';
       return;
     }
     el.innerHTML = [...contacts].reverse().map(c => `
